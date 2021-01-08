@@ -1,7 +1,7 @@
 # Prism Game Engine
 <p align="center">
   <a href="#">
-    <img src="PrismLogo.png" width="650" alt="Prism Logo">
+    <img src="PrismLogo.png" width="500" alt="Prism Logo">
   </a>
 </p>
 
