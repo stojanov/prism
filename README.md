@@ -1,7 +1,7 @@
 # Prism Game Engine
 <p align="center">
   <a href="#">
-    <img src="PrismLogo.png" width="600" alt="Prism Logo">
+    <img src="PrismLogo.png" width="650" alt="Prism Logo">
   </a>
 </p>
 
@@ -16,7 +16,7 @@ My take on a 3D game engine, something i have been working on for quite a while 
 * Multithreaded Rendering Queue
 * Procedural Level/World Generation
 * [Audio Engine (OpenAL)](https://www.openal.org/)
-* [Networking Layer(Asio)](https://think-async.com/Asio/)
+* [Networking Layer (Asio)](https://think-async.com/Asio/)
 
 ## Compilation
 Compilation should be fairly simple using cmake, just run the cmake from the command line or use the gui to create the project files
