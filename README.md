@@ -9,7 +9,7 @@
 My take on a 3D game engine, something i have been working on for quite a while as a hobby project also as a school assignment. Mainly working on it to learn game engine development and modern c++ techniques. Key focus being rouge like mechanics.
 
 ## Planned Features
-* Differed Shading
+* Deffered Shading
 * Shadow Mapping
 * Post Processing (AO, Bloom, ect...)
 * Multithreaded Game Event System
