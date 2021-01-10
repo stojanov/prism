@@ -111,29 +111,6 @@ void Entry()
 	
 	int displayWidth, displayHeight;
 
-	myWindow.GetInputManager().SetEventCallback([](Event& e)
-		{
-			EventHandler Handler(e);
-
-			Handler.Handle<KeyPressedEvent>([](auto e)
-				{
-					PR_INFO("Keyboard Key {0}",
-						(char)(e.GetKey())
-					);
-				});
-			Handler.Handle<MouseMoveEvent>([](auto e)
-				{
-					PR_INFO("MouseMove {0},{1}", e.GetPosition().x, e.GetPosition().y);
-				});
-		
-			Handler.Handle<MouseButtonPressedEvent>([](auto e)
-				{
-					PR_INFO("MouseButton Press {0}",
-						(e.GetKey() == Mouse::Button::LEFT ? "Left" : "Right")
-					);
-				});
-		});
-
 	
 	while (!glfwWindowShouldClose(windowPtr))
 	{

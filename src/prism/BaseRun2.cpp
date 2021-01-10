@@ -18,7 +18,9 @@
 #include "Core/Events/WindowEvents.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "Renderer/CameraEditorController.h"
 #include "Renderer/DynamicMesh.h"
+#include "Renderer/PerspectiveCamera.h"
 #include "Renderer/Texture.h"
 
 using namespace Prism;
@@ -96,19 +98,23 @@ void BaseRun2()
 		{ Gl::ShaderDataType::Float3, "normals" },
 	});
 
+
+	auto k = GLFW_KEY_9;
 	Cube.AddVertexData(texturedCube);
 	Cube.FlushVertexData();
 	CompanionCubeTexture.Bind(0);
 
 	shader->SetInt("tex", 0);
 
-	glm::vec3 lightPos( 1.f, 1.f, -2.f);
+	glm::vec3 lightPos( 1.f, 1.f, 1.2f);
 	glm::vec3 lightColor(1.f);
 	
 	float lightIntens = 1.f;
 
 	glm::vec3 rotation(0.f);
 	glm::vec3 lastRotVal(0.f);
+	glm::vec3 position(0.f);
+	glm::vec3 lastposition(0.f);
 	
 	glm::mat4 cubeTransformMatrix(1.f);
 
@@ -119,29 +125,23 @@ void BaseRun2()
 
 	int displayWidth, displayHeight;
 
-	myWindow.GetInputManager().SetEventCallback([](Event& e)
-		{
-			EventHandler Handler(e);
-
-			Handler.Handle<KeyPressedEvent>([](auto e)
-				{
-					PR_INFO("Keyboard Key {0}",
-						(char)(e.GetKey())
-					);
-				});
-
-			Handler.Handle<WindowResizeEvent>([](auto e)
-				{
-					PR_INFO("Window size changed {0} {1}", e.GetWidth(), e.GetHeight());
-				});
-		});
-
 	glfwGetWindowSize(windowPtr, &displayWidth, &displayHeight);
 	
 	glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)displayWidth / (float)displayHeight, 0.1f, 100.0f);
 
 	glm::mat4 view = glm::mat4(1.0f);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+
+	Renderer::PerspectiveCamera camera(45, displayWidth, displayHeight, 0.1f, 100.f);
+
+	camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
+	myWindow.GetInputManager().ShouldSpawnMouseButtonDown(true);
+	myWindow.GetInputManager().ShouldSpawnMouseButtonReleased(true);
+	
+	myWindow.GetInputManager().SetEventCallback([&](Event& e)
+		{
+			camera.OnSystemEvent(e);
+		});
 	
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(windowPtr))
@@ -156,6 +156,7 @@ void BaseRun2()
 		
 		ImGui::Begin("Cube");
 		ImGui::SliderFloat3("Rotation", (float*) &rotation, -90, 90);
+		ImGui::SliderFloat3("Position", (float*) &position, -90, 90);
 		ImGui::End();
 
 		ImGui::Begin("Light");
@@ -170,10 +171,17 @@ void BaseRun2()
 		rotateMatrix(rotation.y - lastRotVal.y, { 0.f, 1.f, 0.f });
 		rotateMatrix(rotation.z - lastRotVal.z, { 0.f, 0.f, 1.f });
 
+		auto kpos = position - lastposition;
+
+		cubeTransformMatrix = glm::translate(cubeTransformMatrix, kpos);
+		lastposition = position;
+	
 		lastRotVal = rotation;
 		ImGui::Render();
 
 		myWindow.GetInputManager().ProcessEvents();
+
+		camera.Update();
 		
 		glViewport(0, 0, displayWidth, displayHeight);
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -184,8 +192,7 @@ void BaseRun2()
 		shader->SetFloat3("lightPos", lightPos);
 		shader->SetFloat("lightIntens", lightIntens);
 		shader->SetFloat3("lightClr", lightColor);
-		shader->SetMat4("projection", proj);
-		shader->SetMat4("view", view);
+		shader->SetMat4("projectedview", camera.GetProjectedView());
 		
 		Cube.DrawArrays();
 		

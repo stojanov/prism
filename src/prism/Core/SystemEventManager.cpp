@@ -85,8 +85,7 @@ namespace Prism::Core
 			else if (this->m_PressedKeys[key] && glKeyEvent == GLFW_RELEASE)
 			{
 				m_PressedKeys[key] = false;
-				if (m_ButtonStates.MouseButtonReleased)
-				_PushEvent(KeyReleasedEvent ((Keyboard::Key)key));
+				_PushEvent(KeyReleasedEvent((Keyboard::Key)key));
 			}
 		};
 
@@ -106,31 +105,31 @@ namespace Prism::Core
 
 		if (xpos != m_MouseState.MouseXPos || ypos != m_MouseState.MouseYPos) 
 		{
-			_PushEvent(MouseMoveEvent(m_MouseState.MouseXPos = xpos, m_MouseState.MouseYPos = ypos));
+			_PushEvent(MouseMoveEvent(Mouse::Button::NONE, m_MouseState.MouseXPos = xpos, m_MouseState.MouseYPos = ypos));
 		}
 	
 		static auto OnMouseClick = [this](uint8_t glMouseBtn, Mouse::Button mouseBtn)
 		{
 			bool& KeyDownRef = (mouseBtn == Mouse::Button::LEFT ? m_MouseState.LeftDown : m_MouseState.RightDown);
 			
-			if (auto _localBtnState = glfwGetMouseButton(m_Window, glMouseBtn);_localBtnState == GLFW_PRESS)
+			if (auto _localBtnState = glfwGetMouseButton(m_Window, glMouseBtn); _localBtnState == GLFW_PRESS)
 			{
 				if (!KeyDownRef)
 				{
-					_PushEvent(MouseButtonPressedEvent(mouseBtn));
+					_PushEvent(MouseButtonPressedEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
 					KeyDownRef = true;
 				}
 				if (m_ButtonStates.MouseButtonDown)
 				{
-					_PushEvent(MouseButtonDownEvent(mouseBtn));
+					_PushEvent(MouseButtonDownEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
 				}
 			}
-			else if (_localBtnState == GLFW_RELEASE)
+			else if (KeyDownRef && _localBtnState == GLFW_RELEASE)
 			{
 				KeyDownRef = false;
 				if (m_ButtonStates.MouseButtonReleased)
 				{
-					_PushEvent(MouseButtonReleasedEvent(mouseBtn));
+					_PushEvent(MouseButtonReleasedEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
 				}
 			}
 		};

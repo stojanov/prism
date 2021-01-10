@@ -10,7 +10,7 @@ namespace Prism
 	{
 		None = 0,
 		KeyPressed, KeyDown, KeyReleased,
-		MouseButtonPressed, MouseButtonDown,MouseButtonReleased, MouseMoved,
+		MouseButtonPressed, MouseButtonDown,MouseButtonReleased, MouseMove,
 		WindowResize
 	};
 

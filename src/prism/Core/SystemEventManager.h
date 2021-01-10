@@ -10,7 +10,6 @@ namespace Prism::Core
 {
 	using EventCallback = std::function<void(Event&)>;
 
-
 	// Queue Events so it doesn't block the whole game on event spawn
 	class SystemEventManager
 	{
@@ -21,10 +20,6 @@ namespace Prism::Core
 		void PollEvents();
 
 		void UseRawMouseInput(bool isEnabled) const;
-
-		void EnableCursor() const;
-		void HideCursor() const;
-		void DisableCursor() const;
 
 		bool IsKeyDown(Keyboard::Key key) { return m_PressedKeys[key]; }
 		bool IsMouseDown(Mouse::Button btn)

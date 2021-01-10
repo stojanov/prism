@@ -6,37 +6,26 @@
 namespace Prism
 {
 	template<EventType Type>
-	class MouseButtonEvent : public Event
+	class MouseEvent : public Event
 	{
 	public:
 		PR_EVENT(Type)
-			MouseButtonEvent(Mouse::Button btn) : m_Btn(btn) {}
-		Mouse::Button GetKey() const { return m_Btn; }
-	private:
-		Mouse::Button m_Btn;
-	};
-
-	using MouseButtonDownEvent = MouseButtonEvent<EventType::MouseButtonDown>;
-	using MouseButtonPressedEvent = MouseButtonEvent<EventType::MouseButtonPressed>;
-	using MouseButtonReleasedEvent = MouseButtonEvent<EventType::MouseButtonReleased>;
-
-	class MouseMoveEvent : public Event
-	{
-	public:
-		PR_EVENT(EventType::MouseMoved)
-
-			MouseMoveEvent(float x, float y)
+		MouseEvent(Mouse::Button btn, float x, float y)
 			:
+			m_Btn(btn),
 			m_Pos(x, y)
 		{}
-
-		MouseMoveEvent(const glm::vec2& pos)
-			:
-			m_Pos(pos)
-		{}
-
+		
+		Mouse::Button GetKey() const { return m_Btn; }
 		const glm::vec2& GetPosition() const { return m_Pos; }
 	private:
+		Mouse::Button m_Btn;
 		glm::vec2 m_Pos;
 	};
+
+	using MouseButtonDownEvent = MouseEvent<EventType::MouseButtonDown>;
+	using MouseButtonPressedEvent = MouseEvent<EventType::MouseButtonPressed>;
+	using MouseButtonReleasedEvent = MouseEvent<EventType::MouseButtonReleased>;
+	using MouseMoveEvent = MouseEvent<EventType::MouseMove>;
+
 }
