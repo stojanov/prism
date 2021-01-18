@@ -11,10 +11,25 @@
 namespace Prism::Renderer
 {
 	PerspectiveCamera::PerspectiveCamera() = default;
-	
+	PerspectiveCamera::~PerspectiveCamera() = default;
+
 	PerspectiveCamera::PerspectiveCamera(float FOV, int width, int height, float clipPlaneNear, float clipPlaneFar)
+		:
+		m_Fov(FOV),
+		m_ClipNear(clipPlaneNear),
+		m_ClipFar(clipPlaneFar)
 	{
 		m_Projection = glm::perspective(glm::radians(FOV), width * 1.0f / height, clipPlaneNear, clipPlaneFar);
+	}
+
+	void PerspectiveCamera::UpdatePerspective(float fov, int width, int height, float clipPlaneNear, float clipPlaneFar)
+	{
+		m_Projection = glm::perspective(glm::radians(fov), width * 1.f / height, clipPlaneNear, clipPlaneFar);
+	}
+
+	void PerspectiveCamera::UpdateRatio(int width, int height)
+	{
+		m_Projection = glm::perspective(glm::radians(m_Fov), width * 1.f / height, m_ClipNear, m_ClipFar);
 	}
 
 	void PerspectiveCamera::MoveVertically(float speed)
@@ -80,11 +95,11 @@ namespace Prism::Renderer
 		}	
 	}
 	
-	void PerspectiveCamera::Update()
+	void PerspectiveCamera::OnUpdate(float dt)
 	{
 		if (m_HasContoller)
 		{
-			m_Controller->Update(0.013);
+			m_Controller->Update(dt);
 		}
 
 		m_Position += m_DPosition;

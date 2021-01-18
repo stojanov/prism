@@ -13,7 +13,7 @@ namespace Prism::Renderer
 	public:
 		PerspectiveCamera();
 		PerspectiveCamera(float FOV, int width, int height, float clipPlaneNear, float clipPlaneFar);
-		virtual ~PerspectiveCamera() = default;
+		virtual ~PerspectiveCamera();
 
 		void MoveHorizontally(float speed) override;
 		void MoveVertically(float speed) override;
@@ -29,17 +29,26 @@ namespace Prism::Renderer
 		void OffsetVerticalRotation(float angle) override;
 		void OffsetHorizontalRotation(float angle) override;
 
+		void UpdatePerspective(float fov, int width, int height, float clipPlaneNear, float clipPlaneFar);
+		void UpdateRatio(int width, int height);
+		
 		void OnSystemEvent(Event& e) override;
 		
-		void Update();
+		void OnUpdate(float dt);
 
 		template<typename T, typename = typename std::enable_if<std::is_base_of<CameraController, T>::value>::type>
 		void AttachController()
 		{
 			PR_ASSERT(!m_HasContoller, "Camera can only have 1 Controller!");
 			m_HasContoller = true;
-			//m_Controller = DynamicPtrCast<Controller>(MakePtr<T>(this));
-			m_Controller = dynamic_cast<CameraController*>(new T(this));
+			m_Controller = DynamicPtrCast<CameraController>(MakePtr<T>(this));
+		}
+
+		void RemoveController()
+		{
+			PR_ASSERT(m_HasContoller, "Camera must have a controller to be removed");
+			m_HasContoller = false;
+			m_Controller.reset();
 		}
 
 		const glm::mat4& GetProjectedView() const { return m_ProjectedView; }
@@ -47,11 +56,13 @@ namespace Prism::Renderer
 		const glm::mat4& GetView() const { return m_View; }
 	private:
 		bool m_HasContoller{ false };
-		CameraController* m_Controller;
+		Ptr<CameraController> m_Controller;
 		glm::mat4 m_View;
 		glm::mat4 m_Projection;
 		glm::mat4 m_ProjectedView;
-
+		float m_Fov;
+		float m_ClipNear;
+		float m_ClipFar;
 		glm::vec3 m_DPosition{ 0.f, 0.f, 0.f };
 		glm::vec2 m_RotationDelta{ 0.f, 0.f };
 		glm::vec3 m_Position{ 0.f, 0.f, -3.f };

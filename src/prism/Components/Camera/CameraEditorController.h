@@ -1,9 +1,12 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "CameraController.h"
+
+#include "prism/Renderer/PerspectiveCamera.h"
+#include "prism/Renderer/CameraController.h"
 #include "prism/Core/Events/MouseEvents.h"
 #include "prism/Core/Events/KeyEvents.h"
+#include "prism/Core/Events/WindowEvents.h"
 #include "prism/System/Log.h"
 
 namespace Prism::Renderer
@@ -54,6 +57,14 @@ namespace Prism::Renderer
 			{
 				m_ShouldRotate = !(e.GetKey() == Keyboard::LALT);
 			});
+
+			if constexpr (std::is_same<T, PerspectiveCamera>::value)
+			{
+				evt.Handle<WindowResizeEvent>([this](WindowResizeEvent& e)
+				{
+					m_Camera->UpdateRatio(e.GetWidth(), e.GetHeight());
+				});
+			}
 		}
 		
 		void Update(float dt) override

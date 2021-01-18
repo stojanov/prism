@@ -13,6 +13,7 @@ namespace Prism::Core
 		m_Layers[m_Layers.size() - 1]->OnDetach();
 		m_LayerPositions.erase(m_LastInserts.layer);
 		m_Layers.pop_back();
+		
 	}
 
 	void LayerSystem::PopOverlay()

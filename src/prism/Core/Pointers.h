@@ -21,15 +21,16 @@ namespace Prism
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
-	template<typename To, typename From, typename Deleter>
-	std::unique_ptr<To, Deleter> DynamicPtrCast(std::unique_ptr<From, Deleter>&& p)
+	template<typename To, typename From>
+	std::unique_ptr<To> DynamicPtrCast(std::unique_ptr<From>&& p)
 	{
+		// Must have a virtual destructor
 		if (To* cast = dynamic_cast<To*>(p.get()))
 		{
-			std::unique_ptr<To, Deleter> result(cast, std::move(p.get_deleter()));
+			std::unique_ptr<To> result(cast, std::move(p.get_deleter()));
 			p.release();
 			return result;
 		}
-		return std::unique_ptr<To, Deleter>(nullptr);
+		return std::unique_ptr<To>(nullptr);
 	}
 }

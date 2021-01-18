@@ -2,7 +2,8 @@
 
 #include <vector>
 
-#include "prism/Renderer/CameraEditorController.h"
+
+#include "prism/Components/Camera/CameraEditorController.h"
 
 std::vector<float> texturedCube = {
 		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  0.0f,  -1.0f,
@@ -59,7 +60,6 @@ namespace Prism::Examples
 	void Base::OnAttach()
 	{
 		// Hardcoded for now
-		m_Camera = Renderer::PerspectiveCamera(45, 980, 750, 0.1f, 100.f);
 		m_Shader = Gl::Shader::FromFiles(s_VertFilename, s_FragFilename);
 		m_Texture = Renderer::Texture(s_TextureFilename);
 
@@ -84,13 +84,12 @@ namespace Prism::Examples
 
 	void Base::OnUpdate(float dt)
 	{
-		m_Camera.Update();
+		m_Camera.OnUpdate(dt);
 	}
 
 	void Base::OnGuiDraw()
 	{
-		//GuiStartFrame();
-		
+		// GuiStartFrame();
 	}
 	
 	void Base::OnDraw()

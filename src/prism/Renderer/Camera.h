@@ -8,6 +8,7 @@ namespace Prism::Renderer
 	class BaseCamera
 	{
 	public:
+		virtual ~BaseCamera() = default;
 		virtual void MoveHorizontally(float x) = 0;
 		virtual void MoveVertically(float y) = 0;
 		virtual void OffsetXPosition(float x) = 0;

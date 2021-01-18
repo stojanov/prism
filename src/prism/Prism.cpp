@@ -1,10 +1,7 @@
 #include "Prism.h"
 
-
 #include <iomanip>
 #include <iostream>
-
-
 
 #include "Core/Events/WindowEvents.h"
 #include "glad/glad.h"
@@ -19,6 +16,12 @@ namespace Prism
 		m_Window.Create(w, h, name); // Temp, TODO: Add fullscreen support
 		m_Window.SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 		m_WindowActive = true;
+
+		glEnable(GL_DEPTH_TEST);
+		
+		PR_CORE_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+		PR_INFO("Driver - {0}", glGetString(GL_VERSION));
+		PR_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	}
 
 	void Application::OnEvent(Event& e)
@@ -47,7 +50,6 @@ namespace Prism
 		auto StartTime = std::chrono::high_resolution_clock::now();
 		auto LastFrameTime = StartTime;
 
-		//glEnable(GL_DEPTH_TEST);
 		
 		while (m_WindowActive)
 		{

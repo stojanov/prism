@@ -19,10 +19,12 @@ namespace Prism::Core
 
 	using SharedContextRef = Ref<SharedContext>;
 
+	
 	inline SharedContextRef CreateSharedContext()
 	{
 		auto ctx = MakeRef<SharedContext>();
 
+		
 		return ctx;
 	}
 	*/

@@ -18,13 +18,12 @@ namespace Prism::Core
 
 		struct Size
 		{
-			int widht;
+			int width;
 			int height;
 		};
 		
 		void Init();
 		void Create(int w, int h, const char* name);
-		void Loop();
 		SystemEventManager& GetInputManager() { return m_InputEventManager; }
 
 		void ProcessEvents();
@@ -36,8 +35,6 @@ namespace Prism::Core
 		GLFWwindow* m_WindowPtr{ nullptr };
 		SystemEventManager m_InputEventManager;
 		WindowData m_Data;
-		UpdateCallback m_Update;
-		DrawCallback m_Draw;
 		Size s;
 	};
 }

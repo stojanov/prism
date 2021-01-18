@@ -52,10 +52,6 @@ namespace Prism::Core
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(m_WindowPtr, true);
 		ImGui_ImplOpenGL3_Init("#version 400");
-		
-		PR_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
-		PR_INFO("Driver - {0}", glGetString(GL_VERSION));
-		PR_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	}
 
 	void Window::ProcessEvents()

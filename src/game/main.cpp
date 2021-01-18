@@ -10,5 +10,6 @@ int main()
 	app.CreateLayer<Prism::Examples::Base>("Base Example");
 	
 	app.Run();
+	
 	return 0;
 }

@@ -25,7 +25,7 @@ namespace Prism::Examples
 		static std::string s_FragFilename;
 		static std::string s_TextureFilename;
 
-		Renderer::PerspectiveCamera m_Camera;
+		Renderer::PerspectiveCamera m_Camera{ 45, 980, 750, 0.1f, 100.f };
 		Gl::Shader m_Shader;
 		Renderer::DynamicMesh m_Cube{
 			{ Gl::ShaderDataType::Float3, "position" },
