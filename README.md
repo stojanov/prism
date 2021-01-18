@@ -21,6 +21,8 @@ My take on a 3D game engine, something i have been working on for quite a while 
 ## Compilation
 Compilation should be fairly simple using cmake, just run the cmake from the command line or use the gui to create the project files
 
+## Work in Progress
+[WIP](WIP.md)
 
 ## License
 [GPL](https://choosealicense.com/licenses/gpl-3.0/)

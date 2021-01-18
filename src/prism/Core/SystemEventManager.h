@@ -5,11 +5,10 @@
 #include "prism/System/Debug.h"
 #include "Events/Event.h"
 #include "GLFW/glfw3.h"
+#include "WindowData.h"
 
 namespace Prism::Core
 {
-	using EventCallback = std::function<void(Event&)>;
-
 	// Queue Events so it doesn't block the whole game on event spawn
 	class SystemEventManager
 	{

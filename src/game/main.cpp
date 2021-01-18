@@ -1,9 +1,14 @@
 #include <iostream>
 
-//#include "prism/BaseRun.h"
-#include "prism/BaseRun2.h"
+#include "prism/Prism.h"
+#include "prism/Examples/BaseExample.h"
+
 int main()
 {
-	BaseRun2();
+	Prism::Application app(980, 750, "Prism");
+
+	app.CreateLayer<Prism::Examples::Base>("Base Example");
+	
+	app.Run();
 	return 0;
 }

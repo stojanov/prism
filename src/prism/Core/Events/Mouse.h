@@ -10,7 +10,8 @@ namespace Prism
 			NONE,
 			LEFT,
 			RIGHT,
-			MIDDLE
+			MIDDLE,
+			SCROLL
 		};
 	};
 }

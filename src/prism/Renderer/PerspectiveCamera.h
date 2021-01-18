@@ -11,6 +11,7 @@ namespace Prism::Renderer
 	class PerspectiveCamera: BaseCamera
 	{
 	public:
+		PerspectiveCamera();
 		PerspectiveCamera(float FOV, int width, int height, float clipPlaneNear, float clipPlaneFar);
 		virtual ~PerspectiveCamera() = default;
 
@@ -38,13 +39,12 @@ namespace Prism::Renderer
 			PR_ASSERT(!m_HasContoller, "Camera can only have 1 Controller!");
 			m_HasContoller = true;
 			//m_Controller = DynamicPtrCast<Controller>(MakePtr<T>(this));
-			auto ctl = new T(this);
-			m_Controller = dynamic_cast<CameraController*>(ctl);
+			m_Controller = dynamic_cast<CameraController*>(new T(this));
 		}
 
-		const glm::mat4& GetProjectedView() const { return m_ProjectedView; };
-		const glm::mat4& GetProjection() const { return m_Projection; };
-		const glm::mat4& GetView() const { return m_View; };
+		const glm::mat4& GetProjectedView() const { return m_ProjectedView; }
+		const glm::mat4& GetProjection() const { return m_Projection; }
+		const glm::mat4& GetView() const { return m_View; }
 	private:
 		bool m_HasContoller{ false };
 		CameraController* m_Controller;

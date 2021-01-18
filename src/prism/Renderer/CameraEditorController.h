@@ -16,7 +16,6 @@ namespace Prism::Renderer
 			:
 			m_Camera(camera)
 		{
-			
 		}
 
 		void OnSystemEvent(Event& e) override

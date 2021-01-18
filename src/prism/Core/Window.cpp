@@ -4,6 +4,9 @@
 
 #include <chrono>
 #include <iostream>
+
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "glad/glad.h"
 #include "glm/vec4.hpp"
 #include "prism/System/Debug.h"
@@ -40,32 +43,28 @@ namespace Prism::Core
 		if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 			exit(-1);
 
-		m_InputEventManager = SystemEventManager(m_WindowPtr);
+		m_InputEventManager = { m_WindowPtr };
+
+		glfwSetWindowUserPointer(m_WindowPtr, (void*) &m_Data);
+
+		ImGui::CreateContext();
+
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(m_WindowPtr, true);
+		ImGui_ImplOpenGL3_Init("#version 400");
 		
 		PR_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
 		PR_INFO("Driver - {0}", glGetString(GL_VERSION));
 		PR_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	}
 
-	void Window::Loop()
+	void Window::ProcessEvents()
 	{
-		glm::vec4 clearColor{ 0.0f, 0.8f, 0.0f, 0.0f };
-
-		auto StartTime = std::chrono::high_resolution_clock::now();
-		auto LastFrameTime = std::chrono::high_resolution_clock::now();
-
-		while (!glfwWindowShouldClose(m_WindowPtr)) 
-		{
-			StartTime = std::chrono::high_resolution_clock::now();
-			float dt = std::chrono::duration_cast<std::chrono::milliseconds>(LastFrameTime - StartTime).count();
-			glfwGetWindowSize(m_WindowPtr, &m_Width, &m_Height);
-
-			glViewport(0, 0, m_Width, m_Height);
-			glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			glfwSwapBuffers(m_WindowPtr);
-			LastFrameTime = std::chrono::high_resolution_clock::now();
-		}
+		m_InputEventManager.ProcessEvents();
+	}
+	
+	void Window::SetEventCallback(EventCallback callback)
+	{
+		m_Data.OnEvent = callback;
 	}
 }

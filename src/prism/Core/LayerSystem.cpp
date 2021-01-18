@@ -54,15 +54,15 @@ namespace Prism::Core
 		}
 	}
 
-	void LayerSystem::Update()
+	void LayerSystem::Update(float dt)
 	{
 		for (const auto& overlay : m_Overlays)
 		{
-			overlay->OnUpdate();
+			overlay->OnUpdate(dt);
 		}
 		for (const auto& layer : m_Layers)
 		{
-			layer->OnUpdate();
+			layer->OnUpdate(dt);
 		}
 	}
 

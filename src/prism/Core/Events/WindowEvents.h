@@ -27,5 +27,8 @@ namespace Prism
 		int m_Width;
 		int m_Height;
 	};
+
+	using WindowCloseEvent = WindowEvent<EventType::WindowClose>;
+	using WindowFocusEvent = WindowEvent<EventType::WindowFocus>;
 }
 

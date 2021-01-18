@@ -4,6 +4,8 @@
 #include "Events/MouseEvents.h"
 #include "Events/WindowEvents.h"
 
+#include "WindowData.h"
+
 namespace Prism::Core
 {
 	SystemEventManager::SystemEventManager() 
@@ -18,7 +20,21 @@ namespace Prism::Core
 
 		glfwSetWindowSizeCallback(win, [](GLFWwindow* win, int width, int height)
 		{
+			auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
 			
+			data->OnEvent(WindowResizeEvent(width, height));
+		});
+
+		glfwSetWindowCloseCallback(win, [](GLFWwindow* win)
+		{
+			auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
+			data->OnEvent(WindowCloseEvent());
+		});
+
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* win, double xoffset, double yoffset)
+		{
+			auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
+			data->OnEvent(MouseScrollEvent(xoffset, yoffset));
 		});
 	}
 	
@@ -140,8 +156,8 @@ namespace Prism::Core
 	
 	void SystemEventManager::_PushEvent(Event& e)
 	{
-		m_EvtCallback(e);
-		//m_PolledEvents.push(e);
+		auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((m_Window)));
+		data->OnEvent(e);
 	}
 
 	void SystemEventManager::ProcessEvents()

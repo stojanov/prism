@@ -10,13 +10,13 @@ namespace Prism
 	{
 		None = 0,
 		KeyPressed, KeyDown, KeyReleased,
-		MouseButtonPressed, MouseButtonDown,MouseButtonReleased, MouseMove,
-		WindowResize
+		MouseButtonPressed, MouseButtonDown,MouseButtonReleased, MouseMove, MouseScroll,
+		WindowResize, WindowClose, WindowFocus
 	};
 
 #define PR_EVENT(type) EventType GetEventType() const override { return type; } \
 						static EventType GetStaticType() { return type; }
-	
+
 	class Event
 	{
 	public:

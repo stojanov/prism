@@ -1,7 +1,5 @@
 #include "PerspectiveCamera.h"
 
-#include <type_traits>
-
 #include "CameraController.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -12,6 +10,8 @@
 
 namespace Prism::Renderer
 {
+	PerspectiveCamera::PerspectiveCamera() = default;
+	
 	PerspectiveCamera::PerspectiveCamera(float FOV, int width, int height, float clipPlaneNear, float clipPlaneFar)
 	{
 		m_Projection = glm::perspective(glm::radians(FOV), width * 1.0f / height, clipPlaneNear, clipPlaneFar);
@@ -88,7 +88,7 @@ namespace Prism::Renderer
 		}
 
 		m_Position += m_DPosition;
-		PR_WARN("{0},{1},{2} {3},{4},{5}", m_DPosition.x, m_DPosition.y, m_DPosition.z, m_Position.x, m_Position.y, m_Position.z);
+		//PR_WARN("{0},{1},{2} {3},{4},{5}", m_DPosition.x, m_DPosition.y, m_DPosition.z, m_Position.x, m_Position.y, m_Position.z);
 		m_Direction = glm::normalize(m_LookAt - m_Position);
 
 		glm::vec3 axis = glm::cross(m_Direction, m_Up);
@@ -101,7 +101,7 @@ namespace Prism::Renderer
 		m_Up = glm::rotate(rotation, m_Up);
 		
 		m_LookAt = m_Position + m_Direction;
-		PR_ERROR("{0},{1},{2} {3},{4},{5}", m_Position.x, m_Position.y, m_Position.z, m_Direction.x, m_Direction.y, m_Direction.z);
+		//PR_ERROR("{0},{1},{2} {3},{4},{5}", m_Position.x, m_Position.y, m_Position.z, m_Direction.x, m_Direction.y, m_Direction.z);
 		m_View = glm::lookAt(m_Position, m_LookAt, m_Up);
 		
 		m_ProjectedView = m_Projection * m_View;

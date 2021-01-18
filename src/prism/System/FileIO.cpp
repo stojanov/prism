@@ -19,6 +19,6 @@ namespace Prism::System
 	
 	std::future<std::string> AsyncReadFile(const std::string& filepath)
 	{
-		return std::async(std::launch::async, [filepath]() { return ReadFile(filepath); });
+		return std::async(std::launch::async, [&filepath]() { return ReadFile(filepath); });
 	}
 }

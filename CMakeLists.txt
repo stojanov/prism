@@ -4,6 +4,7 @@ project(prism)
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
+
 add_subdirectory(vendor/GLFW)
 add_subdirectory(vendor/spdlog)
 
@@ -27,6 +28,7 @@ include_directories(
                     vendor/imgui/
                     vendor/spdlog/include/
                     vendor/stb/
+                    vendor/json/include/
                     src/)
 
 file(GLOB STB_SRC vendor/stb/*.c)
@@ -65,6 +67,7 @@ add_executable(${PROJECT_NAME}
                     ${HEADERS} 
                     ${IMGUI_GLFW_HEADERS}
                     ${PROJECT_CONFIGS})
+
 
 target_link_libraries(${PROJECT_NAME} glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES})
