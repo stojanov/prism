@@ -1,9 +1,9 @@
 #pragma once
 #include <type_traits>
+#include <glm/glm.hpp>
 
-#include "Camera.h"
-#include "CameraController.h"
-#include "glm/glm.hpp"
+#include "prism/Components/Camera/Camera.h"
+#include "prism/Components/Camera/Controller.h"
 #include "prism/System/Debug.h"
 
 namespace Prism::Renderer
@@ -14,9 +14,9 @@ namespace Prism::Renderer
 		PerspectiveCamera();
 		PerspectiveCamera(float FOV, int width, int height, float clipPlaneNear, float clipPlaneFar);
 		virtual ~PerspectiveCamera();
-
-		void MoveHorizontally(float speed) override;
-		void MoveVertically(float speed) override;
+		
+		void MoveX(float speed);
+		void MoveZ(float speed);
 		
 		void OffsetXPosition(float x) override;
 		void OffsetYPosition(float y) override;
@@ -33,7 +33,6 @@ namespace Prism::Renderer
 		void UpdateRatio(int width, int height);
 		
 		void OnSystemEvent(Event& e) override;
-		
 		void OnUpdate(float dt);
 
 		template<typename T, typename = typename std::enable_if<std::is_base_of<CameraController, T>::value>::type>
@@ -65,9 +64,9 @@ namespace Prism::Renderer
 		float m_ClipFar;
 		glm::vec3 m_DPosition{ 0.f, 0.f, 0.f };
 		glm::vec2 m_RotationDelta{ 0.f, 0.f };
-		glm::vec3 m_Position{ 0.f, 0.f, -3.f };
+		glm::vec3 m_Position{ 0.f, 0.f, -2.f };
 		glm::vec3 m_LookAt{ 0.f, 0.f, 5.f };
 		glm::vec3 m_Up{ 0.f, 1.f, 0.f };
-		glm::vec3 m_Direction;
+		glm::vec3 m_Direction{ 0.f, 0.f, 1.f};
 	};
 }

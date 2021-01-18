@@ -54,6 +54,11 @@ namespace Prism::Core
 		ImGui_ImplOpenGL3_Init("#version 400");
 	}
 
+	void Window::Close()
+	{
+		glfwSetWindowShouldClose(m_WindowPtr, true);
+	}
+
 	void Window::ProcessEvents()
 	{
 		m_InputEventManager.ProcessEvents();

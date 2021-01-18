@@ -25,7 +25,8 @@ namespace Prism::Core
 
 	void LayerSystem::RemoveLayer(const std::string& name)
 	{
-		if (const auto& layerPos = m_LayerPositions.find(name); layerPos != m_LayerPositions.end())
+		if (const auto& layerPos = m_LayerPositions.find(name); 
+			layerPos != m_LayerPositions.end())
 		{
 			m_Layers[layerPos->second]->OnDetach();
 			m_Layers.erase(m_Layers.begin() + layerPos->second);
@@ -35,7 +36,8 @@ namespace Prism::Core
 
 	void LayerSystem::RemoveOverlay(const std::string& name)
 	{
-		if (const auto& overlayPos = m_LayerPositions.find(name); overlayPos != m_LayerPositions.end())
+		if (const auto& overlayPos = m_LayerPositions.find(name); 
+			overlayPos != m_LayerPositions.end())
 		{
 			m_Overlays[overlayPos->second]->OnDetach();
 			m_Overlays.erase(m_Overlays.begin() + overlayPos->second);

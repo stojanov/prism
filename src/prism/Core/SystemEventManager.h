@@ -44,10 +44,10 @@ namespace Prism::Core
 
 		struct ButtonStates
 		{
-			bool KeyDown{ false };
-			bool KeyReleased{ false };
-			bool MouseButtonDown{ false };
-			bool MouseButtonReleased{ false };
+			bool KeyDown{ true };
+			bool KeyReleased{ true };
+			bool MouseButtonDown{ true };
+			bool MouseButtonReleased{ true };
 		} m_ButtonStates;
 		
 		struct MouseState

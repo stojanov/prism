@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
+
+#include "Core/Events/KeyEvents.h"
 #include "Core/Events/WindowEvents.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"
@@ -28,6 +30,15 @@ namespace Prism
 	{
 		EventHandler evt(e);
 
+		evt.Handle<KeyPressedEvent>([this](KeyPressedEvent& e)
+		{
+			PR_INFO("KEY: {0}", (char)e.GetKey());
+			if (e.GetKey() == Keyboard::Escape)
+			{
+				m_Window.Close();
+				m_WindowActive = false;
+			}
+		});
 		evt.Handle<WindowCloseEvent>([this](Event& e)
 		{
 			m_WindowActive = false;

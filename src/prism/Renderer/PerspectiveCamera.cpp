@@ -1,6 +1,6 @@
 #include "PerspectiveCamera.h"
 
-#include "CameraController.h"
+#include "prism/Components/Camera/Controller.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -32,26 +32,24 @@ namespace Prism::Renderer
 		m_Projection = glm::perspective(glm::radians(m_Fov), width * 1.f / height, m_ClipNear, m_ClipFar);
 	}
 
-	void PerspectiveCamera::MoveVertically(float speed)
+	void PerspectiveCamera::MoveZ(float speed)
 	{
-		m_DPosition += m_Up * speed;
+		m_DPosition += m_Direction * speed;
 	}
-
-	void PerspectiveCamera::MoveHorizontally(float speed)
+	
+	void PerspectiveCamera::MoveX(float speed)
 	{
-		m_DPosition += glm::normalize(glm::cross(m_Direction, m_Up)) * speed;
+		m_DPosition += glm::cross(m_Direction, m_Up) * speed;
 	}
 	
 	void PerspectiveCamera::OffsetXPosition(float x) 
 	{
 		m_Position.x += x;
 	}
-
 	void PerspectiveCamera::OffsetYPosition(float y)
 	{
 		m_Position.y += y;
 	}
-
 	void PerspectiveCamera::OffsetZPosition(float z)
 	{
 		m_Position.z += z;
@@ -61,7 +59,6 @@ namespace Prism::Renderer
 	{
 		m_Position = position;
 	}
-	
 	void PerspectiveCamera::OffsetPosition(const glm::vec3& position)
 	{
 		m_Position += position;
@@ -71,17 +68,14 @@ namespace Prism::Renderer
 	{
 		m_RotationDelta.x = angle;
 	}
-
 	void PerspectiveCamera::OffsetVerticalRotation(float angle)
 	{
 		m_RotationDelta.x += angle;
 	}
-
 	void PerspectiveCamera::SetHorizontalRotation(float angle)
 	{
 		m_RotationDelta.y = angle;
 	}
-
 	void PerspectiveCamera::OffsetHorizontalRotation(float angle)
 	{
 		m_RotationDelta.y += angle;
@@ -103,7 +97,6 @@ namespace Prism::Renderer
 		}
 
 		m_Position += m_DPosition;
-		//PR_WARN("{0},{1},{2} {3},{4},{5}", m_DPosition.x, m_DPosition.y, m_DPosition.z, m_Position.x, m_Position.y, m_Position.z);
 		m_Direction = glm::normalize(m_LookAt - m_Position);
 
 		glm::vec3 axis = glm::cross(m_Direction, m_Up);
@@ -116,7 +109,15 @@ namespace Prism::Renderer
 		m_Up = glm::rotate(rotation, m_Up);
 		
 		m_LookAt = m_Position + m_Direction;
-		//PR_ERROR("{0},{1},{2} {3},{4},{5}", m_Position.x, m_Position.y, m_Position.z, m_Direction.x, m_Direction.y, m_Direction.z);
+
+		/*
+		PR_ERROR("{0},{1},{2}\t{3},{4},{5}\t{6},{7}", 
+			m_Position.x, m_Position.y, m_Position.z, 
+			m_Direction.x, m_Direction.y, m_Direction.z, 
+			m_RotationDelta.x, m_RotationDelta.y
+		);
+		*/
+		
 		m_View = glm::lookAt(m_Position, m_LookAt, m_Up);
 		
 		m_ProjectedView = m_Projection * m_View;

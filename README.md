@@ -17,6 +17,7 @@ My take on a 3D game engine, something i have been working on for quite a while 
 * Procedural Level/World Generation
 * [Audio Engine (OpenAL)](https://www.openal.org/)
 * [Networking Layer (Asio)](https://think-async.com/Asio/)
+* Embeded Scripting Language probably lua
 
 ## Compilation
 Compilation should be fairly simple using cmake, just run the cmake from the command line or use the gui to create the project files

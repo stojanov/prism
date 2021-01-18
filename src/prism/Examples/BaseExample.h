@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prism/Core/Layer.h"
+#include "prism/Components/Layer.h"
 #include "prism/GL/Shader.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
@@ -8,7 +8,7 @@
 
 namespace Prism::Examples
 {
-	class Base: public Core::Layer
+	class Base: public Layer
 	{
 	public:
 		Base();
@@ -26,7 +26,7 @@ namespace Prism::Examples
 		static std::string s_TextureFilename;
 
 		Renderer::PerspectiveCamera m_Camera{ 45, 980, 750, 0.1f, 100.f };
-		Gl::Shader m_Shader;
+		Ref<Gl::Shader> m_Shader;
 		Renderer::DynamicMesh m_Cube{
 			{ Gl::ShaderDataType::Float3, "position" },
 			{ Gl::ShaderDataType::Float2, "texcord" },
@@ -34,9 +34,9 @@ namespace Prism::Examples
 		};
 		Renderer::Texture m_Texture;
 
-		glm::mat4 m_CubeTransform;
-		glm::vec3 m_LightPosition{ 1.f, 1.f, 1.f };
-		glm::vec3 m_LightClr{};
+		glm::mat4 m_CubeTransform{ 1.f };
+		glm::vec3 m_LightPosition{ 0.f, 0.f, 2.f };
+		glm::vec3 m_LightClr{ 1.f, 1.f, 0.f };
 		float m_LightIntensity { 1.f };
 	};
 }

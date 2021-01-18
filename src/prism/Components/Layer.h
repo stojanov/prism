@@ -7,7 +7,7 @@ namespace Prism {
 	class Event;
 }
 
-namespace Prism::Core
+namespace Prism
 {
 	class Layer
 	{

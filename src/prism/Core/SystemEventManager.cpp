@@ -21,7 +21,6 @@ namespace Prism::Core
 		glfwSetWindowSizeCallback(win, [](GLFWwindow* win, int width, int height)
 		{
 			auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
-			
 			data->OnEvent(WindowResizeEvent(width, height));
 		});
 
@@ -121,7 +120,11 @@ namespace Prism::Core
 
 		if (xpos != m_MouseState.MouseXPos || ypos != m_MouseState.MouseYPos) 
 		{
-			_PushEvent(MouseMoveEvent(Mouse::Button::NONE, m_MouseState.MouseXPos = xpos, m_MouseState.MouseYPos = ypos));
+			_PushEvent(MouseMoveEvent(
+				Mouse::Button::NONE, 
+				m_MouseState.MouseXPos = xpos, 
+				m_MouseState.MouseYPos = ypos
+			));
 		}
 	
 		static auto OnMouseClick = [this](uint8_t glMouseBtn, Mouse::Button mouseBtn)
@@ -132,12 +135,20 @@ namespace Prism::Core
 			{
 				if (!KeyDownRef)
 				{
-					_PushEvent(MouseButtonPressedEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
+					_PushEvent(MouseButtonPressedEvent(
+						mouseBtn, 
+						m_MouseState.MouseXPos, 
+						m_MouseState.MouseYPos
+					));
 					KeyDownRef = true;
 				}
 				if (m_ButtonStates.MouseButtonDown)
 				{
-					_PushEvent(MouseButtonDownEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
+					_PushEvent(MouseButtonDownEvent(
+						mouseBtn, 
+						m_MouseState.MouseXPos, 
+						m_MouseState.MouseYPos
+					));
 				}
 			}
 			else if (KeyDownRef && _localBtnState == GLFW_RELEASE)
@@ -145,7 +156,11 @@ namespace Prism::Core
 				KeyDownRef = false;
 				if (m_ButtonStates.MouseButtonReleased)
 				{
-					_PushEvent(MouseButtonReleasedEvent(mouseBtn, m_MouseState.MouseXPos, m_MouseState.MouseYPos));
+					_PushEvent(MouseButtonReleasedEvent(
+						mouseBtn,
+						m_MouseState.MouseXPos, 
+						m_MouseState.MouseYPos
+					));
 				}
 			}
 		};
