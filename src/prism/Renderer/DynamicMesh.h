@@ -5,26 +5,27 @@
 #include "prism/GL/VertexBuffer.h"
 #include "prism/Core/Pointers.h"
 #include "Vertex.h"
+#include "prism/Components/Mesh.h"
 
 namespace Prism::Renderer
 {
 	// Will render only triangles
-	// The first vertex buffer will be the always the positions buffer
+	// The first vertex buffer will always be the positions buffer
 	// If not passed a layout, assumed layout is a vec3 float positions
 	// Supports only floating point vertices
 	// TODO: Test Indexed Draw
 	// Only rendering triangles
-	class DynamicMesh
+	class DynamicMesh: public Mesh
 	{
 	public:
 		DynamicMesh();
 		DynamicMesh(const std::initializer_list<Gl::BufferElement>& layout);
 		
 		uint32_t CreateNewVertexBuffer(const std::initializer_list<Gl::BufferElement>& layout);
-		void SetIndexBuffer(Ptr<Gl::IndexBuffer> idxBuff);
+		void SetIndexBuffer(Ptr<Gl::IndexBuffer>&& idxBuff);
 		
-		void AddVertexData(uint32_t vertIdx, std::vector<float> data);
-		void AddVertexData(std::vector<float> data);
+		void AddVertexData(uint32_t vertIdx, std::vector<float>& data);
+		void AddVertexData(std::vector<float>& data);
 		
 		template<typename T>
 		uint32_t AddVertex(uint32_t idx,  const T& vert)
@@ -69,13 +70,13 @@ namespace Prism::Renderer
 			return AddVertex<T>(0, vert);
 		}
 	
-		void ConnectTriangles(uint32_t idx1, uint32_t idx2, uint32_t idx3);
+		void ConnectVertices(uint32_t idx1, uint32_t idx2, uint32_t idx3);
 		void FlushVertexData(uint32_t vertIdx = 0);
 		void FlushIndexData();
 		void Flush();
 		
-		void DrawIndexed() const;
-		void DrawArrays() const;
+		void DrawIndexed() const override;
+		void DrawArrays() const override;
 	private:
 		std::vector<Gl::BufferLayout> m_Layouts;
 		std::vector<std::vector<float>> m_VertexData;

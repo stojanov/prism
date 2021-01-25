@@ -15,6 +15,7 @@ namespace Prism::Renderer
 		virtual void OffsetPosition(const glm::vec3& position) = 0;
 		virtual void SetPosition(const glm::vec3& position) = 0;
 
+		virtual void ShouldLock(bool lck) = 0;
 		virtual void OnSystemEvent(Event& e) = 0;
 		
 		virtual void SetVerticalRotation(float angle) = 0;

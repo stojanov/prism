@@ -1,6 +1,5 @@
 #pragma once
 
-#include "prism/Core/Pointers.h"
 #include "spdlog/spdlog.h"
 
 namespace Prism
@@ -10,11 +9,11 @@ namespace Prism
 	public:
 		static void Init();
 
-		static Ref<spdlog::logger>& GetCoreLog() { return s_CoreLog;  }
-		static Ref<spdlog::logger>& GetClientLog() { return s_ClientLog; }
+		static std::shared_ptr<spdlog::logger>& GetCoreLog() { return s_CoreLog;  }
+		static std::shared_ptr<spdlog::logger>& GetClientLog() { return s_ClientLog; }
 	private:
-		static Ref<spdlog::logger> s_CoreLog;
-		static Ref<spdlog::logger> s_ClientLog;
+		static std::shared_ptr<spdlog::logger> s_CoreLog;
+		static std::shared_ptr<spdlog::logger> s_ClientLog;
 	};
 }
 

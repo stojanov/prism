@@ -2,14 +2,8 @@
 
 namespace Prism::Renderer
 {
-	StaticMesh::StaticMesh()
+	StaticMesh::StaticMesh(const std::initializer_list<Gl::BufferElement>& layout)
 	{
 		
 	}
-
-	void StaticMesh::SetIndexBuffer()
-	{
-		
-	}
-
 }

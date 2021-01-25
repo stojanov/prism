@@ -7,6 +7,8 @@
 #include "GLFW/glfw3.h"
 #include "WindowData.h"
 
+#include <glad/glad.h>
+
 namespace Prism::Core
 {
 	// Queue Events so it doesn't block the whole game on event spawn
@@ -23,7 +25,7 @@ namespace Prism::Core
 		bool IsKeyDown(Keyboard::Key key) { return m_PressedKeys[key]; }
 		bool IsMouseDown(Mouse::Button btn)
 		{
-			return btn == Mouse::Button::LEFT ? m_MouseState.LeftDown : m_MouseState.RightDown;
+			return *(GetMouseButtonState(btn));
 		}
 
 		void ShouldSpawnKeyDown(bool isEnabled);
@@ -40,6 +42,21 @@ namespace Prism::Core
 		void _ProcessKeyboardEvents();
 		void _ProcessMouseEvents();
 
+		bool* GetMouseButtonState(Mouse::Button btn)
+		{
+			if (btn == Mouse::Button::NONE)
+			{
+				return nullptr;
+			}
+			static bool* buttons[] = {
+				&m_MouseState.LeftDown,
+				&m_MouseState.RightDown,
+				&m_MouseState.ScrollDown
+			};
+			
+			return buttons[(int) btn];
+		}
+		
 		EventCallback m_EvtCallback;
 
 		struct ButtonStates
@@ -54,6 +71,7 @@ namespace Prism::Core
 		{
 			bool LeftDown{ false };
 			bool RightDown{ false };
+			bool ScrollDown{ false };
 			double MouseXPos{ 0 };
 			double MouseYPos{ 0 };
 		} m_MouseState;

@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 
+#include "prism/System/Debug.h"
+
 namespace Prism
 {
 	template<typename T>
@@ -22,15 +24,26 @@ namespace Prism
 	}
 
 	template<typename To, typename From>
-	std::unique_ptr<To> DynamicPtrCast(std::unique_ptr<From>&& p)
+	Ptr<To> DynamicPtrCast(Ptr<From>&& p)
 	{
-		// Must have a virtual destructor
+		// Static assert would also do fine but it won't get the type info 
+		PR_CONST_ASSERT(std::has_virtual_destructor_v<To>,
+			"(" + static_cast<std::string>(typeid(To).name()) + ") must have a virtual destructor."
+		);
+		
 		if (To* cast = dynamic_cast<To*>(p.get()))
 		{
-			std::unique_ptr<To> result(cast, std::move(p.get_deleter()));
+			// Virtual destructor should be called when release
+			//std::unique_ptr<To> result(cast, std::move(p.get_deleter()));
+			Ptr<To> result(cast);
 			p.release();
 			return result;
 		}
-		return std::unique_ptr<To>(nullptr);
+
+		std::string ToType = typeid(To).name();
+		std::string FromType = typeid(From).name();
+		
+		PR_ASSERT(0, "Cannot do dynamic cast on: " + FromType + " -> " + ToType);
+		return Ptr<To>(nullptr);
 	}
 }

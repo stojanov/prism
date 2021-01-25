@@ -9,5 +9,7 @@ namespace Prism::Core
 	struct WindowData
 	{
 		EventCallback OnEvent;
+		int Width;
+		int Height;
 	};
 }

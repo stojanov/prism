@@ -18,10 +18,16 @@ namespace Prism::Core
 	{
 		m_PressedKeys.fill(false);
 
+		auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
+
+		glfwGetWindowSize(win, &data->Width, &data->Height);
+		
 		glfwSetWindowSizeCallback(win, [](GLFWwindow* win, int width, int height)
 		{
 			auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((win)));
 			data->OnEvent(WindowResizeEvent(width, height));
+			data->Width = width;
+			data->Height = height;
 		});
 
 		glfwSetWindowCloseCallback(win, [](GLFWwindow* win)
@@ -129,18 +135,18 @@ namespace Prism::Core
 	
 		static auto OnMouseClick = [this](uint8_t glMouseBtn, Mouse::Button mouseBtn)
 		{
-			bool& KeyDownRef = (mouseBtn == Mouse::Button::LEFT ? m_MouseState.LeftDown : m_MouseState.RightDown);
+			bool* KeyDownPtr = GetMouseButtonState(mouseBtn);
 			
 			if (auto _localBtnState = glfwGetMouseButton(m_Window, glMouseBtn); _localBtnState == GLFW_PRESS)
 			{
-				if (!KeyDownRef)
+				if (!*KeyDownPtr)
 				{
 					_PushEvent(MouseButtonPressedEvent(
 						mouseBtn, 
 						m_MouseState.MouseXPos, 
 						m_MouseState.MouseYPos
 					));
-					KeyDownRef = true;
+					(*KeyDownPtr) = true;
 				}
 				if (m_ButtonStates.MouseButtonDown)
 				{
@@ -151,9 +157,9 @@ namespace Prism::Core
 					));
 				}
 			}
-			else if (KeyDownRef && _localBtnState == GLFW_RELEASE)
+			else if (*KeyDownPtr && _localBtnState == GLFW_RELEASE)
 			{
-				KeyDownRef = false;
+				(*KeyDownPtr) = false;
 				if (m_ButtonStates.MouseButtonReleased)
 				{
 					_PushEvent(MouseButtonReleasedEvent(
@@ -167,6 +173,7 @@ namespace Prism::Core
 
 		OnMouseClick(GLFW_MOUSE_BUTTON_LEFT, Mouse::Button::LEFT);
 		OnMouseClick(GLFW_MOUSE_BUTTON_RIGHT, Mouse::Button::RIGHT);
+		OnMouseClick(GLFW_MOUSE_BUTTON_MIDDLE, Mouse::Button::SCROLL);
 	}
 	
 	void SystemEventManager::_PushEvent(Event& e)

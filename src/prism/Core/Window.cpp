@@ -24,11 +24,16 @@ namespace Prism::Core
 
 	void Window::Init()
 	{		
-		PR_ASSERT(glfwInit(), "Coudn't initialize glfw")
-		
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	}
+
+	int Window::GetWidth() const
+	{
+		return m_Data.Width;
+	}
+
+	int Window::GetHeight() const 
+	{
+		return m_Data.Height;
 	}
 	
 	void Window::Create(int w, int h, const char* name)
@@ -43,15 +48,16 @@ namespace Prism::Core
 		if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 			exit(-1);
 
-		m_InputEventManager = { m_WindowPtr };
-
 		glfwSetWindowUserPointer(m_WindowPtr, (void*) &m_Data);
 
 		ImGui::CreateContext();
-
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(m_WindowPtr, true);
 		ImGui_ImplOpenGL3_Init("#version 400");
+
+		m_InputEventManager = { m_WindowPtr };
 	}
 
 	void Window::Close()

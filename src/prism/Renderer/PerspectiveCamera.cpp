@@ -22,6 +22,19 @@ namespace Prism::Renderer
 		m_Projection = glm::perspective(glm::radians(FOV), width * 1.0f / height, clipPlaneNear, clipPlaneFar);
 	}
 
+	void PerspectiveCamera::ShouldLock(bool lck)
+	{
+		if (m_HasContoller)
+		{
+			m_Controller->ShouldLock(lck);
+		}
+	}
+
+	void PerspectiveCamera::SetLookAt(const glm::vec3& LookAt)
+	{
+		m_LookAt = LookAt;
+	}
+	
 	void PerspectiveCamera::UpdatePerspective(float fov, int width, int height, float clipPlaneNear, float clipPlaneFar)
 	{
 		m_Projection = glm::perspective(glm::radians(fov), width * 1.f / height, clipPlaneNear, clipPlaneFar);
@@ -39,7 +52,12 @@ namespace Prism::Renderer
 	
 	void PerspectiveCamera::MoveX(float speed)
 	{
-		m_DPosition += glm::cross(m_Direction, m_Up) * speed;
+		m_DPosition += glm::normalize(glm::cross(m_Direction, m_Up)) * speed;
+	}
+
+	void PerspectiveCamera::MoveY(float speed)
+	{
+		m_DPosition += m_Up * speed;
 	}
 	
 	void PerspectiveCamera::OffsetXPosition(float x) 
@@ -97,6 +115,7 @@ namespace Prism::Renderer
 		}
 
 		m_Position += m_DPosition;
+		m_LookAt += m_DPosition;
 		m_Direction = glm::normalize(m_LookAt - m_Position);
 
 		glm::vec3 axis = glm::cross(m_Direction, m_Up);
@@ -120,7 +139,7 @@ namespace Prism::Renderer
 		
 		m_View = glm::lookAt(m_Position, m_LookAt, m_Up);
 		
-		m_ProjectedView = m_Projection * m_View;
+		m_ProjectedView = m_Projection * (m_View);
 
 		//m_RotationDelta = { 0.f, 0.f }; 
 		m_DPosition = { 0.f, 0.f, 0.f };

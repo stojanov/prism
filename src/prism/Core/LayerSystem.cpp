@@ -1,6 +1,10 @@
 #include "LayerSystem.h"
 
 
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
+
 namespace Prism::Core
 {
 	LayerSystem::LayerSystem()
@@ -8,52 +12,44 @@ namespace Prism::Core
 		
 	}
 
+	
+	LayerSystem::LayerSystem(SharedContextRef ctx)
+		:
+		m_Ctx(ctx)
+	{
+		
+	}
+
 	void LayerSystem::PopLayer()
 	{
+		PR_ASSERT(m_Layers.size() > 0, "Layer stack size must have at least 1 layer.");
 		m_Layers[m_Layers.size() - 1]->OnDetach();
-		m_LayerPositions.erase(m_LastInserts.layer);
 		m_Layers.pop_back();
 		
 	}
 
 	void LayerSystem::PopOverlay()
 	{
-		m_Overlays[m_Layers.size() - 1]->OnDetach();
-		m_LayerPositions.erase(m_LastInserts.overlay);
+		PR_ASSERT(m_Overlays.size() > 0, "Layer stack size must have at least 1 layer.");
+		m_Overlays[m_Overlays.size() - 1]->OnDetach();
 		m_Overlays.pop_back();
 	}
-
-	void LayerSystem::RemoveLayer(const std::string& name)
-	{
-		if (const auto& layerPos = m_LayerPositions.find(name); 
-			layerPos != m_LayerPositions.end())
-		{
-			m_Layers[layerPos->second]->OnDetach();
-			m_Layers.erase(m_Layers.begin() + layerPos->second);
-			m_LayerPositions.erase(layerPos);
-		}
-	}
-
-	void LayerSystem::RemoveOverlay(const std::string& name)
-	{
-		if (const auto& overlayPos = m_LayerPositions.find(name); 
-			overlayPos != m_LayerPositions.end())
-		{
-			m_Overlays[overlayPos->second]->OnDetach();
-			m_Overlays.erase(m_Overlays.begin() + overlayPos->second);
-			m_LayerPositions.erase(overlayPos);
-		}
-	}
-
+	
 	void LayerSystem::OnSystemEvent(Event& e)
 	{
 		for (const auto& overlay : m_Overlays)
 		{
-			overlay->OnSystemEvent(e);
+			if (overlay->ShouldRespondToEvents())
+			{
+				overlay->OnSystemEvent(e);
+			}
 		}
 		for (const auto& layer : m_Layers)
 		{
-			layer->OnSystemEvent(e);
+			if (layer->ShouldRespondToEvents())
+			{
+				layer->OnSystemEvent(e);
+			}
 		}
 	}
 
@@ -71,13 +67,29 @@ namespace Prism::Core
 
 	void LayerSystem::Draw()
 	{
-		for (const auto& layer : m_Layers)
+		static constexpr auto LayerDrawFunc = [](const Ptr<Layer>& layer)
 		{
 			layer->OnDraw();
+			
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			layer->OnGuiDraw();
+
+			// TODO: Update imgui window size
+			
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		};
+		
+		for (const auto& layer : m_Layers)
+		{
+			LayerDrawFunc(layer);
 		}
 		for (const auto& overlay : m_Overlays)
 		{
-			overlay->OnDraw();
+			LayerDrawFunc(overlay);
 		}
 	}
 }

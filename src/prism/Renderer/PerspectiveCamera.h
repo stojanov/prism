@@ -4,6 +4,7 @@
 
 #include "prism/Components/Camera/Camera.h"
 #include "prism/Components/Camera/Controller.h"
+#include "prism/Core/Pointers.h"
 #include "prism/System/Debug.h"
 
 namespace Prism::Renderer
@@ -16,7 +17,12 @@ namespace Prism::Renderer
 		virtual ~PerspectiveCamera();
 		
 		void MoveX(float speed);
+		void MoveY(float speed);
 		void MoveZ(float speed);
+
+		void ShouldLock(bool lck);
+
+		void SetLookAt(const glm::vec3& LookAt);
 		
 		void OffsetXPosition(float x) override;
 		void OffsetYPosition(float y) override;
@@ -35,7 +41,7 @@ namespace Prism::Renderer
 		void OnSystemEvent(Event& e) override;
 		void OnUpdate(float dt);
 
-		template<typename T, typename = typename std::enable_if<std::is_base_of<CameraController, T>::value>::type>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<CameraController, T>>>
 		void AttachController()
 		{
 			PR_ASSERT(!m_HasContoller, "Camera can only have 1 Controller!");
@@ -65,7 +71,7 @@ namespace Prism::Renderer
 		glm::vec3 m_DPosition{ 0.f, 0.f, 0.f };
 		glm::vec2 m_RotationDelta{ 0.f, 0.f };
 		glm::vec3 m_Position{ 0.f, 0.f, -2.f };
-		glm::vec3 m_LookAt{ 0.f, 0.f, 5.f };
+		glm::vec3 m_LookAt{ 0.f, 0.f, 0.f };
 		glm::vec3 m_Up{ 0.f, 1.f, 0.f };
 		glm::vec3 m_Direction{ 0.f, 0.f, 1.f};
 	};

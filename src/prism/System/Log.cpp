@@ -7,8 +7,8 @@
 
 namespace Prism
 {
-	Ref<spdlog::logger> Log::s_ClientLog;
-	Ref<spdlog::logger> Log::s_CoreLog;
+	std::shared_ptr<spdlog::logger> Log::s_ClientLog;
+	std::shared_ptr<spdlog::logger> Log::s_CoreLog;
 
 	void Log::Init()
 	{

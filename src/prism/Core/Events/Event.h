@@ -45,4 +45,6 @@ namespace Prism
 	private:
 		Event& m_Evt;
 	};
+
+#define CLASSEVENT(handler, type) handler.Handle<type>([this](type& e)
 }

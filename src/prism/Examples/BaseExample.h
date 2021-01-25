@@ -11,8 +11,8 @@ namespace Prism::Examples
 	class Base: public Layer
 	{
 	public:
-		Base();
-		virtual ~Base() = default;
+		Base(Core::SharedContextRef ctx, const std::string& name);
+		virtual ~Base();
 		
 		void OnAttach() override;
 		void OnDetach() override;
@@ -21,21 +21,35 @@ namespace Prism::Examples
 		void OnGuiDraw() override;
 		void OnUpdate(float dt) override;
 	private:
-		static std::string s_VertFilename;
-		static std::string s_FragFilename;
-		static std::string s_TextureFilename;
-
+		static std::string s_CubeVertFilename;
+		static std::string s_CubeFragFilename;
+		static std::string s_CubeTextureFilename;
+		static std::string s_PlaneTextureFilename;
+		static std::string s_PlaneVertFilename;
+		static std::string s_PlaneFragFilename;
+		
+		bool m_CursorOverGui{ false };
 		Renderer::PerspectiveCamera m_Camera{ 45, 980, 750, 0.1f, 100.f };
-		Ref<Gl::Shader> m_Shader;
+		Ptr<Gl::Shader> m_CubeShader;
+		Ptr<Gl::Shader> m_PlaneShader;
 		Renderer::DynamicMesh m_Cube{
 			{ Gl::ShaderDataType::Float3, "position" },
 			{ Gl::ShaderDataType::Float2, "texcord" },
 			{ Gl::ShaderDataType::Float3, "normals" },
 		};
-		Renderer::Texture m_Texture;
+		Renderer::DynamicMesh m_Plane{
+			{ Gl::ShaderDataType::Float3, "position" },
+			{ Gl::ShaderDataType::Float2, "texcord" },
+		};
+		Ptr<Renderer::Texture> m_CubeTexture;
+		Ptr<Renderer::Texture> m_PlaneTexture;
+		
+		glm::vec3 m_LastCubePos{ 0.f, 0.f, 0.f };
+		glm::vec3 m_CubePosImGui{ 0.f, 0.f, 0.f };
 
+		glm::mat4 m_PlaneTransform{ 1.f };
 		glm::mat4 m_CubeTransform{ 1.f };
-		glm::vec3 m_LightPosition{ 0.f, 0.f, 2.f };
+		glm::vec3 m_LightPosition{ 2.f, 0.f, -2.f };
 		glm::vec3 m_LightClr{ 1.f, 1.f, 0.f };
 		float m_LightIntensity { 1.f };
 	};

@@ -1,13 +1,11 @@
-
+#pragma once
 #include "glm/glm.hpp"
 
-#include "GLFW/glfw3.h"
 #include "Controller.h"
 #include "prism/Renderer/PerspectiveCamera.h"
 #include "prism/Core/Events/MouseEvents.h"
 #include "prism/Core/Events/KeyEvents.h"
 #include "prism/Core/Events/WindowEvents.h"
-#include "prism/System/Log.h"
 
 namespace Prism::Renderer
 {
@@ -22,8 +20,17 @@ namespace Prism::Renderer
 		}
 		virtual ~FPSCameraController() = default;
 
+		void ShouldLock(bool lck) override
+		{
+			m_IsLocked = lck;
+		}
+		
 		void OnSystemEvent(Event& e) override
 		{
+			if (m_IsLocked)
+			{
+				return;
+			}
 			EventHandler evt(e);
 
 			evt.Handle<MouseButtonDownEvent>([this](MouseButtonDownEvent& e)
@@ -92,6 +99,7 @@ namespace Prism::Renderer
 		}
 	private:
 		T* m_Camera;
+		bool m_IsLocked{ false };
 		bool m_IsMouseActive{ false };
 		float m_MouseMoveSens = 0.9;
 		float m_MouseRotateSens = 0.3;

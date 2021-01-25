@@ -50,7 +50,7 @@ namespace Prism::Math
 	{
 		return (a2 + (b2 - a2) * f(LinearTranslate(a1, b1, 0.0f, 1.0f, x)));
 	}
-
+	// TODO: Check if maths is correct
 	constexpr auto BilinearInterpolate(
 		const glm::vec2& a1, const glm::vec2& a2,
 		const glm::vec2& b1, const glm::vec2& b2, 

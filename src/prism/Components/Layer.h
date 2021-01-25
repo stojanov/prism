@@ -1,7 +1,7 @@
 #pragma once
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <string>
+
+#include "prism/Core/SharedContext.h"
 
 namespace Prism {
 	class Event;
@@ -12,6 +12,9 @@ namespace Prism
 	class Layer
 	{
 	public:
+		Layer(Ref<Core::SharedContext> ctx, const std::string& name);
+		virtual ~Layer();
+		
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
 		virtual void OnUpdate(float dt) = 0;
@@ -19,18 +22,12 @@ namespace Prism
 		virtual void OnSystemEvent(Event& e) = 0;
 		virtual void OnGuiDraw() = 0;
 		//virtual void OnGameEvent();
+
+		bool ShouldRespondToEvents() const { return m_ShouldRespondToEvents; }
+		const std::string& GetName() const { return m_Name; }
 	protected:
-		void GuiStartFrame()
-		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-		}
-		
-		void GuiDraw()
-		{
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
+		Core::SharedContextRef m_Ctx;
+		std::string m_Name;
+		bool m_ShouldRespondToEvents{ true };
 	};
 }

@@ -7,10 +7,9 @@ namespace Prism
 	public:
 		enum class Button
 		{
-			NONE,
-			LEFT,
+			NONE = -1,
+			LEFT = 0,
 			RIGHT,
-			MIDDLE,
 			SCROLL
 		};
 	};

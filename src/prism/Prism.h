@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/LayerSystem.h"
+#include "Core/SharedContext.h"
 #include "Core/Window.h"
 
 // TODO: Add State management
@@ -25,12 +26,16 @@ namespace Prism
 		
 		void Run();
 	private:
+		float m_FixedDt{ 0.16f };
+
 		void OnEvent(Event& e);
 		void Loop();
 
 		Core::LayerSystem m_Layers;
-		Core::Window m_Window;
+		Ref<Core::SharedContext> m_Context;
+		Ref<Core::Window> m_Window;
 		bool m_WindowActive{ false };
+		bool m_Wireframe{ false };
 	};
 }
 

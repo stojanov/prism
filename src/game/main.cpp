@@ -6,7 +6,7 @@
 int main()
 {
 	Prism::Application app(980, 750, "Prism");
-
+	
 	app.CreateLayer<Prism::Examples::Base>("Base Example");
 	
 	app.Run();

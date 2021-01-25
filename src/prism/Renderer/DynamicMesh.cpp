@@ -3,6 +3,8 @@
 namespace Prism::Renderer
 {
 	DynamicMesh::DynamicMesh()
+		:
+		m_IdxBuffer(Gl::IndexBuffer::CreateRef())
 	{
 		CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "position" }
@@ -10,6 +12,8 @@ namespace Prism::Renderer
 	}
 
 	DynamicMesh::DynamicMesh(const std::initializer_list<Gl::BufferElement>& bufferElements)
+		:
+		m_IdxBuffer(Gl::IndexBuffer::CreateRef())
 	{
 		CreateNewVertexBuffer(bufferElements);
 	}
@@ -25,38 +29,38 @@ namespace Prism::Renderer
 		return m_VertexBuffers.size() - 1;
 	}
 	
-	void DynamicMesh::SetIndexBuffer(Ptr<Gl::IndexBuffer> idxBuff)
+	void DynamicMesh::SetIndexBuffer(Ptr<Gl::IndexBuffer>&& idxBuff)
 	{
 		m_IdxBuffer = std::move(idxBuff);
 	}
 
-	void DynamicMesh::AddVertexData(uint32_t vertIdx, std::vector<float> data)
+	void DynamicMesh::AddVertexData(uint32_t vertIdx, std::vector<float>& data)
 	{
 		m_VertexData[vertIdx].insert(m_VertexData[vertIdx].end(), data.begin(), data.end());
-		m_VertCount += data.size();
+		m_VertCount += data.size() / m_VertexBuffers[vertIdx]->GetLayout().GetElements().size();
 	}
 
-	void DynamicMesh::AddVertexData(std::vector<float> data)
+	void DynamicMesh::AddVertexData(std::vector<float>& data)
 	{
 		AddVertexData(0, data);
 	}
 
-	void DynamicMesh::ConnectTriangles(uint32_t idx1, uint32_t idx2, uint32_t idx3)
+	void DynamicMesh::ConnectVertices(uint32_t idx1, uint32_t idx2, uint32_t idx3)
 	{
 		m_IndexData.push_back(idx1);
 		m_IndexData.push_back(idx2);
 		m_IndexData.push_back(idx3);
 	}
 
-	void DynamicMesh::FlushVertexData(uint32_t vertBuffIdx)
+	void DynamicMesh::FlushVertexData(uint32_t vertIdx)
 	{
-		PR_ASSERT(m_VertexBuffers.size() > vertBuffIdx, "Can't flush vertex buffer that doesn't exist!");
-		m_VertexBuffers[vertBuffIdx]->SetData(m_VertexData[vertBuffIdx],m_VertexData[vertBuffIdx].size() * sizeof(float));
+		PR_ASSERT(m_VertexBuffers.size() > vertIdx, "Can't flush vertex buffer that doesn't exist!");
+		m_VertexBuffers[vertIdx]->SetData(m_VertexData[vertIdx],m_VertexData[vertIdx].size() * sizeof(float));
 	}
 
 	void DynamicMesh::FlushIndexData()
 	{
-		
+		m_IdxBuffer->SetData(m_IndexData);
 	}
 
 	void DynamicMesh::Flush()
@@ -68,12 +72,11 @@ namespace Prism::Renderer
 			FlushVertexData(i);
 		}
 	}
-
 	
 	void DynamicMesh::DrawIndexed() const
 	{
 		m_VertArray.Bind();
-		glDrawElements(GL_TRIANGLES, m_VertCount / 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, m_IndexData.size(), GL_UNSIGNED_INT, 0);
 	}
 	
 	void DynamicMesh::DrawArrays() const

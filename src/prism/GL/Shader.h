@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 
 #include <glm/glm.hpp>
+
+#include "prism/Core/Pointers.h"
 #include "prism/System/System.h"
 
 namespace Prism::Gl
