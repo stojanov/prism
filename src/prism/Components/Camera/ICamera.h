@@ -5,10 +5,10 @@
 
 namespace Prism::Renderer
 {
-	class BaseCamera
+	class IBaseCamera
 	{
 	public:
-		virtual ~BaseCamera() = default;
+		virtual ~IBaseCamera() = default;
 		virtual void OffsetXPosition(float x) = 0;
 		virtual void OffsetYPosition(float y) = 0;
 		virtual void OffsetZPosition(float z) = 0;

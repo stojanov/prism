@@ -9,11 +9,13 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
+#include "Core/AssetLoader.h"
+
 namespace Prism
 {
 	Application::Application(int w, int h, const char* name)
 	{
-		PR_ASSERT(glfwInit(), "Coudn't initialize glfw")
+		PR_ASSERT(glfwInit(), "Coudn't initialize glfw");
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -21,13 +23,12 @@ namespace Prism
 		
 		Log::Init();
 		m_Window = MakeRef<Core::Window>();
-		m_Window->Init();
 		m_Window->Create(w, h, name); // Temp, TODO: Add fullscreen support
 		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 		m_WindowActive = true;
 
 		m_Context = Core::CreateSharedContext(m_Window);
-		m_Context->SystemController->DepthTest(true);
+		m_Context->RenderOptions->DepthTest(true);
 
 		m_Layers = { m_Context };
 		
@@ -87,7 +88,7 @@ namespace Prism
 			LastFrameTime = StartTime;
 			float dt = ms * 1.f / 1000; // TODO: move into it's own class
 
-			m_Context->SystemController->DrawWireframe(m_Wireframe);
+			m_Context->RenderOptions->DrawWireframe(m_Wireframe);
 			
 			glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

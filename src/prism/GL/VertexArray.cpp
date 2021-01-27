@@ -5,7 +5,6 @@ namespace Prism::Gl
 	VertexArray::VertexArray()
 	{
 		glCreateVertexArrays(1, &m_ID);
-		PR_INFO("GOT ID: {0}", m_ID);
 	}
 
 	VertexArray::~VertexArray()

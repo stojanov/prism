@@ -2,14 +2,14 @@
 #include <type_traits>
 #include <glm/glm.hpp>
 
-#include "prism/Components/Camera/Camera.h"
-#include "prism/Components/Camera/Controller.h"
+#include "prism/Components/Camera/ICamera.h"
+#include "prism/Components/Camera/IController.h"
 #include "prism/Core/Pointers.h"
 #include "prism/System/Debug.h"
 
 namespace Prism::Renderer
 {
-	class PerspectiveCamera: BaseCamera
+	class PerspectiveCamera: IBaseCamera
 	{
 	public:
 		PerspectiveCamera();
@@ -41,12 +41,12 @@ namespace Prism::Renderer
 		void OnSystemEvent(Event& e) override;
 		void OnUpdate(float dt);
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<CameraController, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<ICameraController, T>>>
 		void AttachController()
 		{
 			PR_ASSERT(!m_HasContoller, "Camera can only have 1 Controller!");
 			m_HasContoller = true;
-			m_Controller = DynamicPtrCast<CameraController>(MakePtr<T>(this));
+			m_Controller = DynamicPtrCast<ICameraController>(MakePtr<T>(this));
 		}
 
 		void RemoveController()
@@ -61,7 +61,7 @@ namespace Prism::Renderer
 		const glm::mat4& GetView() const { return m_View; }
 	private:
 		bool m_HasContoller{ false };
-		Ptr<CameraController> m_Controller;
+		Ptr<ICameraController> m_Controller;
 		glm::mat4 m_View;
 		glm::mat4 m_Projection;
 		glm::mat4 m_ProjectedView;

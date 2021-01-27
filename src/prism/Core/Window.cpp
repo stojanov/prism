@@ -8,7 +8,6 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "glad/glad.h"
-#include "glm/vec4.hpp"
 #include "prism/System/Debug.h"
 
 namespace Prism::Core
@@ -20,10 +19,6 @@ namespace Prism::Core
 	Window::~Window()
 	{
 		glfwDestroyWindow(m_WindowPtr);
-	}
-
-	void Window::Init()
-	{		
 	}
 
 	int Window::GetWidth() const
@@ -45,7 +40,7 @@ namespace Prism::Core
 
 		glfwMakeContextCurrent(m_WindowPtr);
 
-		if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
+		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
 			exit(-1);
 
 		glfwSetWindowUserPointer(m_WindowPtr, (void*) &m_Data);

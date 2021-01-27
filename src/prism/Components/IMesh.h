@@ -2,7 +2,7 @@
 
 namespace Prism
 {
-	class Mesh
+	class IMesh
 	{
 	public:
 		virtual void DrawIndexed() const = 0;

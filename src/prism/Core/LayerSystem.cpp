@@ -67,7 +67,7 @@ namespace Prism::Core
 
 	void LayerSystem::Draw()
 	{
-		static constexpr auto LayerDrawFunc = [](const Ptr<Layer>& layer)
+		static constexpr auto LayerDrawFunc = [](const Ptr<ILayer>& layer)
 		{
 			layer->OnDraw();
 			

@@ -19,7 +19,6 @@ namespace Prism::Core
 		int GetWidth() const;
 		int GetHeight() const;
 		
-		void Init();
 		void Create(int w, int h, const char* name);
 		SystemEventManager& GetInputManager() { return m_InputEventManager; }
 		

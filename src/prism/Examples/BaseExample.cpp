@@ -69,7 +69,7 @@ namespace Prism::Examples
 	std::string Base::s_PlaneFragFilename		= "res/plane.frag";
 	
 	Base::Base(Core::SharedContextRef ctx, const std::string& name)
-		: Layer(ctx, name)
+		: ILayer(ctx, name)
 	{
 	}
 
@@ -80,13 +80,12 @@ namespace Prism::Examples
 
 	void Base::OnAttach()
 	{
-		// Hardcoded for now
-		m_PlaneTexture = MakePtr<Renderer::Texture>(s_PlaneTextureFilename);
-		m_CubeTexture = MakePtr<Renderer::Texture>(s_CubeTextureFilename);
-		//m_PlaneTexture->Bind(1);
+		m_Ctx->Assets.Textures->LoadAsset("plane", { s_PlaneTextureFilename });
+		m_Ctx->Assets.Shaders->LoadAsset("plane", { s_PlaneVertFilename, s_PlaneFragFilename });
+		m_Ctx->Assets.Textures->LoadAsset("cube", { s_CubeTextureFilename });
+		m_Ctx->Assets.Shaders->LoadAsset("cube", { s_CubeVertFilename, s_CubeFragFilename });
+
 		
-		m_CubeShader = Gl::Shader::PtrFromFiles(s_CubeVertFilename, s_CubeFragFilename);
-		m_PlaneShader = Gl::Shader::PtrFromFiles(s_PlaneVertFilename, s_PlaneFragFilename);
 		m_Camera.SetPosition({ 0.f, 1.f, -4.f});
 		//m_Camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
 
@@ -96,19 +95,18 @@ namespace Prism::Examples
 		m_Cube.FlushVertexData();
 
 		m_Plane.AddVertexData(PlaneData);
-
 		m_Plane.ConnectVertices(0, 1, 2);
 		m_Plane.ConnectVertices(2, 1, 3);
 		m_Plane.Flush();
 
-		m_PlaneTexture->Bind(0);
-		m_PlaneTexture->Bind(1);
+		auto CubeShader = m_Ctx->Assets.Shaders->Get("cube");
+		auto PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
 		
-		m_CubeShader->Bind();
-		m_CubeShader->SetInt("tex", 0);
+		CubeShader->Bind();
+		CubeShader->SetInt("tex", 0);
 
-		m_PlaneShader->Bind();
-		m_PlaneShader->SetInt("tex", 1);
+		PlaneShader->Bind();
+		PlaneShader->SetInt("tex", 1);
 		m_CubeTransform = glm::translate(m_CubeTransform, { 0.f, 0.5f, 0.f });
 		m_PlaneTransform = glm::rotate(m_PlaneTransform, glm::radians(90.f), { 1.f, 0.f, 0.f });
 		m_PlaneTransform = glm::translate(m_PlaneTransform, { 0.f, -0.5f, 0.f });
@@ -150,21 +148,24 @@ namespace Prism::Examples
 	
 	void Base::OnDraw()
 	{
-		m_CubeTexture->Bind(0);
-		m_CubeShader->Bind();
-		m_CubeShader->SetInt("tex", 0);
-		m_CubeShader->SetMat4("transform", m_CubeTransform);
-		m_CubeShader->SetFloat3("lightPos", m_LightPosition);
-		m_CubeShader->SetFloat("lightIntens", m_LightIntensity);
-		m_CubeShader->SetFloat3("lightClr", m_LightClr);
-		m_CubeShader->SetMat4("projectedview", m_Camera.GetProjectedView());
+		auto CubeShader = m_Ctx->Assets.Shaders->Get("cube");
+		auto PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
+		
+		m_Ctx->Assets.Textures->Get("cube")->Bind(0);
+		CubeShader->Bind();
+		CubeShader->SetInt("tex", 0);
+		CubeShader->SetMat4("transform", m_CubeTransform);
+		CubeShader->SetFloat3("lightPos", m_LightPosition);
+		CubeShader->SetFloat("lightIntens", m_LightIntensity);
+		CubeShader->SetFloat3("lightClr", m_LightClr);
+		CubeShader->SetMat4("projectedview", m_Camera.GetProjectedView());
 		m_Cube.DrawArrays();
 
-		m_PlaneTexture->Bind(1);
-		m_PlaneShader->Bind();
-		m_PlaneShader->SetInt("tex", 1);
-		m_PlaneShader->SetMat4("transform", m_PlaneTransform);
-		m_PlaneShader->SetMat4("projectedview", m_Camera.GetProjectedView());
+		m_Ctx->Assets.Textures->Get("plane")->Bind(1);
+		PlaneShader->Bind();
+		PlaneShader->SetInt("tex", 1);
+		PlaneShader->SetMat4("transform", m_PlaneTransform);
+		PlaneShader->SetMat4("projectedview", m_Camera.GetProjectedView());
 		m_Plane.DrawIndexed();
 	}
 }

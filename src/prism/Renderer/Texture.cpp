@@ -22,7 +22,7 @@ namespace Prism::Renderer
 	{
 		if (flip) stbi_set_flip_vertically_on_load(1);
 		auto data = stbi_load(path.c_str(), &m_Width, &m_Height, &m_ChannelCount, 0);
-		
+
 		PR_ASSERT(data, "No Texture data found.");
 
 		if (m_ChannelCount == 3) m_Format = GL_RGB;
@@ -43,6 +43,11 @@ namespace Prism::Renderer
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
+	}
+
+	Ref<Texture> Texture::CreateRef(const std::string& path, bool flip)
+	{
+		return MakeRef<Texture>(path, flip);
 	}
 
 	void Texture::SetData(uint8_t* data, uint32_t size)

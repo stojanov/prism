@@ -2,6 +2,7 @@
 
 #include <string>
 #include "glad/glad.h"
+#include "prism/Core/Pointers.h"
 
 namespace Prism::Renderer
 {
@@ -13,7 +14,7 @@ namespace Prism::Renderer
 		~Texture();
 
 		void SetData(uint8_t* data, uint32_t size);
-		
+		static Ref<Texture> CreateRef(const std::string& path, bool flip = true);
 		void Bind(uint8_t slot);
 
 		static int GetTexSlot(uint8_t slot)
@@ -53,6 +54,8 @@ namespace Prism::Renderer
 				GL_TEXTURE31,
 			};
 
+			PR_ASSERT(slot < 32, "Texture slot doesn't exist");
+			
 			return slots[slot];
 		}
 	private:

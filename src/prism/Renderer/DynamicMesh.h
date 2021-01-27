@@ -5,7 +5,7 @@
 #include "prism/GL/VertexBuffer.h"
 #include "prism/Core/Pointers.h"
 #include "Vertex.h"
-#include "prism/Components/Mesh.h"
+#include "prism/Components/IMesh.h"
 
 namespace Prism::Renderer
 {
@@ -15,7 +15,7 @@ namespace Prism::Renderer
 	// Supports only floating point vertices
 	// TODO: Test Indexed Draw
 	// Only rendering triangles
-	class DynamicMesh: public Mesh
+	class DynamicMesh: public IMesh
 	{
 	public:
 		DynamicMesh();

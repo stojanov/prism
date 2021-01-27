@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "Pointers.h"
-#include "prism/Components/Layer.h"
+#include "prism/Components/ILayer.h"
 
 namespace Prism::Core
 {
@@ -14,20 +14,20 @@ namespace Prism::Core
 		LayerSystem();
 		LayerSystem(SharedContextRef ctx);
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<Layer, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<ILayer, T>>>
 		void CreateLayer(const std::string& name)
 		{
 			auto LayerPtr = MakePtr<T>(m_Ctx, name);
 			LayerPtr->OnAttach();
-			m_Layers.emplace_back(DynamicPtrCast<Layer>(std::move(LayerPtr)));
+			m_Layers.emplace_back(DynamicPtrCast<ILayer>(std::move(LayerPtr)));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<Layer, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<ILayer, T>>>
 		void CreateOverlay(const std::string& name)
 		{
 			auto LayerPtr = new T(m_Ctx, name);
 			LayerPtr->OnAttach();
-			m_Overlays.emplace_back(DynamicPtrCast<Layer>(std::move(LayerPtr)));
+			m_Overlays.emplace_back(DynamicPtrCast<ILayer>(std::move(LayerPtr)));
 		}
 		
 		void PopOverlay();
@@ -40,7 +40,7 @@ namespace Prism::Core
 		
 	private:
 		SharedContextRef m_Ctx;
-		std::vector<Ptr<Layer>> m_Overlays;
-		std::vector<Ptr<Layer>> m_Layers;
+		std::vector<Ptr<ILayer>> m_Overlays;
+		std::vector<Ptr<ILayer>> m_Layers;
 	};
 }

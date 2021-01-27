@@ -1,7 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
 
-#include "Controller.h"
+#include "IController.h"
 #include "prism/Renderer/PerspectiveCamera.h"
 #include "prism/Core/Events/MouseEvents.h"
 #include "prism/Core/Events/KeyEvents.h"
@@ -10,7 +10,7 @@
 namespace Prism::Renderer
 {
 	template<typename T>
-	class FPSCameraController : public CameraController
+	class FPSCameraController : public ICameraController
 	{
 	public:
 		FPSCameraController(T* camera)

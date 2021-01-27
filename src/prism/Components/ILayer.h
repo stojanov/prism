@@ -9,11 +9,11 @@ namespace Prism {
 
 namespace Prism
 {
-	class Layer
+	class ILayer
 	{
 	public:
-		Layer(Ref<Core::SharedContext> ctx, const std::string& name);
-		virtual ~Layer();
+		ILayer(Ref<Core::SharedContext> ctx, const std::string& name);
+		virtual ~ILayer();
 		
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;

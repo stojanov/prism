@@ -69,7 +69,7 @@ namespace Prism::Gl
 			glDeleteShader(m_VertexShader);
 			glDeleteShader(m_FragmentShader);
 
-			PR_ERROR("{0}", infoLog.data());
+			PR_CORE_ERROR("{0}", infoLog.data());
 			PR_ASSERT(false, "Error linking program");
 		}
 		

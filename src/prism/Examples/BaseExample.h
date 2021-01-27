@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prism/Components/Layer.h"
+#include "prism/Components/ILayer.h"
 #include "prism/GL/Shader.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
@@ -8,7 +8,7 @@
 
 namespace Prism::Examples
 {
-	class Base: public Layer
+	class Base: public ILayer
 	{
 	public:
 		Base(Core::SharedContextRef ctx, const std::string& name);
@@ -30,8 +30,6 @@ namespace Prism::Examples
 		
 		bool m_CursorOverGui{ false };
 		Renderer::PerspectiveCamera m_Camera{ 45, 980, 750, 0.1f, 100.f };
-		Ptr<Gl::Shader> m_CubeShader;
-		Ptr<Gl::Shader> m_PlaneShader;
 		Renderer::DynamicMesh m_Cube{
 			{ Gl::ShaderDataType::Float3, "position" },
 			{ Gl::ShaderDataType::Float2, "texcord" },
@@ -41,8 +39,6 @@ namespace Prism::Examples
 			{ Gl::ShaderDataType::Float3, "position" },
 			{ Gl::ShaderDataType::Float2, "texcord" },
 		};
-		Ptr<Renderer::Texture> m_CubeTexture;
-		Ptr<Renderer::Texture> m_PlaneTexture;
 		
 		glm::vec3 m_LastCubePos{ 0.f, 0.f, 0.f };
 		glm::vec3 m_CubePosImGui{ 0.f, 0.f, 0.f };

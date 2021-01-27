@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-#include "Controller.h"
+#include "IController.h"
 #include "prism/Renderer/PerspectiveCamera.h"
 #include "prism/Core/Events/MouseEvents.h"
 #include "prism/Core/Events/KeyEvents.h"
@@ -12,7 +12,7 @@
 namespace Prism::Renderer
 {
 	template<typename T>
-	class CameraEditorController: public CameraController
+	class CameraEditorController: public ICameraController
 	{
 	public:
 		CameraEditorController(T* camera)

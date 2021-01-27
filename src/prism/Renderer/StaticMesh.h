@@ -1,10 +1,11 @@
 #pragma once
-#include "prism/Components/Mesh.h"
+
+#include "prism/Components/IMesh.h"
 #include "prism/GL/VertexArray.h"
 
 namespace Prism::Renderer
 {
-	class StaticMesh: public Mesh
+	class StaticMesh: public IMesh
 	{
 	public:
 		StaticMesh(const std::initializer_list<Gl::BufferElement>& layout);

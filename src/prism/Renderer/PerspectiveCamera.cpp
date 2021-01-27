@@ -1,6 +1,5 @@
 #include "PerspectiveCamera.h"
 
-#include "prism/Components/Camera/Controller.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>

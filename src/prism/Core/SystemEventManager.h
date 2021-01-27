@@ -44,10 +44,7 @@ namespace Prism::Core
 
 		bool* GetMouseButtonState(Mouse::Button btn)
 		{
-			if (btn == Mouse::Button::NONE)
-			{
-				return nullptr;
-			}
+			PR_ASSERT(btn != Mouse::Button::NONE, "Mouse Button None is not a valid mouse button state!");
 			static bool* buttons[] = {
 				&m_MouseState.LeftDown,
 				&m_MouseState.RightDown,
