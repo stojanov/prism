@@ -37,7 +37,7 @@ namespace Prism::Renderer
 	void DynamicMesh::AddVertexData(uint32_t vertIdx, std::vector<float>& data)
 	{
 		m_VertexData[vertIdx].insert(m_VertexData[vertIdx].end(), data.begin(), data.end());
-		m_VertCount += data.size() / m_VertexBuffers[vertIdx]->GetLayout().GetElements().size();
+		m_VertCount += data.size() / m_VertexBuffers[vertIdx]->GetLayout().GetLength();
 	}
 
 	void DynamicMesh::AddVertexData(std::vector<float>& data)

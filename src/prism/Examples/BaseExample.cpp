@@ -61,10 +61,12 @@ std::vector<float> PlaneData = {
 
 namespace Prism::Examples
 {
+	std::string Base::s_CubeTextureFilename		= "res/cube.jpg";
+	std::string Base::s_PlaneTextureFilename	= "res/cube.jpg";
+	
 	std::string Base::s_CubeVertFilename		= "res/cube.vert";
 	std::string Base::s_CubeFragFilename		= "res/cube.frag";
-	std::string Base::s_CubeTextureFilename		= "res/cube.jpg";
-	std::string Base::s_PlaneTextureFilename	= "res/grid.jpg";
+
 	std::string Base::s_PlaneVertFilename		= "res/plane.vert";
 	std::string Base::s_PlaneFragFilename		= "res/plane.frag";
 	
@@ -80,13 +82,19 @@ namespace Prism::Examples
 
 	void Base::OnAttach()
 	{
-		m_Ctx->Assets.Textures->LoadAsset("plane", { s_PlaneTextureFilename });
-		m_Ctx->Assets.Shaders->LoadAsset("plane", { s_PlaneVertFilename, s_PlaneFragFilename });
-		m_Ctx->Assets.Textures->LoadAsset("cube", { s_CubeTextureFilename });
-		m_Ctx->Assets.Shaders->LoadAsset("cube", { s_CubeVertFilename, s_CubeFragFilename });
+		m_Ctx->Assets.Textures->QueueLoad("plane", { s_PlaneTextureFilename });
+		m_Ctx->Assets.Shaders->QueueLoad("plane", { s_PlaneVertFilename, s_PlaneFragFilename });
+		m_Ctx->Assets.Textures->QueueLoad("cube", { s_CubeTextureFilename });
+		m_Ctx->Assets.Shaders->QueueLoad("cube", { s_CubeVertFilename, s_CubeFragFilename });
 
+		m_Ctx->Assets.Textures->AsyncLoad();
+		m_Ctx->Assets.Shaders->AsyncLoad();
+
+		m_Ctx->Assets.Textures->Wait();
+		m_Ctx->Assets.Shaders->Wait();
 		
 		m_Camera.SetPosition({ 0.f, 1.f, -4.f});
+		m_Camera.SetLookAt({ 0.f, 0.f, 0.f });
 		//m_Camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
 
 		m_Camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
@@ -99,14 +107,18 @@ namespace Prism::Examples
 		m_Plane.ConnectVertices(2, 1, 3);
 		m_Plane.Flush();
 
-		auto CubeShader = m_Ctx->Assets.Shaders->Get("cube");
-		auto PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
-		
-		CubeShader->Bind();
-		CubeShader->SetInt("tex", 0);
+		{
+			const auto& CubeShader = m_Ctx->Assets.Shaders->Get("cube");
+			const auto& PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
 
-		PlaneShader->Bind();
-		PlaneShader->SetInt("tex", 1);
+			CubeShader->Bind();
+			CubeShader->SetInt("tex", 0);
+
+			PlaneShader->Bind();
+			PlaneShader->SetInt("tex", 1);
+		}
+
+		
 		m_CubeTransform = glm::translate(m_CubeTransform, { 0.f, 0.5f, 0.f });
 		m_PlaneTransform = glm::rotate(m_PlaneTransform, glm::radians(90.f), { 1.f, 0.f, 0.f });
 		m_PlaneTransform = glm::translate(m_PlaneTransform, { 0.f, -0.5f, 0.f });
@@ -148,8 +160,8 @@ namespace Prism::Examples
 	
 	void Base::OnDraw()
 	{
-		auto CubeShader = m_Ctx->Assets.Shaders->Get("cube");
-		auto PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
+		const auto& CubeShader = m_Ctx->Assets.Shaders->Get("cube");
+		const auto& PlaneShader = m_Ctx->Assets.Shaders->Get("plane");
 		
 		m_Ctx->Assets.Textures->Get("cube")->Bind(0);
 		CubeShader->Bind();

@@ -30,13 +30,31 @@ namespace Prism::Core
 	{
 		return m_Data.Height;
 	}
+
+	void Window::BindWindow()
+	{
+		glfwMakeContextCurrent(m_WindowPtr);
+	}
 	
 	void Window::Create(int w, int h, const char* name)
 	{
-		m_WindowPtr = glfwCreateWindow(w, h, name, NULL, NULL);
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+		m_LoadingContext = glfwCreateWindow(1, 1, "Loading Context", NULL, NULL);
+
+		if (m_LoadingContext == NULL)
+		{
+			PR_CORE_ERROR("Coulding creating loading context!");
+			PR_ASSERT(0, "Error creating loading context");
+		}
+		
+		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+		m_WindowPtr = glfwCreateWindow(w, h, name, NULL, m_LoadingContext);
 
 		if (m_WindowPtr == NULL)
-			exit(-1);
+		{
+			PR_CORE_ERROR("Coulding creating window!");
+			PR_ASSERT(0, "Error creating window");
+		}
 
 		glfwMakeContextCurrent(m_WindowPtr);
 

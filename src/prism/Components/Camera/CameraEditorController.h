@@ -43,27 +43,37 @@ namespace Prism::Renderer
 			CLASSEVENT(evt, MouseButtonDownEvent)
 			{
 				const auto pos = e.GetPosition();
-				if (m_ShouldRotate)
-				{
-					m_Rotation.x += (pos.x - m_LastMousePosition.x) * m_MouseRotateSens;
-					m_Rotation.y -= (pos.y - m_LastMousePosition.y) * m_MouseRotateSens;
-				} else
+				
+				if (e.GetKey() == Mouse::Button::SCROLL)
 				{
 					m_Position.x -= (pos.x - m_LastMousePosition.x) * m_MouseMoveSens;
-					m_Position.z -= (pos.y - m_LastMousePosition.y) * m_MouseMoveSens;
+					m_Position.z += (pos.y - m_LastMousePosition.y) * m_MouseMoveSens;
+				} else
+				{
+					if (m_ShouldRotate)
+					{
+						m_Rotation.x += (pos.x - m_LastMousePosition.x) * m_MouseRotateSens;
+						m_Rotation.y -= (pos.y - m_LastMousePosition.y) * m_MouseRotateSens;
+					}
 				}
-				
+
 				m_LastMousePosition = e.GetPosition();
 			});
 			
 			CLASSEVENT(evt, MouseButtonPressedEvent)
 			{
+				if (e.GetKey() == Mouse::Button::SCROLL)
+				{
+					m_IsMouseActive = true;
+				}
 				m_LastMousePosition = e.GetPosition();
-				m_IsMouseActive = true;
 			});
 			CLASSEVENT(evt, MouseButtonReleasedEvent)
 			{
-				m_IsMouseActive = false;
+				if (e.GetKey() == Mouse::Button::SCROLL)
+				{
+					m_IsMouseActive = false;
+				}
 			});
 			CLASSEVENT(evt, KeyPressedEvent)
 			{

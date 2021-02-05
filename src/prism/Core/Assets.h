@@ -15,7 +15,7 @@ namespace Prism
 		return { Renderer::Texture::CreateRef(args.Filepath), false };
 	}
 	
-	using TextureAssets = Core::AssetLoader<Renderer::Texture, TextureLoadArgs, TextureLoadFunction>;
+	using TextureAssets = Core::AssetLoader<Renderer::Texture, TextureLoadArgs, TextureLoadFunction, true>;
 
 	
 	struct ShaderLoadArgs
@@ -29,5 +29,5 @@ namespace Prism
 		return { Gl::Shader::RefFromFiles(args.VertFilePath, args.FragFilePath), false };
 	}
 	
-	using ShaderAssets = Core::AssetLoader<Gl::Shader, ShaderLoadArgs, ShaderLoadFunction>;
+	using ShaderAssets = Core::AssetLoader<Gl::Shader, ShaderLoadArgs, ShaderLoadFunction, true>;
 }

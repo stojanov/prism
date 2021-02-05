@@ -33,7 +33,6 @@ namespace Prism
 
 		Core::LayerSystem m_Layers;
 		Ref<Core::SharedContext> m_Context;
-		Ref<Core::Window> m_Window;
 		bool m_WindowActive{ false };
 		bool m_Wireframe{ false };
 	};

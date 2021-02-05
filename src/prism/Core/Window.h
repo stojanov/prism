@@ -21,14 +21,17 @@ namespace Prism::Core
 		
 		void Create(int w, int h, const char* name);
 		SystemEventManager& GetInputManager() { return m_InputEventManager; }
-		
+
+		void BindWindow();
 		void ProcessEvents();
 		void SetEventCallback(EventCallback callback);
 
 		void Close();
 		GLFWwindow* GetNativeWindow() const { return m_WindowPtr;  }
+		GLFWwindow* GetLoadingContext() const { return m_LoadingContext; }
 	private:
 		GLFWwindow* m_WindowPtr{ nullptr };
+		GLFWwindow* m_LoadingContext{ nullptr }; // For multithreaded use
 		SystemEventManager m_InputEventManager;
 		WindowData m_Data;
 	};

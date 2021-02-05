@@ -1,8 +1,6 @@
 #include "Prism.h"
 
 #include <iomanip>
-#include <iostream>
-
 #include "Core/Events/KeyEvents.h"
 #include "Core/Events/MouseEvents.h"
 #include "Core/Events/WindowEvents.h"
@@ -22,14 +20,15 @@ namespace Prism
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		
 		Log::Init();
-		m_Window = MakeRef<Core::Window>();
-		m_Window->Create(w, h, name); // Temp, TODO: Add fullscreen support
-		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+		Ref<Core::Window> Window = MakeRef<Core::Window>();
+		
+		Window->Create(w, h, name); // Temp, TODO: Add fullscreen support
+		Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 		m_WindowActive = true;
 
-		m_Context = Core::CreateSharedContext(m_Window);
+		m_Context = Core::CreateSharedContext(Window);
 		m_Context->RenderOptions->DepthTest(true);
-
+		
 		m_Layers = { m_Context };
 		
 		PR_CORE_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
@@ -48,7 +47,7 @@ namespace Prism
 			switch (e.GetKey())
 			{
 			case Keyboard::Escape:
-				m_Window->Close();
+				m_Context->Window->Close();
 				m_WindowActive = false;
 				break;
 			case Keyboard::F1:
@@ -74,9 +73,9 @@ namespace Prism
 
 	void Application::Loop()
 	{
-		glm::vec4 clearColor{ 0.5f, 0.0f, 0.3f, 0.0f };
+		glm::vec4 clearColor{ 0.07f, 0.0f, 0.1f, 0.0f };
 
-		GLFWwindow* WndPtr = m_Window->GetNativeWindow();
+		GLFWwindow* WndPtr = m_Context->Window->GetNativeWindow();
 		
 		auto StartTime = std::chrono::high_resolution_clock::now();
 		auto LastFrameTime = StartTime;
@@ -93,13 +92,13 @@ namespace Prism
 			glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			m_Window->ProcessEvents();
+			m_Context->Window->ProcessEvents();
 			
 			if (dt > m_FixedDt)
 			{
 				while (dt > m_FixedDt) 
 				{
-					m_Layers.Update(dt);
+					m_Layers.Update(m_FixedDt);
 					dt -= m_FixedDt;
 				}	
 			} else
@@ -112,6 +111,10 @@ namespace Prism
 
 			glfwSwapBuffers(WndPtr);
 		}
+
+		m_Context->Tasks->Finish();
+		
+		exit(0);
 	}
 
 

@@ -60,6 +60,12 @@ namespace Prism::Renderer
 		const glm::mat4& GetProjection() const { return m_Projection; }
 		const glm::mat4& GetView() const { return m_View; }
 	private:
+
+		void _RotateCamera()
+		{
+			
+		}
+		
 		bool m_HasContoller{ false };
 		Ptr<ICameraController> m_Controller;
 		glm::mat4 m_View;

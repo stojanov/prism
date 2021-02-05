@@ -78,7 +78,6 @@ namespace Prism::Renderer
 		void DrawIndexed() const override;
 		void DrawArrays() const override;
 	private:
-		std::vector<Gl::BufferLayout> m_Layouts;
 		std::vector<std::vector<float>> m_VertexData;
 		std::vector<uint32_t> m_IndexData;
 		uint32_t m_VertCount{ 0 };

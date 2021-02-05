@@ -1,10 +1,8 @@
 #pragma once
 
 #include "prism/Components/ILayer.h"
-#include "prism/GL/Shader.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
-#include "prism/Renderer/Texture.h"
 
 namespace Prism::Examples
 {
@@ -46,7 +44,7 @@ namespace Prism::Examples
 		glm::mat4 m_PlaneTransform{ 1.f };
 		glm::mat4 m_CubeTransform{ 1.f };
 		glm::vec3 m_LightPosition{ 2.f, 0.f, -2.f };
-		glm::vec3 m_LightClr{ 1.f, 1.f, 0.f };
+		glm::vec3 m_LightClr{ 0.8f, 0.8f, 1.f };
 		float m_LightIntensity { 1.f };
 	};
 }

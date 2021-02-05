@@ -25,5 +25,11 @@ Compilation should be fairly simple using cmake, just run the cmake from the com
 ## Work in Progress
 [WIP](WIP.md)
 
+## Credits
+[TheCherno](https://www.youtube.com/user/TheChernoProject)
+[ChiliTomatoNoodle](https://www.youtube.com/user/ChiliTomatoNoodle)
+[TheThinMatrix](https://www.youtube.com/user/ThinMatrix)
+[Hopson for the inpiration](https://www.youtube.com/channel/UCeQhZOvNKSBRU0Mdg7V44wA)
+
 ## License
 [GPL](https://choosealicense.com/licenses/gpl-3.0/)

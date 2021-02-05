@@ -31,7 +31,10 @@ namespace Prism::Gl
 		return MakePtr<Shader>(vert, frag);
 	}
 
-	Shader::Shader() 	{}
+	Shader::Shader()
+	{
+		PR_CRITICAL("Creating a shader base");
+	}
 	
 	Shader::Shader(const std::string& vert, const std::string& frag)
 	{

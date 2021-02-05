@@ -1,4 +1,5 @@
 #pragma once
+#include <numeric>
 #include <vector>
 
 #include "prism/System/Trace.h"
@@ -90,6 +91,10 @@ namespace Prism::Gl
 
 		uint32_t GetStride() const { return m_Stride; }
 		const auto& GetElements() const { return m_Elements; }
+		uint32_t GetLength() const
+		{
+			return m_Length;
+		}
 	private:
 		void CalculateOffsetsAndStride()
 		{
@@ -101,9 +106,14 @@ namespace Prism::Gl
 				offset += el.Size;
 				m_Stride += el.Size;
 			}
+			m_Length = std::accumulate(m_Elements.begin(), m_Elements.end(), 0, [](uint32_t sum, BufferElement& el)
+				{
+					return el.GetComponentCount() + sum;
+				});
 		}
 		std::vector<BufferElement> m_Elements;
 		uint32_t m_Stride;
+		uint32_t m_Length;
 	};
 
 	class Buffer
