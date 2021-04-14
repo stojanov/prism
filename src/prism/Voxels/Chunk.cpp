@@ -45,7 +45,7 @@ namespace Prism::Voxel
 		m_DebugMesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"}
 			});
-		m_MeshReady = MakePtr<std::atomic_bool>();
+		//m_MeshReady = MakePtr<boolType>();
 	}
 
 	// Allocation is in another function in order to
@@ -71,7 +71,7 @@ namespace Prism::Voxel
 		}*/
 
 		m_IsAllocated = true;
-		*m_MeshReady = false;
+		m_MeshReady = false;
 	}
 
 	void Chunk::SetPopulationFunction(std::function<float(int, int)> PopFunc)
@@ -88,7 +88,7 @@ namespace Prism::Voxel
 	{
 		PR_ASSERT(m_PopulationFunction, "(Chunk) No population function present!");
 		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Population");
-		*m_MeshReady = false;
+		m_MeshReady = false;
 		int ySize = m_YSize - 1;
 		int zOffset = m_ZSize * m_YOffset;
 		int xOffset = m_XSize * m_XOffset;
@@ -182,7 +182,7 @@ namespace Prism::Voxel
 
 	void Chunk::PrepareForClearing()
 	{
-		*m_MeshReady = false;
+		m_MeshReady = false;
 	}
 
 	void Chunk::Render()
@@ -337,6 +337,6 @@ namespace Prism::Voxel
 			}
 		}
 
-		*m_MeshReady = true;
+		m_MeshReady = true;
 	}
 }

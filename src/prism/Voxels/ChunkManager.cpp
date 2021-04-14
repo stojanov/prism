@@ -67,15 +67,12 @@ namespace Prism::Voxel
 		
 		for (auto* chunk : Additions)
 		{
-			chunk->Allocate();
-			chunk->Populate();
-			chunk->GenerateMesh();
-			/*
 			m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
 			{
-
+				chunk->Allocate();
+				chunk->Populate();
+				chunk->GenerateMesh();
 			});
-			*/
 		}
 
 		PR_CORE_WARN("(ChunkManager) Added {0} new chunks", Additions.size());
@@ -84,15 +81,12 @@ namespace Prism::Voxel
 	// Gets cords in world space
 	void ChunkManager::MoveXY(const glm::vec3& pos)
 	{
-		auto x = m_CenterPosition.x * m_ChunkWorldSize;
-		auto y = m_CenterPosition.y * m_ChunkWorldSize;
-
 		auto tx = (int) (pos.x / m_ChunkWorldSize);
 		auto ty = (int) (pos.z / m_ChunkWorldSize);
 
-		if (tx != x || ty != y)
+		if (tx != m_CenterPosition.x || ty != m_CenterPosition.y)
 		{
-			//PR_INFO("{0}, {1} {2}, {3}", x, y, tx, ty);
+			PR_INFO("{0}, {1} | {2}, {3}", m_CenterPosition.x, m_CenterPosition.y, tx, ty);
 			ProcessFromPosition(tx, ty);
 		}
 	}
@@ -101,16 +95,17 @@ namespace Prism::Voxel
 	{
 		for (auto& pos : m_ToRemove)
 		{
-			m_Map.erase(pos);
+			if (auto& i = m_Map.find(pos); i != m_Map.end())
+			{
+				i->second->PrepareForClearing();
+				i->second->Clear();
+				m_Map.erase(pos);
+			}
 		}
 	}
 
 	void ChunkManager::ProcessFromPosition(int xOffset, int yOffset)
 	{
-		if (m_CenterPosition.x == xOffset && m_CenterPosition.y == yOffset)
-		{
-			return;
-		}
 		PR_INFO("CALCULATING NEW SECTOR");
 		for (auto& [pos, chunk] : m_Map)
 		{
@@ -127,7 +122,9 @@ namespace Prism::Voxel
 		m_CenterPosition.x = xOffset;
 		m_CenterPosition.y = yOffset;
 
-		_Create(yOffset - tempY > 0 ? 0 : 1);
+		//_Create(yOffset - tempY > 0 ? 0 : 1);
+		_Create(1);
+		_Create(0);
 	}
 
 	void ChunkManager::_QueueDispose()

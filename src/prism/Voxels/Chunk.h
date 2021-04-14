@@ -23,6 +23,7 @@ namespace Prism::Voxel
 	class Chunk
 	{
 		using MeshType = Renderer::DynamicMesh;
+		using boolType = std::atomic_bool; // For debuging
 	public:
 		enum class BlockType
 		{
@@ -83,7 +84,7 @@ namespace Prism::Voxel
 
 		bool MeshReady()
 		{
-			return *m_MeshReady;
+			return m_MeshReady;
 		}
 
 		// Will prepare for destruction
@@ -162,7 +163,8 @@ namespace Prism::Voxel
 		std::function<float(int, int)> m_PopulationFunction;
 		uint32_t m_NormalBuffer;
 		uint32_t m_ColorBuffer;
-		Ptr<std::atomic_bool> m_MeshReady;
+		//Ptr<boolType> m_MeshReady;
+		boolType m_MeshReady{ false };
 		glm::vec3 m_Position;
 		glm::mat4 m_Transform{ 1.f };
 		int m_CreatedFaces{ 0 };
