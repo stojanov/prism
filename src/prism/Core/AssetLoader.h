@@ -102,6 +102,7 @@ namespace Prism::Core
 			if (m_LoadTask.valid())
 			{
 				m_LoadTask.wait();
+				m_LoadTask = {};
 			}
 		}
 		
@@ -135,7 +136,7 @@ namespace Prism::Core
 			PR_CORE_WARN("Assets ({0})\tDestroying loadind assets", m_Name);
 			for (auto i : m_Assets)
 			{
-				//i->second.reset();
+				i.second.reset();
 			}
 			m_Assets.clear();
 		}

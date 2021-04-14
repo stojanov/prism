@@ -7,7 +7,6 @@
 #include "RenderOptions.h"
 #include "SystemOptions.h"
 #include "Window.h"
-#include "AssetLoader.h"
 #include "Assets.h"
 #include "BackgroundTasks.h"
 
@@ -53,6 +52,8 @@ namespace Prism::Core
 		{
 			glFinish();
 		});
+
+		ctx->Tasks->RegisterWorker("bg", 4);
 		
 		ctx->Assets.Textures = MakeRef<TextureAssets>("Textures", ctx->Tasks->GetWorker(SHARECTX_TASKNAME));
 		ctx->Assets.Shaders = MakeRef<ShaderAssets>("Shaders", ctx->Tasks->GetWorker(SHARECTX_TASKNAME));

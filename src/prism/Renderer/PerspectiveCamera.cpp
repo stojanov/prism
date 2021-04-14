@@ -44,6 +44,16 @@ namespace Prism::Renderer
 		m_Projection = glm::perspective(glm::radians(m_Fov), width * 1.f / height, m_ClipNear, m_ClipFar);
 	}
 
+	void PerspectiveCamera::OffsetRotation(const glm::vec2& rot)
+	{	
+		m_RotationDelta += rot;
+	}
+
+	void PerspectiveCamera::Rotate(const glm::vec2& rot)
+	{
+		m_Rotation = rot;
+	}
+
 	void PerspectiveCamera::MoveZ(float speed)
 	{
 		m_DPosition += m_Direction * speed;
@@ -56,20 +66,7 @@ namespace Prism::Renderer
 
 	void PerspectiveCamera::MoveY(float speed)
 	{
-		m_DPosition += m_Up * speed;
-	}
-	
-	void PerspectiveCamera::OffsetXPosition(float x) 
-	{
-		m_Position.x += x;
-	}
-	void PerspectiveCamera::OffsetYPosition(float y)
-	{
-		m_Position.y += y;
-	}
-	void PerspectiveCamera::OffsetZPosition(float z)
-	{
-		m_Position.z += z;
+		m_DPosition += glm::normalize(m_Up) * speed;
 	}
 	
 	void PerspectiveCamera::SetPosition(const glm::vec3& position)
@@ -80,30 +77,17 @@ namespace Prism::Renderer
 	{
 		m_Position += position;
 	}
-
-	void PerspectiveCamera::SetVerticalRotation(float angle)
-	{
-		m_RotationDelta.x = angle;
-	}
-	void PerspectiveCamera::OffsetVerticalRotation(float angle)
-	{
-		m_RotationDelta.x += angle;
-	}
-	void PerspectiveCamera::SetHorizontalRotation(float angle)
-	{
-		m_RotationDelta.y = angle;
-	}
-	void PerspectiveCamera::OffsetHorizontalRotation(float angle)
-	{
-		m_RotationDelta.y += angle;
-	}
-
+	
 	void PerspectiveCamera::OnSystemEvent(Event& e)
 	{
 		if (m_HasContoller)
 		{
 			m_Controller->OnSystemEvent(e);
 		}	
+	}
+
+	void PerspectiveCamera::_RotateCamera()
+	{
 	}
 	
 	void PerspectiveCamera::OnUpdate(float dt)
@@ -113,26 +97,54 @@ namespace Prism::Renderer
 			m_Controller->Update(dt);
 		}
 
+		auto projectedRotation = m_Rotation + m_RotationDelta;
+
+		if (projectedRotation.x > 89.f)
+		{
+			m_RotationDelta.x = 0;
+		}
+		if (projectedRotation.x < -89.f)
+		{
+			m_RotationDelta.x = 0;
+		}
+
+		if (projectedRotation.x > 360.f)
+		{
+			m_RotationDelta -= 360.f;
+		}
+		if (projectedRotation.x < -360.f)
+		{
+			m_RotationDelta += 360.f;
+		}
+
+		if (projectedRotation.y > 360.f)
+		{
+			m_RotationDelta -= 360.f;
+		}
+		if (projectedRotation.y < -360.f)
+		{
+			m_RotationDelta += 360.f;
+		}
+		
+		//PR_INFO("Camera rotation {0}, {1}", m_RotationDelta.x, m_RotationDelta.y);
+	
 		m_Position += m_DPosition;
 		m_LookAt += m_DPosition;
-		m_Direction = glm::normalize(m_LookAt - m_Position);
 
 		glm::vec3 axis = glm::cross(m_Direction, m_Up);
-		glm::quat pitch = glm::angleAxis(m_RotationDelta.x, axis);
-		glm::quat heading = glm::angleAxis(m_RotationDelta.y, m_Up);
+		glm::quat pitch = glm::angleAxis(m_RotationDelta.y, axis);
+		glm::quat heading = glm::angleAxis(m_RotationDelta.x, m_Up);
 
 		glm::quat rotation = glm::normalize(glm::cross(pitch, heading));
 
 		m_Direction = glm::rotate(rotation, m_Direction);
-		m_Up = glm::rotate(rotation, m_Up);
-		
-		m_LookAt = m_Position + m_Direction;
 
+		m_LookAt = m_Position + m_Direction;
 		m_View = glm::lookAt(m_Position, m_LookAt, m_Up);
 		
 		m_ProjectedView = m_Projection * m_View;
-
-		m_RotationDelta = { 0.f, 0.f }; 
 		m_DPosition = { 0.f, 0.f, 0.f };
+		m_Rotation += m_RotationDelta;
+		m_RotationDelta = { 0.f, 0.f };
 	}
 }

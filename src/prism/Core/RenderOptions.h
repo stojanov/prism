@@ -13,5 +13,6 @@ namespace Prism::Core
 		static void DrawWireframe(bool enabled);
 		static void ShouldCullFaces(bool enabled = true);
 		static void CullFaceOrder(GLenum order);
+		void FrontFace(GLenum order);
 	};
 }

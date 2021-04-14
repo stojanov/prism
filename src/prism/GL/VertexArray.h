@@ -43,6 +43,7 @@ namespace Prism::Gl
 	private:
 		uint32_t m_ID;
 		uint32_t m_BufferIndex{ 0 };
+		uint32_t m_Stride;
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
 	};

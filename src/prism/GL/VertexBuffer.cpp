@@ -80,11 +80,9 @@ namespace Prism::Gl
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
 	}
 
-	void VertexBuffer::SetData(std::vector<float>& vertices, size_t size)
-	{	
-		if (!m_Dynamic) return;
-		Bind();
-		glBufferData(GL_ARRAY_BUFFER, size, &vertices[0], GL_DYNAMIC_DRAW);
+	void VertexBuffer::UpdateSubData(float* vertices, size_t size)
+	{
+		// Todo: Finish this
 	}
 	
 	void VertexBuffer::Bind() const
@@ -95,5 +93,10 @@ namespace Prism::Gl
 	void VertexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void VertexBuffer::Clear()
+	{
+		glDeleteBuffers(1, &m_BufferID);
 	}
 }

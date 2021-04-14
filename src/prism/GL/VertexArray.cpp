@@ -26,7 +26,7 @@ namespace Prism::Gl
 	{
 		auto layout = buffer->GetLayout();
 		PR_ASSERT(layout.GetElements().size(), "VertexBuffer with no layout");
-
+		
 		Bind();
 		buffer->Bind();
 		
@@ -44,13 +44,13 @@ namespace Prism::Gl
 			case ShaderDataType::Int4:
 			case ShaderDataType::Bool:
 			{
-				glEnableVertexAttribArray(m_BufferIndex);
 				glVertexAttribPointer(m_BufferIndex,
 					element.GetComponentCount(),
 					OpenGLBaseType(element.Type),
 					element.Normalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
 					(const void*)element.Offset);
+				glEnableVertexAttribArray(m_BufferIndex);
 				m_BufferIndex++;
 				break;
 			}
@@ -60,13 +60,13 @@ namespace Prism::Gl
 				uint8_t count = element.GetComponentCount();
 				for (uint8_t i = 0; i < count; i++)
 				{
-					glEnableVertexAttribArray(m_BufferIndex);
 					glVertexAttribPointer(m_BufferIndex,
 						count,
 						OpenGLBaseType(element.Type),
 						element.Normalized ? GL_TRUE : GL_FALSE,
 						layout.GetStride(),
 						(const void*)(sizeof(float) * count * i));
+					glEnableVertexAttribArray(m_BufferIndex);
 					glVertexAttribDivisor(m_BufferIndex, 1);
 					m_BufferIndex++;
 				}

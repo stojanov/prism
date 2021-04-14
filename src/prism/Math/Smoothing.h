@@ -47,14 +47,14 @@ namespace Prism::Math
 		return 6 * (t * t * t * t * t) - 15 * (t * t * t * t) + 10 * (t * t * t);
 	}
 
-	// 1/pi * arcsin(2t - 1) + 14
+	// 1/pi * arcsin(2t - 1) + 0.5f
 	inline prdecimal ACosSmooth(prdecimal t)
 	{
-		return -M_1_PI * acos(2 * t - 1) + 1.f;
+		return -M_1_PI * acos(2 * t - 1) + 0.5f;
 	}
 
 	inline prdecimal fastACosSmooth(prdecimal t)
 	{
-		return -M_1_PI * FastACos(2 * t - 1) + 1.f;
+		return -M_1_PI * FastACos(2 * t - 1) + 0.5;
 	}
 }

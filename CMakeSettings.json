@@ -10,13 +10,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "variables": [
-        {
-          "name": "USE_MSVC_RUNTIME_LIBRARY_DLL",
-          "value": "False",
-          "type": "BOOL"
-        }
-      ]
+      "variables": []
     },
     {
       "name": "x64-Release",

@@ -48,4 +48,8 @@ namespace Prism::Core
 		glCullFace(order);
 	}
 
+	void RenderOptions::FrontFace(GLenum order)
+	{
+		glFrontFace(order);
+	}
 }

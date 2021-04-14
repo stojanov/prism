@@ -18,12 +18,9 @@ namespace Prism::System::Time
 		~Scope()
 		{
 			m_End = Clock::now();
-			auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>(m_Start - m_End).count();
-			std::cout << dur << "\n";
-			PR_INFO("{0}\t\t{1}{2}",
+			PR_CORE_INFO("(Timer) {0}\t\t{1}{2}",
 				m_Name,
-				//DurationCast<duration>(Clock::now() - m_Start), 
-				dur,
+				DurationCast<duration>(Clock::now() - m_Start), 
 				GetDurationAsString<duration>()
 			);
 		}

@@ -3,6 +3,7 @@
 
 #include "prism/Core/Core.h"
 #include "Buffer.h"
+#include <glad/glad.h>
 
 namespace Prism::Gl
 {
@@ -22,11 +23,22 @@ namespace Prism::Gl
 		static Ptr<VertexBuffer> CreatePtr(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic = true);
 		
 		const BufferLayout& GetLayout() { return m_Layout; };
+
 		void SetData(float* vertices, size_t size);
-		void SetData(std::vector<float>& vertices, size_t size);
+		void UpdateSubData(float* vertices, size_t size);
+
+		template<typename T>
+		void SetData(std::vector<T>& vertices, size_t count)
+		{
+			if (!m_Dynamic) return;
+			Bind();
+			glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), &vertices[0], GL_DYNAMIC_DRAW);
+		}
 		
 		void Bind() const override;
 		void Unbind() const override;
+
+		void Clear();
 	private:
 		void CreateBuffer();
 

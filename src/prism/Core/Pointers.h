@@ -49,4 +49,13 @@ namespace Prism
 		PR_ASSERT(0, "Cannot do dynamic cast on: " + FromType + " -> " + ToType);
 		return Ptr<To>(nullptr);
 	}
+
+	template<typename T>
+	using VectorPtr = Ptr<std::vector<T>>;
+
+	template<typename T>
+	constexpr VectorPtr<T> MakeVec()
+	{
+		return std::make_unique<std::vector<T>>();
+	}
 }

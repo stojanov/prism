@@ -1,6 +1,7 @@
 #pragma once
 
 #include "prism/Core/Core.h"
+#include "prism/Core/Pointers.h"
 #include "Buffer.h"
 #include "glad/glad.h"
 
@@ -20,11 +21,12 @@ namespace Prism::Gl
 		static Ref<IndexBuffer> CreateRef();
 		static Ptr<IndexBuffer> CreatePtr();
 
-		void SetData(uint32_t* indices, uint32_t count);
-		void SetData(std::vector<uint32_t>& indices);
+		void SetData(uint32_t* indices, uint32_t count) const;
+		void SetData(std::vector<uint32_t>& indices, uint32_t count) const;
 		
 		void Bind() const override;
 		void Unbind() const override;
+		void Clear() const;
 	private:
 		void CreateBuffer()
 		{

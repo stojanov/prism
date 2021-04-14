@@ -4,18 +4,21 @@ namespace Prism::Gl
 {
 	IndexBuffer::IndexBuffer()
 	{
-		CreateBuffer();
+		glCreateBuffers(1, &m_BufferID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
 	}
 
 	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
 	{
-		CreateBuffer();
+		glCreateBuffers(1, &m_BufferID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_DYNAMIC_DRAW);
 	}
 
 	IndexBuffer::IndexBuffer(std::vector<uint32_t>& indices)
 	{
-		CreateBuffer();
+		glCreateBuffers(1, &m_BufferID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
 	}
 	
@@ -44,16 +47,18 @@ namespace Prism::Gl
 		return MakePtr<IndexBuffer>();
 	}
 
-	void IndexBuffer::SetData(uint32_t* indices, uint32_t count)
+	void IndexBuffer::SetData(uint32_t* indices, uint32_t count) const
 	{
 		Bind();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
 	}
 
-	void IndexBuffer::SetData(std::vector<uint32_t>& indices)
+	void IndexBuffer::SetData(std::vector<uint32_t>& indices, uint32_t count) const
 	{
+		if (indices.size() == 0) return;
+		PR_ASSERT(indices.size(), "Empty index buffer data");
 		Bind();
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
 	}
 	
 	void IndexBuffer::Bind() const
@@ -64,5 +69,10 @@ namespace Prism::Gl
 	void IndexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	void IndexBuffer::Clear() const
+	{
+		glDeleteBuffers(1, &m_BufferID);
 	}
 }
