@@ -20,7 +20,8 @@ My take on a 3D game engine, something i have been working on for quite a while 
 * Embeded Scripting Language probably lua
 
 ## Voxel World Generation
- * Added infinite loading but has a lot of bugs that i'm curently trying to fix
+ * Fixed Infinite World Generation
+![Screenshot](VoxelExample.png)
 
 ## Compilation
 Compilation should be fairly simple using cmake, just run the cmake from the command line or use the gui to create the project files

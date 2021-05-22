@@ -3,6 +3,7 @@
 #include <string>
 #include "glad/glad.h"
 #include "prism/Core/Pointers.h"
+#include "glm/vec2.hpp"
 
 namespace Prism::Renderer
 {
@@ -16,6 +17,10 @@ namespace Prism::Renderer
 		void SetData(uint8_t* data, uint32_t size);
 		static Ref<Texture> CreateRef(const std::string& path, bool flip = true);
 		void Bind(uint8_t slot);
+
+		int GetWidth() { return m_Width; }
+		int GetHeight() { return m_Height; }
+		const glm::vec2& GetSize() { return { m_Width, m_Height }; }
 
 		static int GetTexSlot(uint8_t slot)
 		{

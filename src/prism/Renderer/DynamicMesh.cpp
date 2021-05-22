@@ -34,12 +34,12 @@ namespace Prism::Renderer
 		return m_VertexBuffers.size() - 1;
 	}
 
-	void DynamicMesh::AllocateBufferData(uint32_t vertIdx, size_t size)
+	void DynamicMesh::AllocateVertexBuffer(uint32_t vertIdx, size_t size)
 	{
 		m_VertexData[vertIdx].reserve(size);
 	}
 
-	void DynamicMesh::AllocateIndexData(size_t size)
+	void DynamicMesh::AllocateIndexBuffer(size_t size)
 	{
 		m_IndexData.reserve(size);
 	}

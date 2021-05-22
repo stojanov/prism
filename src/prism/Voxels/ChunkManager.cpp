@@ -17,14 +17,47 @@ namespace Prism::Voxel
 		m_CenterPosition = StartPoint;
 
 		_Create(0);
-		_Create(1);
 	}
 
 	void ChunkManager::PopulationFunction(std::function<float(int, int)> func)
 	{
 		m_PopFunc = func;
 	}
+	
+	void ChunkManager::_Create(int selection)
+	{
+		std::vector<Chunk*> Additions;
 
+		for (int x = m_CenterPosition.x - m_Radius; x < m_CenterPosition.x + m_Radius; x++)
+		{
+			for (int y = m_CenterPosition.y - m_Radius; y < m_CenterPosition.y + m_Radius; y++)
+			{
+				if (HasBlock({ x, y }))
+				{
+					continue;
+				}
+				auto chunk = MakePtr<Chunk>(m_ChunkSize, m_BlockSize);
+				chunk->SetPopulationFunction(m_PopFunc);
+				chunk->SetWorldOffset(x, y);
+				Additions.push_back(chunk.get());
+
+				m_NewAdditions.push_back({ x, y });
+				m_Map.emplace(Vec2{ x, y }, std::move(chunk));
+			}
+		}
+
+		for (auto chunk : Additions)
+		{
+			m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
+				{
+					chunk->Allocate();
+					chunk->Populate();
+					chunk->GenerateMesh();
+;				});
+		}
+	}
+
+	/*
 	void ChunkManager::_Create(int selection)
 	{
 		static int nummbersellection[2] = {
@@ -33,11 +66,13 @@ namespace Prism::Voxel
 		};
 		int direction = nummbersellection[selection];
 		
-		std::vector<Chunk*> Additions;
+		std::vector<Ref<Chunk>> Additions;
+
 		for (int x = m_CenterPosition.x - m_Radius; x < m_CenterPosition.x + m_Radius; x++)
 		{
-			float s = sqrt(m_Radius * m_Radius - x * x);
+			float s = sqrt(abs(sqrt(m_Radius) - x * x));
 			int endPoint = ceil(s);
+			PR_INFO("ENDPOINT {0} RADIUS {1} X {2}", endPoint, m_Radius, x);
 			endPoint = m_CenterPosition.y == 0 ? direction * endPoint : endPoint + direction * m_CenterPosition.y;
 
 			int* choiceAr[2] = {
@@ -56,27 +91,32 @@ namespace Prism::Voxel
 					break;
 				}
 				
-				auto chunk = MakePtr<Chunk>(m_ChunkSize, m_BlockSize);
+				auto chunk = MakeRef<Chunk>(m_ChunkSize, m_BlockSize);
+				
 				chunk->SetPopulationFunction(m_PopFunc);
-				chunk->SetOffset(x, endPoint);
+				chunk->SetWorldOffset(x, endPoint);
+				Additions.push_back(chunk);
+				chunk->Allocate();
+				chunk->Populate();
+				m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
+				{
 
-				Additions.push_back(chunk.get());
-				m_Map.emplace(Vec2{ x, endPoint }, std::move(chunk));
+					chunk->GenerateMesh();
+				});
+
+
+				m_Map.emplace(Vec2{ x, endPoint }, (chunk));
 			}
 		}
 		
-		for (auto* chunk : Additions)
+		for (auto chunk : Additions)
 		{
-			m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
-			{
-				chunk->Allocate();
-				chunk->Populate();
-				chunk->GenerateMesh();
-			});
+
 		}
 
 		PR_CORE_WARN("(ChunkManager) Added {0} new chunks", Additions.size());
 	}
+	*/
 	
 	// Gets cords in world space
 	void ChunkManager::MoveXY(const glm::vec3& pos)
@@ -86,7 +126,7 @@ namespace Prism::Voxel
 
 		if (tx != m_CenterPosition.x || ty != m_CenterPosition.y)
 		{
-			PR_INFO("{0}, {1} | {2}, {3}", m_CenterPosition.x, m_CenterPosition.y, tx, ty);
+			PR_INFO("MOVED TO ({0}, {1}) -> ({2}, {3})", m_CenterPosition.x, m_CenterPosition.y, tx, ty);
 			ProcessFromPosition(tx, ty);
 		}
 	}
@@ -95,13 +135,15 @@ namespace Prism::Voxel
 	{
 		for (auto& pos : m_ToRemove)
 		{
-			if (auto& i = m_Map.find(pos); i != m_Map.end())
+			if (auto i = m_Map.find(pos); i != m_Map.end())
 			{
 				i->second->PrepareForClearing();
 				i->second->Clear();
 				m_Map.erase(pos);
+				PR_WARN("ERASING {0} {1}", pos.x, pos.y);
 			}
 		}
+		m_ToRemove.clear();
 	}
 
 	void ChunkManager::ProcessFromPosition(int xOffset, int yOffset)
@@ -109,22 +151,26 @@ namespace Prism::Voxel
 		PR_INFO("CALCULATING NEW SECTOR");
 		for (auto& [pos, chunk] : m_Map)
 		{
+			if (
+				pos.x > m_CenterPosition.x + m_Radius || pos.x < m_CenterPosition.x - m_Radius||
+				pos.y > m_CenterPosition.y + m_Radius || pos.y < m_CenterPosition.y - m_Radius)
+			{
+				m_ToRemove.push_back(pos);
+			}
+		/*
 			auto dist = _Dist(xOffset, yOffset, pos.x, pos.y);
 			if (dist > m_Radius)
 			{
 				m_ToRemove.push_back(pos);
 			}
+			*/
 		}
-
 		_CleanMap();
 
-		int tempY = m_CenterPosition.y;
 		m_CenterPosition.x = xOffset;
 		m_CenterPosition.y = yOffset;
-
-		//_Create(yOffset - tempY > 0 ? 0 : 1);
-		_Create(1);
 		_Create(0);
+		
 	}
 
 	void ChunkManager::_QueueDispose()

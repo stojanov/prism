@@ -110,4 +110,13 @@ namespace Prism::Renderer
 		m_VertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, m_ElementCount, GL_UNSIGNED_INT, 0);
 	}
+
+	void AllocatedMesh::ClearGpuBuffers()
+	{
+		for (auto& buff : m_GlVertexBuffers)
+		{
+			buff->Clear();
+		}
+		m_GlIndexBuffer->Clear();
+	}
 }

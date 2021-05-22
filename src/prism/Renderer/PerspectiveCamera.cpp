@@ -97,35 +97,6 @@ namespace Prism::Renderer
 			m_Controller->Update(dt);
 		}
 
-		auto projectedRotation = m_Rotation + m_RotationDelta;
-
-		if (projectedRotation.x > 89.f)
-		{
-			m_RotationDelta.x = 0;
-		}
-		if (projectedRotation.x < -89.f)
-		{
-			m_RotationDelta.x = 0;
-		}
-
-		if (projectedRotation.x > 360.f)
-		{
-			m_RotationDelta -= 360.f;
-		}
-		if (projectedRotation.x < -360.f)
-		{
-			m_RotationDelta += 360.f;
-		}
-
-		if (projectedRotation.y > 360.f)
-		{
-			m_RotationDelta -= 360.f;
-		}
-		if (projectedRotation.y < -360.f)
-		{
-			m_RotationDelta += 360.f;
-		}
-		
 		//PR_INFO("Camera rotation {0}, {1}", m_RotationDelta.x, m_RotationDelta.y);
 	
 		m_Position += m_DPosition;

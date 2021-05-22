@@ -38,8 +38,7 @@ namespace Prism::Examples
 				return (m_Noise.Fractal2(x, y) + 1) / 2;
 			});
 
-		m_ChunkManager.SetRadius(5);
-		m_ChunkManager.Initial({0, 0});
+		m_ChunkManager.SetRadius(10);
 		
 		m_CameraLocked = true;
 	}

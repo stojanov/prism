@@ -28,7 +28,6 @@ namespace Prism::Core
 		Ref<RenderOptions>			RenderOptions;
 		Ref<BackgroundTasks>		Tasks;
 		GroupAssets					Assets;
-		// Asset Manager
 		// Graphics/Renderer API
 	};
 

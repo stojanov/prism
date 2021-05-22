@@ -67,6 +67,7 @@ namespace Prism::Renderer
 		
 		void DrawArrays() const override;
 		void DrawIndexed() const override;
+		void ClearGpuBuffers();
 	private:
 		void _IncAlloc()
 		{

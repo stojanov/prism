@@ -5,7 +5,8 @@
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Core/SharedContext.h"
 #include "prism/Renderer/AllocatedMesh.h"
-
+#include "prism/Math/Interpolation.h"
+#include "prism/Math/Smoothing.h"
 namespace Prism::Voxel
 {
 	struct Vec2
@@ -54,7 +55,7 @@ namespace Prism::Voxel
 		void SetMappingFunction(std::function<void()> MapFunc);
 		void GenerateMesh();
 		void SendToGpu();
-		void SetOffset(int x, int y);
+		void SetWorldOffset(int x, int y);
 		void RebuildMesh();
 		void UpdateGpu(); // Will update only if rebuild has been called
 
@@ -115,7 +116,7 @@ namespace Prism::Voxel
 
 		bool _Check2DBounds(int x, int y)
 		{
-			return x >= 0 && x < m_XSize&& y >= 0 && y < m_ZSize;
+			return x >= 0 && x < m_XSize && y >= 0 && y < m_ZSize;
 		}
 
 		int _FetchNeighbourBlock(int x, int y)
@@ -153,6 +154,8 @@ namespace Prism::Voxel
 			return ((int)b) >= 2;
 		}
 
+
+		std::vector<glm::vec3> m_Colors;
 		Ptr<MeshType> m_Mesh;
 		Ptr<MeshType> m_DebugMesh;
 		std::vector<BlockData> m_Blocks;
@@ -163,14 +166,13 @@ namespace Prism::Voxel
 		std::function<float(int, int)> m_PopulationFunction;
 		uint32_t m_NormalBuffer;
 		uint32_t m_ColorBuffer;
-		//Ptr<boolType> m_MeshReady;
 		boolType m_MeshReady{ false };
 		glm::vec3 m_Position;
 		glm::mat4 m_Transform{ 1.f };
 		int m_CreatedFaces{ 0 };
 		bool m_IsAllocated{ false };
 		bool m_DataSentToGpu{ false };
-
+		bool m_Populated{ false };
 		int m_BlockSize;
 		int m_XSize;
 		int m_YSize;

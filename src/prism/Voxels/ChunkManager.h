@@ -63,12 +63,12 @@ namespace Prism::Voxel
 			return sqrt(a * a + b * b);
 		}
 		
+		std::vector<Vec2> m_NewAdditions;
 		Core::SharedContextRef m_Ctx;
 		int m_Radius; // In blocks
 		std::function<float(int, int)> m_PopFunc;
 		Map m_Map;
 		std::vector<Vec2> m_ToRemove;
-		std::queue<Ptr<Chunk>> m_ToDispose;
 		Vec2 m_CenterPosition;
 		
 		int m_ChunkWorldSize;

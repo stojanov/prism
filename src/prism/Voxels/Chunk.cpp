@@ -1,8 +1,7 @@
 #include "Chunk.h"
 
 #include "glm/ext/matrix_transform.hpp"
-#include "prism/Math/Interpolation.h"
-#include "prism/Math/Smoothing.h"
+
 #include "prism/System/ScopeTimer.h"
 
 namespace std
@@ -46,6 +45,13 @@ namespace Prism::Voxel
 			{ Gl::ShaderDataType::Float3, "color"}
 			});
 		//m_MeshReady = MakePtr<boolType>();
+
+		
+		m_Colors.push_back({ 0.f, 0.0f, 0.9f });
+		m_Colors.push_back({ 0.f, 0.2f, 0.6f });
+		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
+		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
+		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
 	}
 
 	// Allocation is in another function in order to
@@ -61,14 +67,13 @@ namespace Prism::Voxel
 		m_Blocks.resize(total);
 		m_BlockHeights.resize(m_XSize * m_ZSize, 0);
 
-		/*
 		if constexpr (std::is_same_v<MeshType, Renderer::AllocatedMesh>)
 		{
 			m_Mesh->AllocateVertexBuffer(0, 2 * total);
 			m_Mesh->AllocateVertexBuffer(m_NormalBuffer, 2 * total);
 			m_Mesh->AllocateVertexBuffer(m_ColorBuffer, 2 * total);
 			m_Mesh->AllocateIndexBuffer(6 * total);
-		}*/
+		}
 
 		m_IsAllocated = true;
 		m_MeshReady = false;
@@ -106,6 +111,8 @@ namespace Prism::Voxel
 				m_BlockHeights[_GetLoc(x, z)] = height;
 			}
 		}
+
+		m_Populated = true;
 	}
 
 	void Chunk::_CreateQuad(
@@ -142,12 +149,9 @@ namespace Prism::Voxel
 
 	void Chunk::_PassBlockParam(const glm::vec3& param)
 	{
-		for (int i = 0; i < m_CreatedFaces; i++)
-		{
-		}
 	}
 
-	void Chunk::SetOffset(int x, int y)
+	void Chunk::SetWorldOffset(int x, int y)
 	{
 		m_XOffset = x;
 		m_YOffset = y;
@@ -204,9 +208,10 @@ namespace Prism::Voxel
 	{
 
 	}
-
+	
 	void Chunk::GenerateMesh()
 	{
+		if (!m_Populated) return;
 		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Mesh Generation");
 
 		int yStart;
@@ -299,6 +304,120 @@ namespace Prism::Voxel
 				yStart = height * m_BlockSize;
 				yEnd = yStart + m_BlockSize;
 
+
+
+				_CreateQuad(
+					xStart, yEnd, zEnd,
+					xStart, yEnd, zStart,
+					xEnd, yEnd, zStart,
+					xEnd, yEnd, zEnd
+				);
+
+				glm::vec3 clr = { 0.f, 0.8f, 0.1f };
+				_PassVertParam(m_ColorBuffer, { clr.r, clr.g, clr.b });
+
+				for (int i = 0; i < 4; i++)
+				{
+					if (PossibleSides[i] > -1)
+					{
+						int fl = height + 1;
+						while (fl-- > PossibleSides[i] + 1)
+						{
+							yStart = fl * m_BlockSize;
+							yEnd = yStart + m_BlockSize;
+							//auto clr = GetColor(height, colorOffset);
+							
+							int** Vertex = &VertexOffsets[i * 12];
+							_CreateQuad(
+								*Vertex[0], *Vertex[1], *Vertex[2],
+								*Vertex[3], *Vertex[4], *Vertex[5],
+								*Vertex[6], *Vertex[7], *Vertex[8],
+								*Vertex[9], *Vertex[10], *Vertex[11]
+							);
+							_PassVertParam(m_ColorBuffer, { clr.r, clr.g, clr.b });
+						}
+					}
+				}
+
+			}
+		}
+
+		m_MeshReady = true;
+	}
+	
+
+/*
+	void Chunk::GenerateMesh()
+	{
+		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Mesh Generation");
+
+		int yStart;
+		int yEnd;
+		int xStart;
+		int xEnd;
+		int zStart;
+		int zEnd;
+
+		int height;
+
+		int PossibleSides[4] = {
+			-1,
+			-1,
+			-1,
+			-1,
+		};
+
+		float Normals[12] = {
+			-1.f, 0.f, 0.f,
+			1.f, 0.f, 0.f,
+			0.f, 0.f, 1.f,
+			0.f, 0.f, -1.f,
+		};
+
+		int* VertexOffsets[48] = {
+			// Left
+			&xEnd, &yEnd, &zStart,
+			&xEnd, &yStart, &zStart,
+			&xEnd, &yStart, &zEnd,
+			&xEnd, &yEnd, &zEnd,
+			// Right
+			&xStart, &yEnd, &zStart,
+			&xStart, &yStart, &zStart,
+			&xStart, &yStart, &zEnd,
+			&xStart, &yEnd, &zEnd,
+			// Front reverse order to cull
+			&xStart, &yEnd, &zEnd,
+			&xStart, &yStart, &zEnd,
+			&xEnd, &yStart, &zEnd,
+			&xEnd, &yEnd, &zEnd,
+			// Back
+			&xStart, &yEnd, &zStart,
+			&xStart, &yStart, &zStart,
+			&xEnd, &yStart, &zStart,
+			&xEnd, &yEnd, &zStart
+		};
+
+		for (int x = 0; x < m_XSize; x++)
+		{
+			for (int z = 0; z < m_ZSize; z++)
+			{
+				height = m_BlockHeights[_GetLoc(x, z)];
+
+				xStart = x * m_BlockSize;
+				xEnd = xStart + m_BlockSize;
+				zStart = z * m_BlockSize;
+				zEnd = zStart + m_BlockSize;
+
+				int positions[12] = {
+					x + 1, z, -1, // Left
+					x - 1, z, -1, // Right
+					x, z + 1, -1, // Front
+					x, z - 1, -1, // Back
+				};
+
+				yStart = height * m_BlockSize;
+				yEnd = yStart + m_BlockSize;
+
 				float r = 0.f;
 				float g = 0.8f;
 				float b = 0.1f;
@@ -310,33 +429,8 @@ namespace Prism::Voxel
 					xEnd, yEnd, zEnd
 				);
 				_PassVertParam(m_ColorBuffer, { r, g, b });
-
-				for (int i = 0; i < 4; i++)
-				{
-					if (PossibleSides[i] > -1)
-					{
-						int fl = height + 1;
-						while (fl-- > PossibleSides[i] + 1)
-						{
-							yStart = fl * m_BlockSize;
-							yEnd = yStart + m_BlockSize;
-							int* Positions = &positions[i * 3];
-							int** Vertex = &VertexOffsets[i * 12];
-							float* Normal = &Normals[i * 3];
-							_CreateQuad(
-								*Vertex[0], *Vertex[1], *Vertex[2],
-								*Vertex[3], *Vertex[4], *Vertex[5],
-								*Vertex[6], *Vertex[7], *Vertex[8],
-								*Vertex[9], *Vertex[10], *Vertex[11]
-							);
-							_PassVertParam(m_ColorBuffer, { r, g, b });
-						}
-					}
-				}
-
 			}
 		}
-
-		m_MeshReady = true;
 	}
+	*/
 }

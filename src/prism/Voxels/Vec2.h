@@ -3,8 +3,7 @@
 
 namespace Prism::Voxel
 {
-
-	template<typename  T>
+	template<typename T>
 	using EnableIfNumber = std::enable_if_t<std::conjunction_v<std::is_integral<T>>, std::is_floating_point<T>>;
 
 	template<typename T, typename = EnableIfNumber<T>>
@@ -98,14 +97,14 @@ namespace Prism::Voxel
 		}
 	};
 
-	template<typename T, typename U, typename = EnableIfNumber<T>>
-	const Vec2<U>& Vec2Dot(Vec2<T>& a, Vec2<T>& b)
+	template<typename T, typename = EnableIfNumber<T>>
+	T Vec2Dot(const Vec2<T>& a, const Vec2<T>& b)
 	{
-		
+		return { a.x * b.x + a.y * b.y };
 	}
 
 	template<typename T, typename U, typename = EnableIfNumber<T>>
-	const Vec2<U>& Vec2Cross(Vec2<T>& a, Vec2<T>& b)
+	const Vec2<U>& Vec2Cross(const Vec2<T>& a, const Vec2<T>& b)
 	{
 
 	}

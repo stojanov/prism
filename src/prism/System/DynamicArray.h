@@ -85,8 +85,6 @@ namespace Prism::System
 			ptr[1] = element1;
 			ptr[2] = element2;
 			ptr[3] = element3;
-
-			PR_INFO("Element push");
 			
 			m_Pointer += 4;
 		}
@@ -100,9 +98,9 @@ namespace Prism::System
 				NewData[i] = m_Data.get()[i];
 			}
 
-			m_Data.release();
+			m_AllocatedSize = m_AllocatedSize * 2;
 
-			m_Pointer <<= 1;
+			m_Data.reset(NewData);
 		}
 
 		size_t MemorySize()
