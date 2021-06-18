@@ -3,7 +3,7 @@
 #include <string>
 #include "glad/glad.h"
 #include "prism/Core/Pointers.h"
-#include "glm/vec2.hpp"
+#include "vec2.hpp"
 
 namespace Prism::Renderer
 {

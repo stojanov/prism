@@ -107,6 +107,7 @@ namespace Prism::Renderer
 	void DynamicMesh::NewMesh()
 	{
 		ClearBuffers();
+		ClearGpuBuffers();
 		m_ElementCount = 0;
 	}
 	

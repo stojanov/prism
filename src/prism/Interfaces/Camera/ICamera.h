@@ -1,5 +1,6 @@
 #pragma once
-#include "glm/vec3.hpp"
+
+#include <vec3.hpp>
 
 #include "prism/Core/Events/Event.h"
 

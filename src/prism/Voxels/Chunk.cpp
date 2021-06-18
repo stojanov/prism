@@ -1,9 +1,8 @@
 #include "Chunk.h"
 
-#include "glm/ext/matrix_transform.hpp"
+#include <ext/matrix_transform.hpp>
 
 #include "prism/System/ScopeTimer.h"
-
 namespace std
 {
 	// TEMPPPP!!!
@@ -35,15 +34,15 @@ namespace Prism::Voxel
 
 		m_NormalBuffer = m_Mesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "normal" }
-			});
+		});
 
 		m_ColorBuffer = m_Mesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color" }
-			});
+		});
 
 		m_DebugMesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"}
-			});
+		});
 		//m_MeshReady = MakePtr<boolType>();
 
 		
@@ -67,13 +66,10 @@ namespace Prism::Voxel
 		m_Blocks.resize(total);
 		m_BlockHeights.resize(m_XSize * m_ZSize, 0);
 
-		if constexpr (std::is_same_v<MeshType, Renderer::AllocatedMesh>)
-		{
-			m_Mesh->AllocateVertexBuffer(0, 2 * total);
-			m_Mesh->AllocateVertexBuffer(m_NormalBuffer, 2 * total);
-			m_Mesh->AllocateVertexBuffer(m_ColorBuffer, 2 * total);
-			m_Mesh->AllocateIndexBuffer(6 * total);
-		}
+		m_Mesh->AllocateVertexBuffer(0, 12 * total);
+		m_Mesh->AllocateVertexBuffer(m_NormalBuffer, 12 * total);
+		m_Mesh->AllocateVertexBuffer(m_ColorBuffer, 12 * total);
+		m_Mesh->AllocateIndexBuffer(6 * total);
 
 		m_IsAllocated = true;
 		m_MeshReady = false;
@@ -130,6 +126,7 @@ namespace Prism::Voxel
 		auto v1p = m_Mesh->AddVertex(p1);
 		auto v2p = m_Mesh->AddVertex(p2);
 		auto v3p = m_Mesh->AddVertex(p3);
+
 		glm::vec3 normal = glm::cross((p2 - p0), (p3 - p1));
 
 		m_Mesh->ConnectVertices(v0p, v1p, v3p);
@@ -230,13 +227,6 @@ namespace Prism::Voxel
 			-1,
 		};
 
-		float Normals[12] = {
-			-1.f, 0.f, 0.f,
-			1.f, 0.f, 0.f,
-			0.f, 0.f, 1.f,
-			0.f, 0.f, -1.f,
-		};
-
 		int* VertexOffsets[48] = {
 			// Left
 			&xEnd, &yEnd, &zStart,
@@ -304,8 +294,6 @@ namespace Prism::Voxel
 				yStart = height * m_BlockSize;
 				yEnd = yStart + m_BlockSize;
 
-
-
 				_CreateQuad(
 					xStart, yEnd, zEnd,
 					xStart, yEnd, zStart,
@@ -314,7 +302,7 @@ namespace Prism::Voxel
 				);
 
 				glm::vec3 clr = { 0.f, 0.8f, 0.1f };
-				_PassVertParam(m_ColorBuffer, { clr.r, clr.g, clr.b });
+				_PassVertParam(m_ColorBuffer, clr);
 
 				for (int i = 0; i < 4; i++)
 				{
@@ -325,8 +313,7 @@ namespace Prism::Voxel
 						{
 							yStart = fl * m_BlockSize;
 							yEnd = yStart + m_BlockSize;
-							//auto clr = GetColor(height, colorOffset);
-							
+
 							int** Vertex = &VertexOffsets[i * 12];
 							_CreateQuad(
 								*Vertex[0], *Vertex[1], *Vertex[2],
@@ -334,7 +321,7 @@ namespace Prism::Voxel
 								*Vertex[6], *Vertex[7], *Vertex[8],
 								*Vertex[9], *Vertex[10], *Vertex[11]
 							);
-							_PassVertParam(m_ColorBuffer, { clr.r, clr.g, clr.b });
+							_PassVertParam(m_ColorBuffer, clr);
 						}
 					}
 				}
@@ -344,93 +331,4 @@ namespace Prism::Voxel
 
 		m_MeshReady = true;
 	}
-	
-
-/*
-	void Chunk::GenerateMesh()
-	{
-		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Mesh Generation");
-
-		int yStart;
-		int yEnd;
-		int xStart;
-		int xEnd;
-		int zStart;
-		int zEnd;
-
-		int height;
-
-		int PossibleSides[4] = {
-			-1,
-			-1,
-			-1,
-			-1,
-		};
-
-		float Normals[12] = {
-			-1.f, 0.f, 0.f,
-			1.f, 0.f, 0.f,
-			0.f, 0.f, 1.f,
-			0.f, 0.f, -1.f,
-		};
-
-		int* VertexOffsets[48] = {
-			// Left
-			&xEnd, &yEnd, &zStart,
-			&xEnd, &yStart, &zStart,
-			&xEnd, &yStart, &zEnd,
-			&xEnd, &yEnd, &zEnd,
-			// Right
-			&xStart, &yEnd, &zStart,
-			&xStart, &yStart, &zStart,
-			&xStart, &yStart, &zEnd,
-			&xStart, &yEnd, &zEnd,
-			// Front reverse order to cull
-			&xStart, &yEnd, &zEnd,
-			&xStart, &yStart, &zEnd,
-			&xEnd, &yStart, &zEnd,
-			&xEnd, &yEnd, &zEnd,
-			// Back
-			&xStart, &yEnd, &zStart,
-			&xStart, &yStart, &zStart,
-			&xEnd, &yStart, &zStart,
-			&xEnd, &yEnd, &zStart
-		};
-
-		for (int x = 0; x < m_XSize; x++)
-		{
-			for (int z = 0; z < m_ZSize; z++)
-			{
-				height = m_BlockHeights[_GetLoc(x, z)];
-
-				xStart = x * m_BlockSize;
-				xEnd = xStart + m_BlockSize;
-				zStart = z * m_BlockSize;
-				zEnd = zStart + m_BlockSize;
-
-				int positions[12] = {
-					x + 1, z, -1, // Left
-					x - 1, z, -1, // Right
-					x, z + 1, -1, // Front
-					x, z - 1, -1, // Back
-				};
-
-				yStart = height * m_BlockSize;
-				yEnd = yStart + m_BlockSize;
-
-				float r = 0.f;
-				float g = 0.8f;
-				float b = 0.1f;
-
-				_CreateQuad(
-					xStart, yEnd, zEnd,
-					xStart, yEnd, zStart,
-					xEnd, yEnd, zStart,
-					xEnd, yEnd, zEnd
-				);
-				_PassVertParam(m_ColorBuffer, { r, g, b });
-			}
-		}
-	}
-	*/
 }

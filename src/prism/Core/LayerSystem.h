@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "Pointers.h"
-#include "prism/Components/ILayer.h"
+#include "prism/Interfaces/ILayer.h"
 
 namespace Prism::Core
 {

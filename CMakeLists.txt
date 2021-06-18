@@ -24,11 +24,12 @@ endif()
 include_directories(
                     vendor/glad/include/
                     vendor/GLFW/include/
-                    vendor/glm/
+                    vendor/glm/glm/
                     vendor/imgui/
                     vendor/spdlog/include/
                     vendor/stb/
                     vendor/json/include/
+                    vendor/pmap/parallel_hashmap/
                     src/)
 
 file(GLOB STB_SRC vendor/stb/*.c)
@@ -66,7 +67,7 @@ add_executable(${PROJECT_NAME}
                     ${IMGUI_HEADERS}
                     ${HEADERS} 
                     ${IMGUI_GLFW_HEADERS}
-                    ${PROJECT_CONFIGS})
+                    ${PROJECT_CONFIGS} )
 
 
 target_link_libraries(${PROJECT_NAME} glfw

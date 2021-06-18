@@ -1,9 +1,9 @@
 #include "VoxelExample.h"
 
 
-#include "glm/ext/matrix_transform.hpp"
-#include "prism/Components/Camera/CameraEditorController.h"
-#include "prism/Components/Camera/FPSCameraController.h"
+#include <ext/matrix_transform.hpp>
+#include "prism/Interfaces/Camera/CameraEditorController.h"
+#include "prism/Interfaces/Camera/FPSCameraController.h"
 #include "prism/System/ScopeTimer.h"
 
 namespace Prism::Examples
@@ -23,12 +23,11 @@ namespace Prism::Examples
 	void VoxelExample::OnAttach()
 	{
 		m_Camera.SetPosition({ 100.f, 85.f, 0.f });
-		m_Camera.OffsetRotation({ 0.f, 45.f });
+		m_Camera.OffsetRotation({ 0.f, 85.f });
 		
 		m_Camera.AttachController<Renderer::FPSCameraController<Renderer::PerspectiveCamera>>();
-		m_Camera.GetController()->SetMoveSpeed(32);
+		m_Camera.GetController()->SetMoveSpeed(m_CameraMoveSpeed);
 		m_Ctx->Assets.Shaders->LoadAsset("baseshader", { "res/voxel.vert", "res/voxel.frag" });
-		//m_Ctx->Assets.Textures->LoadAsset("dirt", { "res/dirt.jpg "});
 		m_Shader = m_Ctx->Assets.Shaders->Get("baseshader");
 
 		m_Noise.setScale(0.025);
@@ -38,7 +37,7 @@ namespace Prism::Examples
 				return (m_Noise.Fractal2(x, y) + 1) / 2;
 			});
 
-		m_ChunkManager.SetRadius(10);
+		m_ChunkManager.SetRadius(20);
 		
 		m_CameraLocked = true;
 	}
@@ -53,11 +52,23 @@ namespace Prism::Examples
 		EventHandler handler(e);
 
 		m_Camera.OnSystemEvent(e);
+		CLASSEVENT(handler, KeyReleasedEvent)
+		{
+			switch (e.GetKey())
+			{
+			case Keyboard::LSHIFT:
+				m_CameraMoveSpeedMulti = 1.f;
+				break;
+			}
+		});
 		CLASSEVENT(handler, KeyPressedEvent)
 		{
 			switch (e.GetKey())
 			{
-			case Keyboard::P:
+			case Keyboard::LSHIFT:
+				m_CameraMoveSpeedMulti = 3.f;
+				break;
+			case Keyboard::F2:
 				if (m_CameraLocked)
 				{
 					m_Camera.GetController()->ResetDelta();
@@ -79,21 +90,19 @@ namespace Prism::Examples
 		m_CursorOverGui = io.WantCaptureMouse;
 		
 		ImGui::BeginMainMenuBar();
-		ImGui::MenuItem("Chunk Controls", 0, &m_ShowChunkCtrls);
 		ImGui::MenuItem("Controls", 0, &m_ShowBaseCtrls);
+		ImGui::MenuItem("Options", 0, &m_ShowDescripton);
 		ImGui::EndMainMenuBar();
-
 		
-		if (m_ShowChunkCtrls)
+		if (m_ShowDescripton)
 		{
-			ImGui::Begin("Chunks");
-			for (auto& chunk : m_ChunkData)
-			{
-				ImGui::BulletText("%.2f\t\t%.2f\t\t%.2f", chunk.offset.x, chunk.offset.y, chunk.offset.z);
-			}
+			ImGui::Begin("Options");
+			ImGui::SliderFloat("Mouse Sensitivty ", &m_CameraRotationSpeed, 0, 1);
+			ImGui::SliderFloat("Camera Move Speed", &m_CameraMoveSpeed, 0, 100);
+			ImGui::Text("Toggle Wireframe = F1");
+			ImGui::Text("Toggle Camera = F2");
 			ImGui::End();
 		}
-		
 
 		if (m_ShowBaseCtrls)
 		{
@@ -109,7 +118,8 @@ namespace Prism::Examples
 	{
 		m_Camera.ShouldLock(m_CameraLocked || m_CursorOverGui);
 		m_Camera.OnUpdate(dt);
-
+		m_Camera.GetController()->SetMoveSpeed(m_CameraMoveSpeed * m_CameraMoveSpeedMulti);
+		m_Camera.GetController()->SetRotationSpeed(m_CameraRotationSpeed);
 		m_ChunkManager.MoveXY(m_Camera.GetPosition());
 	}
 

@@ -7,6 +7,7 @@
 #include "prism/Renderer/AllocatedMesh.h"
 #include "prism/Math/Interpolation.h"
 #include "prism/Math/Smoothing.h"
+
 namespace Prism::Voxel
 {
 	struct Vec2

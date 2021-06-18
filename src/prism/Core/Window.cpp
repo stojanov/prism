@@ -43,7 +43,7 @@ namespace Prism::Core
 
 		if (m_LoadingContext == NULL)
 		{
-			PR_CORE_ERROR("Coulding creating loading context!");
+			PR_CORE_ERROR("Couldn't create loading context!");
 			PR_ASSERT(0, "Error creating loading context");
 		}
 		
@@ -52,7 +52,7 @@ namespace Prism::Core
 
 		if (m_WindowPtr == NULL)
 		{
-			PR_CORE_ERROR("Coulding creating window!");
+			PR_CORE_ERROR("Couldn't create window!");
 			PR_ASSERT(0, "Error creating window");
 		}
 

@@ -1,9 +1,9 @@
 #pragma once
 #include <type_traits>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
-#include "prism/Components/Camera/ICamera.h"
-#include "prism/Components/Camera/IController.h"
+#include "prism/Interfaces/Camera/ICamera.h"
+#include "prism/Interfaces/Camera/IController.h"
 #include "prism/Core/Pointers.h"
 #include "prism/System/Debug.h"
 

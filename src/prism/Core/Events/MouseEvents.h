@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include "glm/vec2.hpp"
+#include <vec2.hpp>
 
 namespace Prism
 {

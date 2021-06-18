@@ -1,5 +1,5 @@
 #pragma once
-#include "prism/Components/IMesh.h"
+#include "prism/Interfaces/IMesh.h"
 #include "prism/GL/Buffer.h"
 #include "prism/System/Debug.h"
 #include "prism/System/DynamicArray.h"

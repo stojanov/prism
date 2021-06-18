@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prism/Components/ILayer.h"
+#include "prism/Interfaces/ILayer.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
 

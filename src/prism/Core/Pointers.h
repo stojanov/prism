@@ -47,6 +47,7 @@ namespace Prism
 		std::string FromType = typeid(From).name();
 		
 		PR_ASSERT(0, "Cannot do dynamic cast on: " + FromType + " -> " + ToType);
+		PR_CORE_CRITICAL("Cannot do dynamic cast on: " + FromType + " -> " + ToType);
 		return Ptr<To>(nullptr);
 	}
 

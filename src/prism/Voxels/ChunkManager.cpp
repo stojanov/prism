@@ -96,11 +96,11 @@ namespace Prism::Voxel
 				chunk->SetPopulationFunction(m_PopFunc);
 				chunk->SetWorldOffset(x, endPoint);
 				Additions.push_back(chunk);
-				chunk->Allocate();
-				chunk->Populate();
+
 				m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
 				{
-
+					chunk->Allocate();
+					chunk->Populate();
 					chunk->GenerateMesh();
 				});
 

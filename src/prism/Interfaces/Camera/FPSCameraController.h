@@ -1,5 +1,5 @@
 #pragma once
-#include "glm/glm.hpp"
+#include <glm.hpp>
 
 #include "IController.h"
 #include "prism/Renderer/PerspectiveCamera.h"
@@ -40,7 +40,7 @@ namespace Prism::Renderer
 					m_LastMousePosition = e.GetPosition();
 					m_ResetDelta = false;
 				}
-				auto rate = (e.GetPosition() - m_LastMousePosition) * m_MouseRotateSens;
+				auto rate = (e.GetPosition() - m_LastMousePosition) * m_RotationSpeed;
 				
 				m_Rotation -= glm::clamp(rate, -1.f * m_MaxRotationRate, m_MaxRotationRate);
 				m_LastMousePosition = e.GetPosition();
@@ -77,6 +77,11 @@ namespace Prism::Renderer
 			}
 		}
 
+		void SetRotationSpeed(float s) override
+		{
+			m_RotationSpeed = s;
+		}
+
 		void SetMoveSpeed(float s) override
 		{
 			m_MoveSpeed = s;
@@ -103,7 +108,7 @@ namespace Prism::Renderer
 		bool m_IsLocked{ false };
 		bool m_IsMouseActive{ false };
 		float m_MoveSpeed = 0.9;
-		float m_MouseRotateSens = 0.3;
+		float m_RotationSpeed = 0.3;
 		glm::vec2 m_LastMousePosition{ 0.f, 0.f };
 		glm::vec2 m_Rotation{ 0.f, 0.f };
 		glm::vec2 m_Position{ 0.f, 0.f };

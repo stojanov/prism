@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prism/Components/ILayer.h"
+#include "prism/Interfaces/ILayer.h"
 #include "prism/Math/PerlinNoise.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
@@ -29,7 +29,9 @@ namespace Prism::Examples
 	private:
 		std::future<void> m_MeshGen;
 		bool m_CursorOverGui{ false };
-
+		float m_CameraMoveSpeed{ 35.f };
+		float m_CameraRotationSpeed{ 0.3f };
+		float m_CameraMoveSpeedMulti{ 1.f };
 		// Hardcoded width and height for now
 		Renderer::PerspectiveCamera m_Camera{ 90, 1280, 720, 0.1f, 2048.f };
 		Voxel::ChunkManager m_ChunkManager{ m_Ctx, 16, 4 };
@@ -41,7 +43,7 @@ namespace Prism::Examples
 		glm::vec3 m_LightPosition{ 0.f, -200.f, 200.f };
 		glm::vec3 m_LightClr{ 0.1f, 0.9f, 0.6f };
 		float m_LightIntensity{ 1.f };
-		bool m_ShowChunkCtrls = false;
-		bool m_ShowBaseCtrls = false;
+		bool m_ShowBaseCtrls{ false };
+		bool m_ShowDescripton{ true };
 	};
 }

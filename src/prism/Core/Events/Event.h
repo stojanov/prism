@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/vec2.hpp>
+#include <vec2.hpp>
 #include "Keyboard.h"
 #include "Mouse.h"
 

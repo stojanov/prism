@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include "glm/gtc/type_ptr.hpp"
+#include <gtc/type_ptr.hpp>
 #include "prism/System/FileIO.h"
 
 #include <iostream>

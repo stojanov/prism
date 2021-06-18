@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "prism/Prism.h"
-#include "prism/Examples/BaseExample.h"
 #include "prism/Examples/VoxelExample.h"
+#include "prism/Entity/Registry.h"
 
 int main()
 {
@@ -11,6 +11,6 @@ int main()
 	app.CreateLayer<Prism::Examples::VoxelExample>("Voxel Example");
 	
 	app.Run();
-	
+
 	return 0;
 }

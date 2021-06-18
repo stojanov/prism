@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <glm.hpp>
 
 #include "IController.h"
 #include "prism/Renderer/PerspectiveCamera.h"
@@ -27,9 +27,14 @@ namespace Prism::Renderer
 			m_IsLocked = lck;
 		}
 
+		void SetRotationSpeed(float s) override
+		{
+			m_RotationSpeed = s;
+		}
+
 		void SetMoveSpeed(float s) override
 		{
-			m_MouseMoveSens = s;
+			m_MoveSpeed = s;
 		}
 		
 		void OnSystemEvent(Event& e) override
@@ -42,7 +47,7 @@ namespace Prism::Renderer
 
 			CLASSEVENT(evt, MouseScrollEvent)
 			{
-				m_Position.y += e.GetPosition().y * m_MouseMoveSens * 25;
+				m_Position.y += e.GetPosition().y * m_MoveSpeed * 25;
 			});
 			
 			CLASSEVENT(evt, MouseButtonDownEvent)
@@ -51,14 +56,14 @@ namespace Prism::Renderer
 				
 				if (e.GetKey() == Mouse::Button::SCROLL)
 				{
-					m_Position.x -= (pos.x - m_LastMousePosition.x) * m_MouseMoveSens;
-					m_Position.z += (pos.y - m_LastMousePosition.y) * m_MouseMoveSens;
+					m_Position.x -= (pos.x - m_LastMousePosition.x) * m_MoveSpeed;
+					m_Position.z += (pos.y - m_LastMousePosition.y) * m_MoveSpeed;
 				} else
 				{
 					if (m_ShouldRotate)
 					{
-						m_Rotation.x += (pos.x - m_LastMousePosition.x) * m_MouseRotateSens;
-						m_Rotation.y += (pos.y - m_LastMousePosition.y) * m_MouseRotateSens;
+						m_Rotation.x += (pos.x - m_LastMousePosition.x) * m_RotationSpeed;
+						m_Rotation.y += (pos.y - m_LastMousePosition.y) * m_RotationSpeed;
 					}
 				}
 
@@ -117,8 +122,8 @@ namespace Prism::Renderer
 		T* m_Camera;
 		bool m_IsLocked{ false };
 		bool m_IsMouseActive{ false };
-		float m_MouseMoveSens = 0.9;
-		float m_MouseRotateSens = 0.3;
+		float m_MoveSpeed = 0.9;
+		float m_RotationSpeed = 0.3;
 		glm::vec2 m_LastMousePosition{ 0.f, 0.f };
 		glm::vec2 m_Rotation{ 0.f, 0.f};
 		glm::vec3 m_Position{ 0.f, 0.f, 0.f };

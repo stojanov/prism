@@ -30,7 +30,7 @@ namespace Prism::Core
 			:
 			IAssetLoader<T, LoadArgs>(),
 			m_Name(name),
-			m_TaskQueue(std::move(queue))
+			m_TaskQueue(queue)
 		{
 		}
 

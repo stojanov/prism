@@ -4,7 +4,7 @@
 #include <vector>
 #include <glad/glad.h>
 
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 #include "prism/Core/Pointers.h"
 #include "prism/System/System.h"

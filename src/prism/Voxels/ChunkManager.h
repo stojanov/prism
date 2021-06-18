@@ -4,7 +4,7 @@
 
 
 #include "Chunk.h"
-#include "glm/vec2.hpp"
+#include <vec2.hpp>
 #include "prism/Core/Pointers.h"
 
 namespace Prism::Voxel
