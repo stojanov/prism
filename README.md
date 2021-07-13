@@ -6,9 +6,16 @@
 </p>
 
 ## Description 
-My take on a 3D game engine, something i have been working on for quite a while as a hobby project also as a school assignment. Mainly working on it to learn game engine development and modern c++ techniques. Key focus being rouge like mechanics.
+My take on a 3D game engine, something i have been working on for quite a while as a hobby project also as a school assignment. 
+Mainly working on it to learn game engine development and modern c++ techniques. Key focus being rouge like mechanics.
+The current version is very barebones and more like a OpenGL wrapper, the key tasks other than planned features would be:
+* Better error handling and asserts on the release build
+* Rditor and engine separation
+* Scene graph
+* ECS integration
 
 ## Planned Features
+* #### Major rewrite/redesign planned
 * Scene Renderer
 * Deffered Shading
 * Shadow Mapping
