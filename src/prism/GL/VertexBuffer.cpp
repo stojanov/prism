@@ -12,28 +12,20 @@ namespace Prism::Gl
 		glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
 	}
 
-	VertexBuffer::VertexBuffer(float* vertices, size_t size, const BufferLayout& layout, bool dynamic)
+	VertexBuffer::VertexBuffer(void* vertices, size_t size, const BufferLayout& layout, bool dynamic)
 		:
-			m_Layout(layout),
-			m_Dynamic(dynamic)
+			m_Dynamic(dynamic),
+			m_GlBufferType(dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW),
+			m_Layout(layout)
 	{
 		CreateBuffer();
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	}
 
-	VertexBuffer::VertexBuffer(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic)
-		:
-			m_Layout(layout),
-			m_Dynamic(dynamic)
-	{
-		CreateBuffer();
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-	}
-
 	VertexBuffer::VertexBuffer(const BufferLayout& layout)
 		:
-			m_Layout(layout),
-			m_Dynamic(true)
+			m_Dynamic(true),
+			m_Layout(layout)
 	{
 		CreateBuffer();
 	}
@@ -43,46 +35,26 @@ namespace Prism::Gl
 		glDeleteBuffers(1, &m_BufferID);
 	}
 
-	Ref<VertexBuffer> VertexBuffer::CreateRef(const BufferLayout& layout)
+	Ref<VertexBuffer> VertexBuffer::Create(const BufferLayout& layout)
 	{
 		return MakeRef<VertexBuffer>(layout);
 	}
 
-	Ptr<VertexBuffer> VertexBuffer::CreatePtr(const BufferLayout& layout)
+	Ref<VertexBuffer> VertexBuffer::Create(void* data, size_t size, const BufferLayout& layout, const bool dynamic)
 	{
-		return MakePtr<VertexBuffer>(layout);
+		return MakeRef<VertexBuffer>(layout);
 	}
 	
-	Ref<VertexBuffer> VertexBuffer::CreateRef(float* vertices, size_t size, const BufferLayout& layout, bool dynamic)
+	void VertexBuffer::SetData(void* data, size_t size) const
 	{
-		return MakeRef<VertexBuffer>(vertices, size, layout, dynamic);
-	}
-
-	Ref<VertexBuffer> VertexBuffer::CreateRef(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic)
-	{
-		return MakeRef<VertexBuffer>(vertices, layout, dynamic);
-	}
-
-	Ptr<VertexBuffer> VertexBuffer::CreatePtr(float* vertices, size_t size, const BufferLayout& layout, bool dynamic)
-	{
-		return MakePtr<VertexBuffer>(vertices, size, layout, dynamic);
-	}
-
-	Ptr<VertexBuffer> VertexBuffer::CreatePtr(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic)
-	{
-		return MakePtr<VertexBuffer>(vertices, layout, dynamic);
-	}
-	
-	void VertexBuffer::SetData(float* vertices, size_t size)
-	{
-		if (!m_Dynamic) return;
 		Bind();
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, data, m_GlBufferType);
 	}
 
-	void VertexBuffer::UpdateSubData(float* vertices, size_t size)
+	void VertexBuffer::UpdateSubData(void* data, size_t offset, size_t size) const
 	{
-		// Todo: Finish this
+		Bind();
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 	}
 	
 	void VertexBuffer::Bind() const

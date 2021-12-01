@@ -5,7 +5,6 @@
 #include "prism/GL/VertexBuffer.h"
 #include "prism/Core/Pointers.h"
 #include "Vertex.h"
-#include "prism/Interfaces/IMesh.h"
 
 namespace Prism::Renderer
 {
@@ -15,7 +14,8 @@ namespace Prism::Renderer
 	// Supports only floating point vertices
 	// TODO: Test Indexed Draw
 	// Only rendering triangles
-	class DynamicMesh: public IMesh
+
+	class DynamicMesh
 	{
 	public:
 		DynamicMesh();
@@ -28,8 +28,9 @@ namespace Prism::Renderer
 		
 		void AddVertexData(uint32_t vertIdx, std::vector<float>& data);
 		void AddVertexData(std::vector<float>& data);
-		
-		const std::vector<float>& GetVertexData(uint32_t vertIdx = 0)
+
+		template<typename T>
+		const std::vector<T>& GetVertexData(uint32_t vertIdx = 0)
 		{
 			PR_ASSERT(vertIdx < m_VertexData.size(), "Can't find vertex data");
 			return m_VertexData[vertIdx];
@@ -89,7 +90,7 @@ namespace Prism::Renderer
 		{
 			static_assert(IsVertexFloat<T>());
 			constexpr int VertSize = GetVertexSize<T>();
-			PR_ASSERT(idx < m_VertexData.size(), "Cannot find vertex data");
+			PR_ASSERT(vertBufferIdx < m_VertexData.size(), "Cannot find vertex data");
 
 			if constexpr (VertSize == 1)
 			{
@@ -161,11 +162,12 @@ namespace Prism::Renderer
 		void FlushIndexData();
 		void Flush();
 		
-		void DrawIndexed() const override;
-		void DrawArrays() const override;
+		void DrawIndexed() const;
+		void DrawArrays() const;
 		void NewMesh();
 		void ClearBuffers();
 	private:
+		//std::vector<std::array<std::vector<float>, m_MaxTypes>> m_VertexData;
 		std::vector<std::vector<float>> m_VertexData;
 		std::vector<uint32_t> m_IndexData;
 		uint32_t m_VertCount{ 0 };

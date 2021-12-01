@@ -1,5 +1,4 @@
 #pragma once
-#include "prism/Interfaces/IMesh.h"
 #include "prism/GL/Buffer.h"
 #include "prism/System/Debug.h"
 #include "prism/System/DynamicArray.h"
@@ -8,7 +7,11 @@
 
 namespace Prism::Renderer
 {
-	class AllocatedMesh: public IMesh
+	/*
+	 *  WIP, haven't tested anything in here
+	 *	currently not working
+	 */
+	class AllocatedMesh
 	{
 	public:
 		AllocatedMesh();
@@ -65,8 +68,8 @@ namespace Prism::Renderer
 		void ClearBuffers();
 		void ClearGPUBuffers();
 		
-		void DrawArrays() const override;
-		void DrawIndexed() const override;
+		void DrawArrays() const;
+		void DrawIndexed() const;
 		void ClearGpuBuffers();
 	private:
 		void _IncAlloc()

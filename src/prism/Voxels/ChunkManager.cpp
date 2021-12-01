@@ -1,5 +1,7 @@
 #include "ChunkManager.h"
 
+#include "prism/System/ScopeTimer.h"
+
 namespace Prism::Voxel
 {
 	ChunkManager::ChunkManager(Core::SharedContextRef ctx, int ChunkSize, int BlockSize)
@@ -7,7 +9,8 @@ namespace Prism::Voxel
 		m_Ctx(ctx),
 		m_ChunkSize(ChunkSize),
 		m_BlockSize(BlockSize),
-		m_ChunkWorldSize(ChunkSize * BlockSize)
+		m_ChunkWorldSize(ChunkSize * BlockSize),
+		m_Height(ChunkSize)
 	{
 		
 	}
@@ -16,44 +19,52 @@ namespace Prism::Voxel
 	{
 		m_CenterPosition = StartPoint;
 
-		_Create(0);
+		_Create(StartPoint);
 	}
 
 	void ChunkManager::PopulationFunction(std::function<float(int, int)> func)
 	{
 		m_PopFunc = func;
 	}
-	
-	void ChunkManager::_Create(int selection)
+
+	void ChunkManager::Clear()
+	{
+		for (auto& i : m_Map)
+		{
+			i.second->PrepareForClearing();
+			i.second->Clear();
+		}
+		m_Map.clear();
+	}
+
+	void ChunkManager::_Create(const Vec2& position)
 	{
 		std::vector<Chunk*> Additions;
 
-		for (int x = m_CenterPosition.x - m_Radius; x < m_CenterPosition.x + m_Radius; x++)
+		for (int x = position.x - m_Radius; x < position.x + m_Radius; x++)
 		{
-			for (int y = m_CenterPosition.y - m_Radius; y < m_CenterPosition.y + m_Radius; y++)
+			for (int y = position.y - m_Radius; y < position.y + m_Radius; y++)
 			{
 				if (HasBlock({ x, y }))
 				{
 					continue;
 				}
 				auto chunk = MakePtr<Chunk>(m_ChunkSize, m_BlockSize);
-				chunk->SetPopulationFunction(m_PopFunc);
-				chunk->SetWorldOffset(x, y);
-				Additions.push_back(chunk.get());
 
-				m_NewAdditions.push_back({ x, y });
+				chunk->SetPopulationFunction(m_PopFunc);
+				chunk->SetHeight(m_Height);
+				chunk->SetWorldOffset(x, y);
+
+				auto chPtr = chunk.get();
+				m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chPtr]()
+					{
+						chPtr->Allocate();
+						chPtr->Populate();
+						chPtr->GenerateMesh();
+					});
+
 				m_Map.emplace(Vec2{ x, y }, std::move(chunk));
 			}
-		}
-
-		for (auto chunk : Additions)
-		{
-			m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
-				{
-					chunk->Allocate();
-					chunk->Populate();
-					chunk->GenerateMesh();
-;				});
 		}
 	}
 
@@ -79,9 +90,6 @@ namespace Prism::Voxel
 				&endPoint,
 				&m_CenterPosition.y
 			};
-			
-			int sel1 = selection | 0;
-			int sel2 = selection ^ 1;
 			
 			while (*choiceAr[selection | 0] > *choiceAr[selection ^ 1])
 			{
@@ -118,7 +126,7 @@ namespace Prism::Voxel
 	}
 	*/
 	
-	// Gets cords in world space
+	// Gets coords in world space
 	void ChunkManager::MoveXY(const glm::vec3& pos)
 	{
 		auto tx = (int) (pos.x / m_ChunkWorldSize);
@@ -126,50 +134,58 @@ namespace Prism::Voxel
 
 		if (tx != m_CenterPosition.x || ty != m_CenterPosition.y)
 		{
-			PR_INFO("MOVED TO ({0}, {1}) -> ({2}, {3})", m_CenterPosition.x, m_CenterPosition.y, tx, ty);
+			PR_CORE_INFO("MOVED TO ({0}, {1}) -> ({2}, {3})", m_CenterPosition.x, m_CenterPosition.y, tx, ty);
 			ProcessFromPosition(tx, ty);
 		}
 	}
 
+	void ChunkManager::GenerateFromPosition(const glm::vec3& pos)
+	{
+		auto tx = (int)(pos.x / m_ChunkWorldSize);
+		auto ty = (int)(pos.z / m_ChunkWorldSize);
+
+		ProcessFromPosition(tx, ty);
+	}
+
+
 	void ChunkManager::_CleanMap()
 	{
+		PR_SCOPE_TIMER_MS("Chunk cleanup");
+		PR_CORE_WARN("Remove Count {0}", m_ToRemove.size());
 		for (auto& pos : m_ToRemove)
 		{
 			if (auto i = m_Map.find(pos); i != m_Map.end())
 			{
 				i->second->PrepareForClearing();
-				i->second->Clear();
-				m_Map.erase(pos);
-				PR_WARN("ERASING {0} {1}", pos.x, pos.y);
+				i->second->Clear(); // Needs access to an opengl initialized thread
+				m_Map.erase(i);
 			}
 		}
+		
 		m_ToRemove.clear();
 	}
 
 	void ChunkManager::ProcessFromPosition(int xOffset, int yOffset)
 	{
-		PR_INFO("CALCULATING NEW SECTOR");
-		for (auto& [pos, chunk] : m_Map)
+		PR_CORE_WARN("CALCULATING NEW SECTOR");
+		PR_SCOPE_TIMER_US("New Sector");
+
+		for (auto& i : m_Map)
 		{
+			auto& [pos, chunk] = i;
 			if (
-				pos.x > m_CenterPosition.x + m_Radius || pos.x < m_CenterPosition.x - m_Radius||
+				pos.x > m_CenterPosition.x + m_Radius || pos.x < m_CenterPosition.x - m_Radius ||
 				pos.y > m_CenterPosition.y + m_Radius || pos.y < m_CenterPosition.y - m_Radius)
 			{
 				m_ToRemove.push_back(pos);
 			}
-		/*
-			auto dist = _Dist(xOffset, yOffset, pos.x, pos.y);
-			if (dist > m_Radius)
-			{
-				m_ToRemove.push_back(pos);
-			}
-			*/
 		}
-		_CleanMap();
+
+		_CleanMap(); // TODO: Make this multithreaded, causes stutters
+		_Create(Vec2{ xOffset, yOffset });
 
 		m_CenterPosition.x = xOffset;
 		m_CenterPosition.y = yOffset;
-		_Create(0);
 		
 	}
 
@@ -183,4 +199,10 @@ namespace Prism::Voxel
 	{
 		m_Radius = r;
 	}
+
+	void ChunkManager::SetHeight(int height)
+	{
+		m_Height = height;
+	}
+
 }

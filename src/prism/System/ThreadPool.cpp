@@ -1,5 +1,7 @@
 #include "ThreadPool.h"
 
+#include "Log.h"
+
 namespace Prism::System
 {
 	ThreadPool::ThreadPool()
@@ -19,7 +21,14 @@ namespace Prism::System
 
 	ThreadPool::~ThreadPool()
 	{
-		Finish();
+		try
+		{
+			Finish();
+		} catch (std::exception& e)
+		{
+			PR_CORE_ERROR("Error while shutting down the thread pool: {0}", e.what());
+		}
+		
 	}
 
 	void ThreadPool::Start(size_t N)

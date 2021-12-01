@@ -98,11 +98,13 @@ namespace Prism::Entity
 			const auto CompId = GetComponentType<T>();
 			if (auto i = m_ComponentArrays.find(CompId); i == m_ComponentArrays.end())
 			{
-				PR_CORE_ERROR("(Registry) There's not a valid component registered, type {0}", typeid(T).name());
+				PR_CORE_ERROR("(Registry) Not a valid component registered, type {0}", typeid(T).name());
 				return nullptr;
 			}
-
-			return std::static_pointer_cast<detail::ComponentArray<T>>(m_ComponentArrays[CompId]);
+			else
+			{
+				return std::static_pointer_cast<detail::ComponentArray<T>>(i.second);
+			}
 		}
 	};
 }

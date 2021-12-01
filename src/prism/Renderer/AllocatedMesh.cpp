@@ -38,7 +38,7 @@ namespace Prism::Renderer
 
 	uint8_t AllocatedMesh::CreateNewVertexBuffer(const std::initializer_list<Gl::BufferElement>& layout)
 	{
-		auto buff = Gl::VertexBuffer::CreateRef({ layout });
+		auto buff = Gl::VertexBuffer::Create({ layout });
 
 		m_VertexBuffers.emplace_back();
 

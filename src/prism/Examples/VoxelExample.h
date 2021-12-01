@@ -45,5 +45,13 @@ namespace Prism::Examples
 		float m_LightIntensity{ 1.f };
 		bool m_ShowBaseCtrls{ false };
 		bool m_ShowDescripton{ true };
+		bool m_ShowWorldGen{ false };
+		int m_Height{ 16 };
+		float m_NoiseScale{ 0.025 };
+		float m_NoiseScaleMultiplier{ 1 };
+		float m_Persistance{ 0.7 };
+		int m_Octaves{ 5 };
+		int m_Seed{ 0 };
+
 	};
 }
