@@ -15,6 +15,10 @@ namespace Prism::Gl
 	void VertexArray::Bind() const
 	{
 		glBindVertexArray(m_ID);
+		/*
+		m_VertexBuffer->Bind();
+		m_IndexBuffer->Bind();
+		*/
 	}
 
 	void VertexArray::Unbind() const

@@ -4,6 +4,7 @@
 
 namespace Prism::Renderer
 {
+	// TODO: Needs complete rework
 	class TextureAtlas
 	{
 	public:

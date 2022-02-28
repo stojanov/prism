@@ -15,42 +15,4 @@ namespace Prism::Math
 		constexpr auto c = static_cast<prdecimal>(1.5707963267948966);
 		return (a * x * x - b) * x + c;
 	}
-
-	template<typename T>
-	class DeltaValue
-	{
-	public:
-		DeltaValue(const T& v)
-			:
-			m_Value(v),
-			m_PrevValue(v)
-		{			
-		}
-
-		void Assign(const T& v)
-		{
-			m_Value = v;
-			m_PrevValue = v;
-		}
-
-		void Modify(const T& v)
-		{
-			T dv = GetDelta();
-			m_Value += dv;
-			m_PrevValue = v;
-		}
-
-		T& GetDelta()
-		{
-			return m_Value - m_PrevValue;
-		}
-
-		T& Get()
-		{
-			return m_Value;
-		}
-	private:
-		T m_Value;
-		T m_PrevValue;
-	};
 }

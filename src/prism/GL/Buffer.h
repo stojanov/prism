@@ -115,12 +115,4 @@ namespace Prism::Gl
 		uint32_t m_Stride;
 		uint32_t m_Length;
 	};
-
-	class Buffer
-	{
-	public:
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-	};
-
 }

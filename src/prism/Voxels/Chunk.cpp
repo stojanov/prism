@@ -6,15 +6,14 @@
 namespace std
 {
 	// TEMPPPP!!!
-	template<> struct hash<Prism::Voxel::Vec2>
+	template<>
+	struct hash<Prism::Voxel::Vec2>
 	{
 		size_t operator()(const Prism::Voxel::Vec2& vec) const noexcept
 		{
-			hash<float> hasher;
+			hash<int> hasher;
 			auto a = hasher(vec.x);
 			auto b = hasher(vec.y);
-			// (a ^ b) >> 2
-			//return b + 0x9e3779b9 + (a << 6) + (a >> 2);
 			return b + 0x9e3779b9 + (a << 6) + (a >> 2);
 		}
 	};
@@ -27,7 +26,8 @@ namespace Prism::Voxel
 		m_BlockSize(blockSize),
 		m_XSize(Size),
 		m_YSize(Size),
-		m_ZSize(Size)
+		m_ZSize(Size),
+		m_Height(Size)
 	{
 		m_Mesh = MakePtr<MeshType>();
 		m_DebugMesh = MakePtr<MeshType>();
@@ -43,7 +43,6 @@ namespace Prism::Voxel
 		m_DebugMesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"}
 		});
-		//m_MeshReady = MakePtr<boolType>();
 
 		
 		m_Colors.push_back({ 0.f, 0.0f, 0.9f });
@@ -75,6 +74,11 @@ namespace Prism::Voxel
 		m_MeshReady = false;
 	}
 
+	void Chunk::SetHeight(int h)
+	{
+		m_Height = h;
+	}
+
 	void Chunk::SetPopulationFunction(std::function<float(int, int)> PopFunc)
 	{
 		m_PopulationFunction = PopFunc;
@@ -88,9 +92,8 @@ namespace Prism::Voxel
 	void Chunk::Populate()
 	{
 		PR_ASSERT(m_PopulationFunction, "(Chunk) No population function present!");
-		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Population");
+		//PR_SCOPE_TIMER_NS("Chunk Population");
 		m_MeshReady = false;
-		int ySize = m_YSize - 1;
 		int zOffset = m_ZSize * m_YOffset;
 		int xOffset = m_XSize * m_XOffset;
 		for (int x = 0; x < m_XSize; x++)
@@ -98,7 +101,7 @@ namespace Prism::Voxel
 			int xTranslated = x + xOffset;
 			for (int z = 0; z < m_ZSize; z++)
 			{
-				int height = ceil(m_PopulationFunction(xTranslated, z + zOffset) * ySize);
+				int height = ceil(m_PopulationFunction(xTranslated, z + zOffset) * m_Height);
 				height = glm::clamp(height, 0, m_YSize);
 				for (int i = 0; i < height; i++)
 				{
@@ -178,7 +181,14 @@ namespace Prism::Voxel
 	{
 		m_Blocks.clear();
 		m_BlockHeights.clear();
+		m_Mesh->ClearBuffers();
 		m_Mesh->ClearGpuBuffers();
+	}
+
+	void Chunk::Destroy()
+	{
+		PrepareForClearing();
+		Clear();
 	}
 
 	void Chunk::PrepareForClearing()
@@ -205,11 +215,15 @@ namespace Prism::Voxel
 	{
 
 	}
-	
+
+	void Chunk::GenerateMesh2()
+	{
+	}
+
 	void Chunk::GenerateMesh()
 	{
 		if (!m_Populated) return;
-		System::Time::Scope<System::Time::Miliseconds> RandomTimer("Chunk Mesh Generation");
+		PR_SCOPE_TIMER_US("Chunk Mesh Gen");
 
 		int yStart;
 		int yEnd;
@@ -227,7 +241,7 @@ namespace Prism::Voxel
 			-1,
 		};
 
-		int* VertexOffsets[48] = {
+		 int* VertexOffsets[48] = {
 			// Left
 			&xEnd, &yEnd, &zStart,
 			&xEnd, &yStart, &zStart,
@@ -281,14 +295,12 @@ namespace Prism::Voxel
 						//goto LOOPEXIT;
 						nh = _FetchNeighbour(PosPtr[0], PosPtr[1]);
 					}
-					if (nh >= height)
+					if (nh > height)
 					{
-						goto LOOPEXIT;
+						PossibleSides[i] = -1;
+						continue;
 					}
 					PossibleSides[i] = nh;
-					continue;
-				LOOPEXIT:
-					PossibleSides[i] = -1;
 				}
 
 				yStart = height * m_BlockSize;

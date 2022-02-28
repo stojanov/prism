@@ -7,7 +7,7 @@
 
 namespace Prism::Gl
 {
-	class IndexBuffer : public Buffer
+	class IndexBuffer
 	{
 	public:
 		IndexBuffer();
@@ -24,8 +24,8 @@ namespace Prism::Gl
 		void SetData(uint32_t* indices, uint32_t count) const;
 		void SetData(std::vector<uint32_t>& indices, uint32_t count) const;
 		
-		void Bind() const override;
-		void Unbind() const override;
+		void Bind() const;
+		void Unbind() const;
 		void Clear() const;
 	private:
 		void CreateBuffer()

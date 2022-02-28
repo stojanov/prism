@@ -30,7 +30,7 @@ namespace Prism::Examples
 		m_Ctx->Assets.Shaders->LoadAsset("baseshader", { "res/voxel.vert", "res/voxel.frag" });
 		m_Shader = m_Ctx->Assets.Shaders->Get("baseshader");
 
-		m_Noise.setScale(0.025);
+		m_Noise.SetScale(0.025);
 		
 		m_ChunkManager.PopulationFunction([this](int x, int y)
 			{
@@ -92,15 +92,19 @@ namespace Prism::Examples
 		ImGui::BeginMainMenuBar();
 		ImGui::MenuItem("Controls", 0, &m_ShowBaseCtrls);
 		ImGui::MenuItem("Options", 0, &m_ShowDescripton);
+		ImGui::MenuItem("World Gen", 0, &m_ShowWorldGen);
 		ImGui::EndMainMenuBar();
 		
 		if (m_ShowDescripton)
 		{
 			ImGui::Begin("Options");
+			ImGui::Text("Use (WASD) to move around the world");
+			ImGui::Text("Use (F2) to active the camera move");
 			ImGui::SliderFloat("Mouse Sensitivty ", &m_CameraRotationSpeed, 0, 1);
 			ImGui::SliderFloat("Camera Move Speed", &m_CameraMoveSpeed, 0, 100);
 			ImGui::Text("Toggle Wireframe = F1");
 			ImGui::Text("Toggle Camera = F2");
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
 
@@ -112,11 +116,50 @@ namespace Prism::Examples
 			ImGui::SliderFloat("Light Intensity", &m_LightIntensity, 0, 5);
 			ImGui::End();	
 		}
+
+		if (m_ShowWorldGen)
+		{
+			ImGui::Begin("World Generation");
+
+			ImGui::SliderFloat("Scale", &m_NoiseScale, 0.001, 2);
+			ImGui::SliderFloat("Scale Multiplier", &m_NoiseScaleMultiplier, 0, 2);
+			ImGui::Text("Noise Scale %.3f", m_NoiseScale * m_NoiseScaleMultiplier);
+			ImGui::SliderInt("Noise Octaves", &m_Octaves, 1, 10);
+			ImGui::SliderFloat("Noise Persistance", &m_Persistance, 0, 1);
+			// ImGui::SliderInt("Height", &m_Height, 8, 64); WIP
+			ImGui::InputInt("Noise seed", &m_Seed);
+
+
+			if (ImGui::Button("Reseed noise (from seed)"))
+			{
+				m_Noise.ReseedNoise((unsigned) abs(m_Seed));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reseed nosie (random)"))
+			{
+				m_Noise.ReseedNoise();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Generate World"))
+			{
+				PR_INFO("Generating World");
+
+				m_Noise.SetOctaves(m_Octaves);
+				m_Noise.SetPersistance(m_Persistance);
+				m_Noise.SetScale((Math::prdecimal)m_NoiseScale * m_NoiseScaleMultiplier);
+
+				//m_ChunkManager.SetHeight(m_Height);
+				m_ChunkManager.Clear();
+				m_ChunkManager.GenerateFromPosition(m_Camera.GetPosition());
+			}
+			ImGui::Text("Please don't run the generate world while the meshes are being generated!");
+			ImGui::End();
+		}
 	}
 
 	void VoxelExample::OnUpdate(float dt)
 	{
-		m_Camera.ShouldLock(m_CameraLocked || m_CursorOverGui);
+		m_Camera.ShouldLock(m_CameraLocked);
 		m_Camera.OnUpdate(dt);
 		m_Camera.GetController()->SetMoveSpeed(m_CameraMoveSpeed * m_CameraMoveSpeedMulti);
 		m_Camera.GetController()->SetRotationSpeed(m_CameraRotationSpeed);

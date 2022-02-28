@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "Definitions.h"
+#include "prism/System/Debug.h"
 #include "prism/System/Log.h"
 
 namespace Prism::Entity::detail

@@ -13,7 +13,10 @@ namespace Prism
 {
 	Application::Application(int w, int h, const char* name)
 	{
-		PR_ASSERT(glfwInit(), "Coudn't initialize glfw");
+		if (!glfwInit())
+		{
+			PR_ERROR("Coudn't initialize glfw");
+		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -23,17 +26,20 @@ namespace Prism
 		Ref<Core::Window> Window = MakeRef<Core::Window>();
 		
 		Window->Create(w, h, name); // Temp, TODO: Add fullscreen support
-		Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+		Window->SetEventCallback([this](Event& e)
+			{
+				OnEvent(e);
+			});
 		m_WindowActive = true;
 
 		m_Context = Core::CreateSharedContext(Window);
 		m_Context->RenderOptions->DepthTest(true);
 		
 		m_Layers = { m_Context };
-		
-		PR_CORE_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
-		PR_CORE_INFO("Driver - {0}", glGetString(GL_VERSION));
-		PR_CORE_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		glfwSwapInterval(0);
+		PR_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+		PR_INFO("Driver - {0}", glGetString(GL_VERSION));
+		PR_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	}
 
 	void Application::OnEvent(Event& e)

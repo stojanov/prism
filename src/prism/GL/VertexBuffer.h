@@ -5,27 +5,23 @@
 #include "Buffer.h"
 #include <glad/glad.h>
 
+
 namespace Prism::Gl
 {
-	class VertexBuffer : public Buffer
+	class VertexBuffer
 	{
 	public:
 		VertexBuffer(const BufferLayout& layout);
-		VertexBuffer(float* vertices, size_t size, const BufferLayout& layout, bool dynamic = true);
-		VertexBuffer(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic = true);
+		VertexBuffer(void* vertices, size_t size, const BufferLayout& layout, bool dynamic = true);
 		virtual ~VertexBuffer();
 
-		static Ref<VertexBuffer> CreateRef(const BufferLayout& layout);
-		static Ptr<VertexBuffer> CreatePtr(const BufferLayout& layout);
-		static Ref<VertexBuffer> CreateRef(float* vertices, size_t size, const BufferLayout& layout, bool dynamic = true);
-		static Ref<VertexBuffer> CreateRef(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic = true);
-		static Ptr<VertexBuffer> CreatePtr(float* vertices, size_t size, const BufferLayout& layout, bool dynamic = true);
-		static Ptr<VertexBuffer> CreatePtr(std::vector<float>& vertices, const BufferLayout& layout, bool dynamic = true);
+		static Ref<VertexBuffer> Create(const BufferLayout& layout);
+		static Ref<VertexBuffer> Create(void* data, size_t size, const BufferLayout& layout, const bool dynamic = true);
 		
-		const BufferLayout& GetLayout() { return m_Layout; };
+		const BufferLayout& GetLayout() const { return m_Layout; };
 
-		void SetData(float* vertices, size_t size);
-		void UpdateSubData(float* vertices, size_t size);
+		void SetData(void* data, size_t size) const;
+		void UpdateSubData(void* data, size_t offset, size_t size) const;
 
 		template<typename T>
 		void SetData(std::vector<T>& vertices, size_t count)
@@ -35,14 +31,14 @@ namespace Prism::Gl
 			glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), &vertices[0], GL_DYNAMIC_DRAW);
 		}
 		
-		void Bind() const override;
-		void Unbind() const override;
+		void Bind() const;
+		void Unbind() const;
 
 		void Clear();
 	private:
 		void CreateBuffer();
-
 		bool m_Dynamic{ false };
+		GLenum m_GlBufferType{ GL_DYNAMIC_DRAW };
 		unsigned m_BufferID;
 		BufferLayout m_Layout;
 	};

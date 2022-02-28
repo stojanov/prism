@@ -15,12 +15,11 @@ namespace Prism::Voxel
 		int x;
 		int y;
 
-		bool operator==(const Prism::Voxel::Vec2& other) const noexcept
+		bool operator==(const Vec2& other) const noexcept
 		{
 			return (x == other.x) && (y == other.y);
 		}
 	};
-
 
 	class Chunk
 	{
@@ -53,8 +52,10 @@ namespace Prism::Voxel
 		void Allocate();
 		void Populate();
 		void SetPopulationFunction(std::function<float(int, int)> PopFunc);
+		void SetHeight(int h);
 		void SetMappingFunction(std::function<void()> MapFunc);
 		void GenerateMesh();
+		void GenerateMesh2();
 		void SendToGpu();
 		void SetWorldOffset(int x, int y);
 		void RebuildMesh();
@@ -90,6 +91,7 @@ namespace Prism::Voxel
 		}
 
 		// Will prepare for destruction
+		void Destroy();
 		void Clear();
 		void PrepareForClearing();
 		void Render();
@@ -117,7 +119,7 @@ namespace Prism::Voxel
 
 		bool _Check2DBounds(int x, int y)
 		{
-			return x >= 0 && x < m_XSize && y >= 0 && y < m_ZSize;
+			return x > 0 && x < m_XSize && y > 0 && y < m_ZSize;
 		}
 
 		int _FetchNeighbourBlock(int x, int y)
@@ -142,7 +144,8 @@ namespace Prism::Voxel
 				return ChunkBlockPosition::NONEXIST;
 			}
 
-			static ChunkBlockPosition ChunkBlockSelection[2] = {
+			// It's done this way to support multiple cases in case i want to add more stuff in the future
+			static constexpr ChunkBlockPosition ChunkBlockSelection[2] = {
 				ChunkBlockPosition::NONEXIST,
 				ChunkBlockPosition::BODY,
 			};
@@ -155,7 +158,7 @@ namespace Prism::Voxel
 			return ((int)b) >= 2;
 		}
 
-
+		int m_Height;
 		std::vector<glm::vec3> m_Colors;
 		Ptr<MeshType> m_Mesh;
 		Ptr<MeshType> m_DebugMesh;

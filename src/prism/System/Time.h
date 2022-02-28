@@ -13,6 +13,7 @@ namespace Prism::System::Time
 	{
 		Seconds,
 		Miliseconds,
+		Microseconds,
 		Nanoseconds
 	};
 
@@ -31,22 +32,30 @@ namespace Prism::System::Time
 		{
 			return fname ? "nanoseconds" : "ns";
 		}
+		if constexpr (t == Microseconds)
+		{
+			return fname ? "microseconds" : "us";
+		}
 	}
 
 	template<Duration duration, typename T>
-	static long long DurationCast(T t)
+	auto DurationCast(T t)
 	{
 		if constexpr (duration == Seconds)
 		{
-			return std::chrono::duration_cast<std::chrono::seconds>(t).count();
+			return std::chrono::duration_cast<std::chrono::seconds>(t);
 		}
 		if constexpr (duration == Miliseconds)
 		{
-			return std::chrono::duration_cast<std::chrono::milliseconds>(t).count();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(t);
 		}
 		if constexpr (duration == Nanoseconds)
 		{
-			return std::chrono::duration_cast<std::chrono::nanoseconds>(t).count();
+			return std::chrono::duration_cast<std::chrono::nanoseconds>(t);
+		}
+		if constexpr (duration == Microseconds)
+		{
+			return std::chrono::duration_cast<std::chrono::microseconds>(t);
 		}
 	};
 }

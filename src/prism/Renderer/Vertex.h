@@ -16,6 +16,8 @@ namespace Prism::Renderer
 	using VertexM3 = glm::mat3;
 	using Vertex1b = bool;
 
+	static constexpr int VertexTypeCount = 11;
+
 	// matrices not supported as of now
 	template<typename T>
 	constexpr int GetVertexSize()

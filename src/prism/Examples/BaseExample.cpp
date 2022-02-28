@@ -48,9 +48,10 @@ namespace Prism::Examples
 		//m_Camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
 
 		m_Camera.AttachController<Renderer::CameraEditorController<Renderer::PerspectiveCamera>>();
-		
-		m_Cube.AddVertexData(TexturedCubeData);
 
+		m_Camera.GetController()->SetMoveSpeed(3);
+		m_Camera.GetController()->SetRotationSpeed(3);
+		m_Cube.AddVertexData(TexturedCubeData);
 
 		auto buf = m_Plane.CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"},

@@ -13,18 +13,18 @@ namespace Prism::Renderer
 		});
 	}
 
-	DynamicMesh::DynamicMesh(const std::initializer_list<Gl::BufferElement>& bufferElements)
+	DynamicMesh::DynamicMesh(const std::initializer_list<Gl::BufferElement>& layout)
 		:
 		m_VertArray(MakePtr<Gl::VertexArray>())
 	{
 		m_IdxBuffer = Gl::IndexBuffer::CreateRef();
 		m_VertArray->SetIndexBuffer(m_IdxBuffer);
-		CreateNewVertexBuffer(bufferElements);
+		CreateNewVertexBuffer(layout);
 	}
 
-	uint32_t DynamicMesh::CreateNewVertexBuffer(const std::initializer_list<Gl::BufferElement>& bufferElements)
+	uint32_t DynamicMesh::CreateNewVertexBuffer(const std::initializer_list<Gl::BufferElement>& layout)
 	{
-		auto buff = Gl::VertexBuffer::CreateRef({ bufferElements });
+		auto buff = Gl::VertexBuffer::Create({ layout });
 
 		m_VertexData.emplace_back();
 		
@@ -72,7 +72,11 @@ namespace Prism::Renderer
 	void DynamicMesh::FlushVertexData(uint32_t vertIdx)
 	{
 		PR_ASSERT(m_VertexBuffers.size() > vertIdx, "Can't flush vertex buffer that doesn't exist!");
-		PR_ASSERT(m_VertexData[vertIdx].size() > 0, "Can't flush vertex buffer that doesn't have any data!");
+		//PR_ASSERT(m_VertexData[vertIdx].empty(), "Can't flush vertex buffer that doesn't have any data!");
+		if (m_VertexData[vertIdx].empty())
+		{
+			PR_CORE_WARN("Flushing a vertex buffer that's empty");
+		}
 		m_VertexBuffers[vertIdx]->SetData(m_VertexData[vertIdx], m_VertexData[vertIdx].size());
 	}
 
@@ -109,6 +113,7 @@ namespace Prism::Renderer
 		ClearBuffers();
 		ClearGpuBuffers();
 		m_ElementCount = 0;
+		m_VertCount = 0;
 	}
 	
 	void DynamicMesh::ClearBuffers()
