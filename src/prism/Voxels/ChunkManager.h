@@ -23,11 +23,11 @@ namespace Prism::Voxel
 	
 	class ChunkManager
 	{
-	//using Map = std::unordered_map<Vec2, Ptr<Chunk>, Vec2Hasher>;
+	using Map = std::unordered_map<Vec2, Ptr<Chunk>, Vec2Hasher>;
 	// Parallel hash map causes crashes due to the multithreading nature of the code
 	// will need more time to fix this problem
 	//using Map = phmap::parallel_flat_hash_map<Vec2, Ref<Chunk>, Vec2Hasher>;
-	using Map = phmap::flat_hash_map<Vec2, Ptr<Chunk>, Vec2Hasher>;
+	//using Map = phmap::node_hash_map<Vec2, Ptr<Chunk>, Vec2Hasher>;
 	public:
 		ChunkManager(Core::SharedContextRef ctx, int ChunksSize, int BlockSize);
 
