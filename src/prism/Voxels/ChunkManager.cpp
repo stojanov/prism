@@ -10,7 +10,7 @@ namespace Prism::Voxel
 		m_ChunkSize(ChunkSize),
 		m_BlockSize(BlockSize),
 		m_ChunkWorldSize(ChunkSize * BlockSize),
-		m_Height(ChunkSize)
+		m_Height(ChunkSize * 8)
 	{
 		
 	}

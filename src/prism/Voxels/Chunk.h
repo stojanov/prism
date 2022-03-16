@@ -24,7 +24,6 @@ namespace Prism::Voxel
 	class Chunk
 	{
 		using MeshType = Renderer::DynamicMesh;
-		using boolType = std::atomic_bool; // For debuging
 	public:
 		enum class BlockType
 		{
@@ -91,9 +90,9 @@ namespace Prism::Voxel
 		}
 
 		// Will prepare for destruction
+		void PrepareForClearing();
 		void Destroy();
 		void Clear();
-		void PrepareForClearing();
 		void Render();
 		void RenderDebug();
 	private:
@@ -131,8 +130,7 @@ namespace Prism::Voxel
 		{
 			int xOffset = x + m_XSize * m_XOffset;
 			int zOffset = y + m_ZSize * m_YOffset;
-			int ySize = m_YSize - 1;
-			int height = ceil(m_PopulationFunction(xOffset, zOffset) * ySize);
+			int height = ceil(m_PopulationFunction(xOffset, zOffset) * m_Height);
 			//PR_INFO("{0} {1} {2}", xOffset, zOffset, height);
 			return glm::clamp(height, 0, m_YSize);
 		}
@@ -159,7 +157,6 @@ namespace Prism::Voxel
 		}
 
 		int m_Height;
-		std::vector<glm::vec3> m_Colors;
 		Ptr<MeshType> m_Mesh;
 		Ptr<MeshType> m_DebugMesh;
 		std::vector<BlockData> m_Blocks;
@@ -170,7 +167,7 @@ namespace Prism::Voxel
 		std::function<float(int, int)> m_PopulationFunction;
 		uint32_t m_NormalBuffer;
 		uint32_t m_ColorBuffer;
-		boolType m_MeshReady{ false };
+		std::atomic_bool m_MeshReady{ false };
 		glm::vec3 m_Position;
 		glm::mat4 m_Transform{ 1.f };
 		int m_CreatedFaces{ 0 };

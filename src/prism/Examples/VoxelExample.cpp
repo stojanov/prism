@@ -22,7 +22,7 @@ namespace Prism::Examples
 
 	void VoxelExample::OnAttach()
 	{
-		m_Camera.SetPosition({ 100.f, 85.f, 0.f });
+		m_Camera.SetPosition({ 100.f, 320.f, 0.f });
 		m_Camera.OffsetRotation({ 0.f, 85.f });
 		
 		m_Camera.AttachController<Renderer::FPSCameraController<Renderer::PerspectiveCamera>>();
@@ -30,8 +30,10 @@ namespace Prism::Examples
 		m_Ctx->Assets.Shaders->LoadAsset("baseshader", { "res/voxel.vert", "res/voxel.frag" });
 		m_Shader = m_Ctx->Assets.Shaders->Get("baseshader");
 
-		m_Noise.SetScale(0.025);
-		
+		m_Noise.SetScale(m_NoiseScale);
+		m_Noise.SetPersistance(m_Persistance);
+		m_Noise.SetOctaves(m_Octaves);
+
 		m_ChunkManager.PopulationFunction([this](int x, int y)
 			{
 				return (m_Noise.Fractal2(x, y) + 1) / 2;

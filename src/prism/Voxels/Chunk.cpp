@@ -43,13 +43,6 @@ namespace Prism::Voxel
 		m_DebugMesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"}
 		});
-
-		
-		m_Colors.push_back({ 0.f, 0.0f, 0.9f });
-		m_Colors.push_back({ 0.f, 0.2f, 0.6f });
-		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
-		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
-		m_Colors.push_back({ 0.f, 0.8f, 0.1f });
 	}
 
 	// Allocation is in another function in order to
@@ -77,6 +70,7 @@ namespace Prism::Voxel
 	void Chunk::SetHeight(int h)
 	{
 		m_Height = h;
+		m_YSize = h;
 	}
 
 	void Chunk::SetPopulationFunction(std::function<float(int, int)> PopFunc)
@@ -275,25 +269,24 @@ namespace Prism::Voxel
 				zStart = z * m_BlockSize;
 				zEnd = zStart + m_BlockSize;
 
-				int positions[12] = {
-					x + 1, z, -1, // Left
-					x - 1, z, -1, // Right
-					x, z + 1, -1, // Front
-					x, z - 1, -1, // Back
+				int positions[8] = {
+					x + 1, z, // Left
+					x - 1, z, // Right
+					x, z + 1, // Front
+					x, z - 1, // Back
 				};
 
 				for (int i = 0; i < 4; i++)
 				{
-					int nh;
-					int* PosPtr = &positions[i * 3];
+					int nh = -1;
+					int* PosPtr = &positions[i * 2];
 					if (_Check2DBounds(PosPtr[0], PosPtr[1]))
 					{
 						nh = m_BlockHeights[_GetLoc(PosPtr[0], PosPtr[1])];
 					}
 					else
 					{
-						//goto LOOPEXIT;
-						nh = _FetchNeighbour(PosPtr[0], PosPtr[1]);
+						nh = _FetchNeighbour(PosPtr[0], PosPtr[1]) - 1;
 					}
 					if (nh > height)
 					{
@@ -318,23 +311,22 @@ namespace Prism::Voxel
 
 				for (int i = 0; i < 4; i++)
 				{
-					if (PossibleSides[i] > -1)
-					{
-						int fl = height + 1;
-						while (fl-- > PossibleSides[i] + 1)
-						{
-							yStart = fl * m_BlockSize;
-							yEnd = yStart + m_BlockSize;
+					if (PossibleSides[i] == -1)
+						continue;
 
-							int** Vertex = &VertexOffsets[i * 12];
-							_CreateQuad(
-								*Vertex[0], *Vertex[1], *Vertex[2],
-								*Vertex[3], *Vertex[4], *Vertex[5],
-								*Vertex[6], *Vertex[7], *Vertex[8],
-								*Vertex[9], *Vertex[10], *Vertex[11]
-							);
-							_PassVertParam(m_ColorBuffer, clr);
-						}
+					for (int fl = height; fl > PossibleSides[i]; fl--)
+					{
+						yStart = fl * m_BlockSize;
+						yEnd = yStart + m_BlockSize;
+
+						int** Vertex = &VertexOffsets[i * 12];
+						_CreateQuad(
+							*Vertex[0], *Vertex[1], *Vertex[2],
+							*Vertex[3], *Vertex[4], *Vertex[5],
+							*Vertex[6], *Vertex[7], *Vertex[8],
+							*Vertex[9], *Vertex[10], *Vertex[11]
+						);
+						_PassVertParam(m_ColorBuffer, clr);
 					}
 				}
 
