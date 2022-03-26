@@ -60,7 +60,7 @@ namespace Prism::Voxel
 					{
 						chPtr->Allocate();
 						chPtr->Populate();
-						chPtr->GenerateMesh();
+						chPtr->GenerateMesh2();
 					});
 
 				m_Map.emplace(Vec2{ x, y }, std::move(chunk));

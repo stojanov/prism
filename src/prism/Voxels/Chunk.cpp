@@ -212,6 +212,123 @@ namespace Prism::Voxel
 
 	void Chunk::GenerateMesh2()
 	{
+		if (!m_Populated) return;
+		PR_SCOPE_TIMER_US("Chunk Mesh Gen");
+
+		int yStart;
+		int yEnd;
+		int xStart;
+		int xEnd;
+		int zStart;
+		int zEnd;
+
+		int height;
+
+		int PossibleSides[4] = {
+			-1,
+			-1,
+			-1,
+			-1,
+		};
+
+		int* VertexOffsets[48] = {
+			// Left
+			&xEnd, &yEnd, &zStart,
+			&xEnd, &yStart, &zStart,
+			&xEnd, &yStart, &zEnd,
+			&xEnd, &yEnd, &zEnd,
+			// Right
+			&xStart, &yEnd, &zStart,
+			&xStart, &yStart, &zStart,
+			&xStart, &yStart, &zEnd,
+			&xStart, &yEnd, &zEnd,
+			// Front reverse order to cull
+			&xStart, &yEnd, &zEnd,
+			&xStart, &yStart, &zEnd,
+			&xEnd, &yStart, &zEnd,
+			&xEnd, &yEnd, &zEnd,
+			// Back
+			&xStart, &yEnd, &zStart,
+			&xStart, &yStart, &zStart,
+			&xEnd, &yStart, &zStart,
+			&xEnd, &yEnd, &zStart
+		};
+
+		for (int x = 0; x < m_XSize; x++)
+		{
+			for (int z = 0; z < m_ZSize; z++)
+			{
+				height = m_BlockHeights[_GetLoc(x, z)];
+
+				xStart = x * m_BlockSize;
+				xEnd = xStart + m_BlockSize;
+				zStart = z * m_BlockSize;
+				zEnd = zStart + m_BlockSize;
+
+				yStart = height * m_BlockSize;
+				yEnd = yStart + m_BlockSize;
+
+				_CreateQuad(
+					xStart, yEnd, zEnd,
+					xStart, yEnd, zStart,
+					xEnd, yEnd, zStart,
+					xEnd, yEnd, zEnd
+				);
+				glm::vec3 clr = { 0.f, 0.8f, 0.1f };
+				_PassVertParam(m_ColorBuffer, clr);
+
+				int positions[8] = {
+					x + 1, z, // Left
+					x - 1, z, // Right
+					x, z + 1, // Front
+					x, z - 1, // Back
+				};
+
+				for (int h = height; h >= 0; h--)
+				{
+					int sides = 4;
+					for (int i = 0; i < 4; i++)
+					{
+						int* nPos = &positions[i * 2];
+
+						if (_Check2DBounds(nPos[0], nPos[1]))
+						{
+							auto blockType = m_Blocks[_GetBlockLoc(nPos[0], nPos[1], h)].Type;
+
+							if (blockType != BlockType::NONE)
+							{
+								sides--;
+								continue;
+							}
+
+							yStart = h * m_BlockSize;
+							yEnd = yStart + m_BlockSize;
+
+							int** Vertex = &VertexOffsets[i * 12];
+
+							_CreateQuad(
+								*Vertex[0], *Vertex[1], *Vertex[2],
+								*Vertex[3], *Vertex[4], *Vertex[5],
+								*Vertex[6], *Vertex[7], *Vertex[8],
+								*Vertex[9], *Vertex[10], *Vertex[11]
+							);
+							_PassVertParam(m_ColorBuffer, clr);
+						}
+						else
+						{
+							continue; // Check neighbouring chunk
+						}
+					}
+
+					if (sides == 0)
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		m_MeshReady = true;
 	}
 
 	void Chunk::GenerateMesh()
@@ -286,7 +403,7 @@ namespace Prism::Voxel
 					}
 					else
 					{
-						nh = _FetchNeighbour(PosPtr[0], PosPtr[1]) - 1;
+						nh = _FetchNeighbour(PosPtr[0], PosPtr[1]);
 					}
 					if (nh > height)
 					{

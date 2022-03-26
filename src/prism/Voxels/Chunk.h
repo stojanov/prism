@@ -35,12 +35,12 @@ namespace Prism::Voxel
 		struct BlockData
 		{
 			BlockType Type{ BlockType::NONE };
-			Vec2 Pos;
 		};
 
 		enum class ChunkBlockPosition
 		{
-			NONEXIST = 0,
+			OUTOFRANGE = -1,
+			NONEXIST = 0, // Or air block
 			BODY,
 
 			COUNT
@@ -118,7 +118,7 @@ namespace Prism::Voxel
 
 		bool _Check2DBounds(int x, int y)
 		{
-			return x > 0 && x < m_XSize && y > 0 && y < m_ZSize;
+			return x >= 0 && x < m_XSize && y >= 0 && y < m_ZSize;
 		}
 
 		int _FetchNeighbourBlock(int x, int y)
@@ -137,9 +137,9 @@ namespace Prism::Voxel
 
 		ChunkBlockPosition _GetBlockState(int x, int y, int z)
 		{
-			if (!(x > m_XSize && z > m_ZSize && y > m_YSize))
+			if (x > m_XSize - 1 || z > m_ZSize - 1 || y > m_YSize - 1 || x < 0 || z < 0 || y < 0)
 			{
-				return ChunkBlockPosition::NONEXIST;
+				return ChunkBlockPosition::OUTOFRANGE;
 			}
 
 			// It's done this way to support multiple cases in case i want to add more stuff in the future
