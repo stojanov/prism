@@ -22,8 +22,8 @@ namespace Prism::Renderer
 		DynamicMesh(const std::initializer_list<Gl::BufferElement>& layout);
 		
 		uint32_t CreateNewVertexBuffer(const std::initializer_list<Gl::BufferElement>& layout);
-		void AllocateVertexBuffer(uint32_t vertIdx, size_t size);
-		void AllocateIndexBuffer(size_t size);
+		void AllocateVertexBuffer(uint32_t vertIdx, size_t count);
+		void AllocateIndexBuffer(size_t count);
 		void SetIndexBuffer(Ref<Gl::IndexBuffer>);
 		
 		void AddVertexData(uint32_t vertIdx, std::vector<float>& data);

@@ -2,7 +2,7 @@
 
 #include "prism/Prism.h"
 #include "prism/Examples/VoxelExample.h"
-#include "prism/Entity/Registry.h"
+#include "procgen-terrain/ProcGenTerrain.h"
 
 int main()
 {
