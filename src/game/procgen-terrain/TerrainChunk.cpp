@@ -1,5 +1,7 @@
 #include "TerrainChunk.h"
 
+#include <prism/System/ScopeTimer.h>
+
 TerrainChunk::TerrainChunk(int width, int height)
 	:
 	m_Width(width),
@@ -24,8 +26,24 @@ TerrainChunk::TerrainChunk(int width, int height)
 	m_Mesh.AllocateIndexBuffer((m_Width - 1) * (m_Height - 1) * 6);
 }
 
+void TerrainChunk::SetHeightFunc(std::function<float(int, int)> func)
+{
+	m_HeightFunc = func;
+}
+
+void TerrainChunk::CreateTerrain()
+{
+	m_MeshReady = false;
+
+	__UpdateNormals();
+
+	m_MeshReady = true;
+}
+
+
 void TerrainChunk::__CreateMesh()
 {
+	PR_SCOPE_TIMER_US("Mesh Creation");
 	m_MeshReady = false;
 
 	uint32_t VertexCount = 0;
@@ -38,7 +56,10 @@ void TerrainChunk::__CreateMesh()
 				float u = 1.f * x / m_Width;
 				float v = 1.f * y / m_Height;
 
-
+				m_Mesh.AddVertex(glm::vec3{ x, 0.f, y });
+				m_Mesh.AddVertex(m_UVBuffer, glm::vec2{ u, v });
+				m_Mesh.AddVertex(m_ColorBuffer, glm::vec3{ 1.f, 0.f, 0.f });
+				m_Mesh.AddVertex(m_NormalBuffer, glm::vec3{ 0.f, 0.f, 0.f });
 
 				if (x < m_Width - 1 && y < m_Height - 1)
 				{
@@ -48,6 +69,8 @@ void TerrainChunk::__CreateMesh()
 			}
 		}
 	}
+
+	m_MeshReady = true;
 }
 
 void TerrainChunk::__UpdateNormals()
@@ -56,13 +79,13 @@ void TerrainChunk::__UpdateNormals()
 	{
 		return [w, h](int x, int y)
 		{
-			return 0;
+			return (w * x) + y;
 		};
 	};
 
-	const auto _CalcIdx = Idx(m_Width, m_Height);
+	PR_SCOPE_TIMER_US("Normal calculation");
 
-	_CalcIdx(1, 1);
+	const auto _CalcIdx = Idx(m_Width, m_Height);
 
 	for (int x = 0; x < m_Width; x++)
 	{

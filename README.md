@@ -5,7 +5,8 @@
   </a>
 </p>
 
-## Description 
+## Description
+#### NOTE: Still not ready to build for linux due to compiler issues
 My take on a 3D game engine, something i have been working on for quite a while as a hobby project also as a school assignment. 
 Mainly working on it to learn game engine development and modern c++ techniques. Key focus being rouge like mechanics.
 The current version is very barebones and more like a OpenGL wrapper, the key tasks other than planned features would be:

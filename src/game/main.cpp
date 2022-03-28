@@ -8,7 +8,7 @@ int main()
 {
 	Prism::Application app(1280, 720, "Prism");
 	
-	app.CreateLayer<Prism::Examples::VoxelExample>("Voxel Example");
+	app.CreateLayer<ProcGenTerrain>("Voxel Example");
 	
 	app.Run();
 

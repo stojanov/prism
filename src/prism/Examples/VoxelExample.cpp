@@ -88,7 +88,7 @@ namespace Prism::Examples
 
 	void VoxelExample::OnGuiDraw()
 	{
-		auto io = ImGui::GetIO();
+		auto& io = ImGui::GetIO();
 		m_CursorOverGui = io.WantCaptureMouse;
 		
 		ImGui::BeginMainMenuBar();

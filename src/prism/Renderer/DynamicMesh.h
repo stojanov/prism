@@ -117,6 +117,12 @@ namespace Prism::Renderer
 		}
 
 		template<typename T>
+		const T& OverwriteVertex(int vertIdx, const T& vert)
+		{
+			OverwriteVertex<T>(vertIdx, vert);
+		}
+
+		template<typename T>
 		const T& GetVertex(uint32_t vertBufferIdx, uint32_t vertIdx)
 		{
 			constexpr int VertSize = GetVertexSize<T>();
