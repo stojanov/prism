@@ -47,9 +47,9 @@ namespace Prism::Examples
 		bool m_ShowDescripton{ true };
 		bool m_ShowWorldGen{ false };
 		int m_Height{ 16 };
-		float m_NoiseScale{ 0.0025 };
+		float m_NoiseScale{ 0.0025f };
 		float m_NoiseScaleMultiplier{ 1 };
-		float m_Persistance{ 0.7 };
+		float m_Persistance{ 0.7f };
 		int m_Octaves{ 7 };
 		int m_Seed{ 0 };
 

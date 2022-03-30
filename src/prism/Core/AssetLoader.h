@@ -1,8 +1,12 @@
 #pragma once
 
+#include <optional>
 #include "IAssetLoader.h"
 #include "prism/System/ThreadPool.h"
 
+
+
+// TODO: Use std::optional for return in case an asset isn't loaded 
 namespace Prism::Core
 {
 	template<typename T>

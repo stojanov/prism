@@ -16,7 +16,7 @@ TerrainChunk::TerrainChunk(int width, int height)
 	});
 
 	m_UVBuffer = m_Mesh.CreateNewVertexBuffer({
-		{ Prism::Gl::ShaderDataType::Float2, "texcoords"}
+		{ Prism::Gl::ShaderDataType::Float2, "uv"}
 	});
 
 	m_Mesh.AllocateVertexBuffer(0, m_Width * m_Height);
@@ -24,6 +24,8 @@ TerrainChunk::TerrainChunk(int width, int height)
 	m_Mesh.AllocateVertexBuffer(m_NormalBuffer, m_Width * m_Height);
 	m_Mesh.AllocateVertexBuffer(m_UVBuffer, m_Width * m_Height);
 	m_Mesh.AllocateIndexBuffer((m_Width - 1) * (m_Height - 1) * 6);
+
+	__CreateMesh();
 }
 
 void TerrainChunk::SetHeightFunc(std::function<float(int, int)> func)
@@ -51,24 +53,23 @@ void TerrainChunk::__CreateMesh()
 	{
 		for (int y = 0; y < m_Height; y++)
 		{
+			float u = 1.f * x / m_Width;
+			float v = 1.f * y / m_Height;
+
+			m_Mesh.AddVertex(glm::vec3{ x, 0.f, y });
+			m_Mesh.AddVertex(m_UVBuffer, glm::vec2{ u, v });
+			m_Mesh.AddVertex(m_ColorBuffer, glm::vec3{ 1.f, 0.f, 0.f });
+			m_Mesh.AddVertex(m_NormalBuffer, glm::vec3{ 0.f, 0.f, 0.f });
+
 			if (x < m_Width - 1 && x < m_Height - 1)
 			{
-				float u = 1.f * x / m_Width;
-				float v = 1.f * y / m_Height;
-
-				m_Mesh.AddVertex(glm::vec3{ x, 0.f, y });
-				m_Mesh.AddVertex(m_UVBuffer, glm::vec2{ u, v });
-				m_Mesh.AddVertex(m_ColorBuffer, glm::vec3{ 1.f, 0.f, 0.f });
-				m_Mesh.AddVertex(m_NormalBuffer, glm::vec3{ 0.f, 0.f, 0.f });
-
-				if (x < m_Width - 1 && y < m_Height - 1)
-				{
-					m_Mesh.ConnectVertices(VertexCount, VertexCount + m_Width + 1, VertexCount + m_Width);
-					m_Mesh.ConnectVertices(VertexCount, VertexCount + 1, VertexCount + m_Width + 1);
-				}
+				m_Mesh.ConnectVertices(VertexCount, VertexCount + m_Width + 1, VertexCount + m_Width);
+				m_Mesh.ConnectVertices(VertexCount, VertexCount + 1, VertexCount + m_Width + 1);
 			}
 		}
 	}
+
+	m_Mesh.Flush();
 
 	m_MeshReady = true;
 }
@@ -99,5 +100,5 @@ void TerrainChunk::__UpdateNormals()
 
 void TerrainChunk::Render()
 {
-	
+	m_Mesh.DrawIndexed();
 }

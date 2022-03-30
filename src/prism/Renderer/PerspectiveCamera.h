@@ -48,13 +48,16 @@ namespace Prism::Renderer
 				return m_Controller;
 			}
 		}
-		
+
+
+		// TODO: Rework this
 		template<typename T, typename = std::enable_if_t<std::is_base_of_v<ICameraController, T>>>
-		void AttachController()
+		const std::unique_ptr<ICameraController>& AttachController()
 		{
 			PR_ASSERT(!m_HasContoller, "Camera can only have 1 Controller!");
 			m_HasContoller = true;
 			m_Controller = DynamicPtrCast<ICameraController>(MakePtr<T>(this));
+			return m_Controller;
 		}
 
 		void RemoveController()
