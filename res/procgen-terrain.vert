@@ -7,6 +7,7 @@ layout(location = 3) in vec2 aUV;
 uniform mat4 projectedView;
 uniform mat4 transform;
 
+out vec4 WorldPos;
 out vec3 Color;
 out vec2 UV;
 out vec3 Normal;
@@ -18,4 +19,5 @@ void main()
     Color = aClr;
     UV = aUV;
     Normal = aNormal;
+    WorldPos = worldPos;
 }

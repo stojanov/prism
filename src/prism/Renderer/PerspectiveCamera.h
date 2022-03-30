@@ -40,6 +40,11 @@ namespace Prism::Renderer
 		{
 			return m_Position;
 		}
+
+		glm::vec2& GetRotation()
+		{
+			return m_Rotation;
+		}
 		
 		const std::unique_ptr<ICameraController>& GetController()
 		{

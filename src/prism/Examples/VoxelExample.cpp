@@ -106,6 +106,10 @@ namespace Prism::Examples
 			ImGui::SliderFloat("Camera Move Speed", &m_CameraMoveSpeed, 0, 100);
 			ImGui::Text("Toggle Wireframe = F1");
 			ImGui::Text("Toggle Camera = F2");
+			auto& pos = m_Camera.GetPosition();
+			auto& rot = m_Camera.GetRotation();
+			ImGui::Text("Camera Position: (%.2f %.2f %.2f)", pos.x, pos.y, pos.z);
+			ImGui::Text("Camera Rotaton: (%.2f %.2f)", rot.x, rot.y);
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}

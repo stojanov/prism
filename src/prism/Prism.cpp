@@ -36,7 +36,7 @@ namespace Prism
 		m_Context->RenderOptions->DepthTest(true);
 		
 		m_Layers = { m_Context };
-		glfwSwapInterval(0);
+		//glfwSwapInterval(0);
 		PR_INFO("Gpu - {0} {1}", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
 		PR_INFO("Driver - {0}", glGetString(GL_VERSION));
 		PR_INFO("Shader Version - {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));

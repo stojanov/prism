@@ -8,7 +8,7 @@
 class ProcGenTerrain: public Prism::ILayer
 {
 public:
-	static constexpr Prism::Renderer::Vertex2i TerrainSize = { 100, 100 };
+	static constexpr Prism::Renderer::Vertex2i TerrainSize = { 250, 250 };
 
 	ProcGenTerrain(Prism::Core::SharedContextRef ctx, const std::string& name);
 	virtual ~ProcGenTerrain();
@@ -24,7 +24,7 @@ private:
 	bool m_ShowGeneration{ false };
 	bool m_ShowShader{ false };
 
-	float m_CameraMoveSpeed{ 35.f };
+	float m_CameraMoveSpeed{ 50.f };
 	float m_CameraRotationSpeed{ 0.3f };
 	bool m_CameraLocked{ true };
 

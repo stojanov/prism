@@ -1,5 +1,6 @@
 #include "ProcGenTerrain.h"
 
+#include "ext/scalar_constants.hpp"
 #include "prism/Core/Events/KeyEvents.h"
 #include "prism/Core/Events/WindowEvents.h"
 #include "prism/Interfaces/Camera/FPSCameraController.h"
@@ -33,10 +34,29 @@ void ProcGenTerrain::OnAttach()
 		ctrl->SetMoveSpeed(m_CameraMoveSpeed);
 		ctrl->SetRotationSpeed(m_CameraRotationSpeed);
 	}
-	/*
-	m_Camera.SetPosition({ 0.f, 10.f, 0.f });
+
+	m_Camera.SetPosition({ 0.f, 3.f, 0.f });
 	m_Camera.SetLookAt({ 0.f, 0.f, 0.f });
-	*/
+
+	float height = 25.f;
+	// sin(10(x^2+y^2))/10 
+	m_Terrain.SetHeightFunc([height](int x, int y, int w, int h)
+		{
+			static constexpr float pi = glm::pi<float>();
+
+			x -= w / 2;
+			y -= h / 2;
+
+			float dX = (x * 1.f / w) * pi;
+			float dY = (y * 1.f / h) * pi;
+
+			float z = (glm::sin(10 * ((dX * dX) + (dY * dY))) / 10) * height;
+
+			return z;
+		});
+
+	m_Terrain.BakeMap();
+	m_Terrain.UpdateMesh(false);
 }
 
 void ProcGenTerrain::OnDetach()
@@ -99,6 +119,12 @@ void ProcGenTerrain::OnGuiDraw()
 		ImGui::Text("Toggle Wireframe = F1");
 		ImGui::Text("Toggle Camera = F2");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		auto& pos = m_Camera.GetPosition();
+		auto& rot = m_Camera.GetRotation();
+		ImGui::Text("Camera Position: (%.2f %.2f %.2f)", pos.x, pos.y, pos.z);
+		ImGui::Text("Camera Rotaton: (%.2f %.2f)", rot.x, rot.y);
+
 		ImGui::End();
 	}
 
@@ -116,11 +142,10 @@ void ProcGenTerrain::OnGuiDraw()
 void ProcGenTerrain::OnDraw()
 {
 	m_Shader->Bind();
+	m_Shader->SetFloat("height", 25.f);
 	m_Shader->SetMat4("transform", m_Terrain.GetTransform());
 	m_Shader->SetMat4("projectedView", m_Camera.GetProjectedView());
 	m_Terrain.Render();
 }
-
-
 
 

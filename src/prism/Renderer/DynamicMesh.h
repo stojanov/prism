@@ -92,6 +92,8 @@ namespace Prism::Renderer
 			constexpr int VertSize = GetVertexSize<T>();
 			PR_ASSERT(vertBufferIdx < m_VertexData.size(), "Cannot find vertex data");
 
+			vertIdx *= VertSize;
+
 			if constexpr (VertSize == 1)
 			{
 				m_VertexData[vertBufferIdx][vertIdx] = vert;
