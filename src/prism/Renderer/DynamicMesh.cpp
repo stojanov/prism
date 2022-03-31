@@ -125,7 +125,7 @@ namespace Prism::Renderer
 		m_IndexData.clear();
 	}
 
-	void DynamicMesh::ClearGpuBuffers()
+	void DynamicMesh::ClearGpuBuffers() const
 	{
 		for (auto& buff : m_VertexBuffers)
 		{

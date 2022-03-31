@@ -2,13 +2,14 @@
 
 #include "prism/Interfaces/ILayer.h"
 #include "TerrainChunk.h"
+#include "prism/Math/PerlinNoise.h"
 #include "prism/Renderer/PerspectiveCamera.h"
 
 
-class ProcGenTerrain: public Prism::ILayer
+class ProcGenTerrain : public Prism::ILayer
 {
 public:
-	static constexpr Prism::Renderer::Vertex2i TerrainSize = { 250, 250 };
+	static constexpr Prism::Renderer::Vertex2i TerrainSize = { 500, 500 };
 
 	ProcGenTerrain(Prism::Core::SharedContextRef ctx, const std::string& name);
 	virtual ~ProcGenTerrain();
@@ -28,6 +29,7 @@ private:
 	float m_CameraRotationSpeed{ 0.3f };
 	bool m_CameraLocked{ true };
 
+	Prism::Math::PerlinNoise m_Noise{ 9, 0.5 };
 	TerrainChunk m_Terrain{ TerrainSize.x, TerrainSize.y};
 	Prism::Ref<Prism::Gl::Shader> m_Shader{ nullptr };
 	Prism::Renderer::PerspectiveCamera m_Camera{ 90, 1280, 720, 0.1f, 2048.f };

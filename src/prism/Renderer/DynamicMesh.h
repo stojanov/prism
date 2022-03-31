@@ -164,7 +164,7 @@ namespace Prism::Renderer
 		{
 			return GetVertex<glm::vec3>(vertBufferIdx, vertIdx);
 		}
-		void ClearGpuBuffers();
+		void ClearGpuBuffers() const;
 		void ConnectVertices(uint32_t idx1, uint32_t idx2, uint32_t idx3);
 		void FlushVertexData(uint32_t vertIdx = 0);
 		void FlushIndexData();

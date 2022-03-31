@@ -38,10 +38,14 @@ void ProcGenTerrain::OnAttach()
 	m_Camera.SetPosition({ 0.f, 3.f, 0.f });
 	m_Camera.SetLookAt({ 0.f, 0.f, 0.f });
 
-	float height = 25.f;
-	// sin(10(x^2+y^2))/10 
-	m_Terrain.SetHeightFunc([height](int x, int y, int w, int h)
+	float height = 100.f;
+	// sin(10(x^2+y^2))/10
+
+	m_Noise.SetScale(0.004);
+
+	m_Terrain.SetHeightFunc([this, height](int x, int y, int w, int h)
 		{
+		/*
 			static constexpr float pi = glm::pi<float>();
 
 			x -= w / 2;
@@ -51,8 +55,8 @@ void ProcGenTerrain::OnAttach()
 			float dY = (y * 1.f / h) * pi;
 
 			float z = (glm::sin(10 * ((dX * dX) + (dY * dY))) / 10) * height;
-
-			return z;
+			*/
+			return m_Noise.Fractal2(x, y) * height;
 		});
 
 	m_Terrain.BakeMap();

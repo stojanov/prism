@@ -53,7 +53,7 @@ void TerrainChunk::BakeMap()
 	{
 		for (int y = 0; y < m_Height; y++)
 		{
-			m_HeightMap[_Idx(x, y)] = m_HeightFunc(m_Width, m_Height, x, y);
+			m_HeightMap[_Idx(x, y)] = m_HeightFunc(x, y, m_Width, m_Height);
 		}
 	}
 }
@@ -94,6 +94,12 @@ void TerrainChunk::_CreateMesh()
 void TerrainChunk::UpdateMesh(bool shouldUseFunc)
 {
 	PR_SCOPE_TIMER_US("Updating Mesh");
+
+	if (!shouldUseFunc && m_HeightMap.size() != m_Width * m_Height)
+	{
+		PR_CORE_ERROR("(TerrainChunk) Cannot use height map looks like it's not generated yet!");
+		return;
+	}
 
 	for (int x = 0; x < m_Width; x++)
 	{
