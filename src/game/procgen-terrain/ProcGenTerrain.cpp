@@ -21,12 +21,26 @@ ProcGenTerrain::~ProcGenTerrain()
 
 void ProcGenTerrain::OnAttach()
 {
-	if (!m_Ctx->Assets.Shaders->LoadAsset("procgen-terrain", 
-		{ "res/procgen-terrain.vert", "res/procgen-terrain.frag"}
+	m_Ctx->Tasks->GetWorker("glcontext")->QueueTask([this]()
+	{
+		m_TerrainCPU.CreateMesh(); 
+		m_TerrainGPU.CreateMesh();
+	}); 
+
+	if (!m_Ctx->Assets.Shaders->LoadAsset("procgen-terrain",
+		{ "res/procgen-terrain.vert", "res/procgen-terrain.frag" }
 	))
 	{
-		m_Shader = m_Ctx->Assets.Shaders->Get("procgen-terrain");
-		PR_INFO("Shader Loaded");
+		m_ShaderCPU = m_Ctx->Assets.Shaders->Get("procgen-terrain");
+		PR_INFO("Procgen terrain CPU Shader Loaded");
+	}
+
+	if (!m_Ctx->Assets.Shaders->LoadAsset("gpu-procgen-terrain",
+		{ "res/gpu-procgen-terrain.vert", "res/gpu-procgen-terrain.frag" }
+	))
+	{
+		m_ShaderGPU = m_Ctx->Assets.Shaders->Get("gpu-procgen-terrain");
+		PR_INFO("Procgen terrain GPU Shader Loaded");
 	}
 
 	{
@@ -43,9 +57,8 @@ void ProcGenTerrain::OnAttach()
 
 	m_Noise.SetScale(0.004);
 
-	m_Terrain.SetHeightFunc([this, height](int x, int y, int w, int h)
+	m_TerrainCPU.SetHeightFunc([this, height](int x, int y, int w, int h)
 		{
-		/*
 			static constexpr float pi = glm::pi<float>();
 
 			x -= w / 2;
@@ -55,12 +68,12 @@ void ProcGenTerrain::OnAttach()
 			float dY = (y * 1.f / h) * pi;
 
 			float z = (glm::sin(10 * ((dX * dX) + (dY * dY))) / 10) * height;
-			*/
-			return m_Noise.Fractal2(x, y) * height;
+
+			return z;
+			//return m_Noise.Fractal2(x, y) * height;
 		});
 
-	m_Terrain.BakeMap();
-	m_Terrain.UpdateMesh(false);
+	m_TerrainCPU.BakeMap();
 }
 
 void ProcGenTerrain::OnDetach()
@@ -105,16 +118,20 @@ void ProcGenTerrain::OnUpdate(float dt)
 	m_Camera.OnUpdate(dt);
 }
 
-
 void ProcGenTerrain::OnGuiDraw()
 {
 	auto& io = ImGui::GetIO();
 
 	ImGui::BeginMainMenuBar();
+	if (ImGui::Button("Render GPU"))
+	{
+		m_RenderingGPU = !m_RenderingGPU;
+	}
 	ImGui::MenuItem("Info", 0, &m_ShowInfo);
-	ImGui::MenuItem("Shader", 0, &m_ShowShader);
+	ImGui::MenuItem("Shader", 0, &m_ShowCPUOptions);
+	
 	ImGui::EndMainMenuBar();
-
+	 
 	if (m_ShowInfo)
 	{
 		ImGui::Begin("Options");
@@ -132,24 +149,63 @@ void ProcGenTerrain::OnGuiDraw()
 		ImGui::End();
 	}
 
-	if (m_ShowShader)
+	if (m_RenderingGPU)
 	{
-		ImGui::Begin("Shader Options");
-		ImGui::Text("Use (WASD) to move around the world");
-		ImGui::Text("Use (F2) to active the camera move");
+		ImGui::Begin("GPU Render Options");
+
+		ImGui::SliderFloat("Elevation", &m_GPUElevation, 0, 100);
+		 
+		if (ImGui::CollapsingHeader("Noise options"))
+		{
+			ImGui::Text("Currently using %s", m_GPUUsingSimplex ? "Simplex Noise" : "Value Noise");
+			ImGui::SameLine();
+			if (ImGui::Button(m_GPUUsingSimplex ? "Value Noise" : "Simplex Noise"))
+			{
+				m_GPUUsingSimplex = !m_GPUUsingSimplex;
+			}
+			ImGui::SliderInt("Octaves", &m_GPUOctaves, 1, 10);
+			ImGui::SliderFloat("Scale", &m_GPUScale, 0, 1);
+			ImGui::SliderFloat("Scale Multiplier", &m_GPUScaleMultiplier, 0, 1);
+			ImGui::SliderFloat("Persistance", &m_GPUPersistance, 0, 1);
+			ImGui::SliderFloat2("Offset", (float*)&m_GPUOffset, -50, 50);
+		}
+
 		ImGui::End();
 	}
 
-	
+	if (!m_RenderingGPU)
+	{
+		ImGui::Begin("CPU Render Options");
+
+
+		ImGui::End();
+	}
 }
 
 void ProcGenTerrain::OnDraw()
 {
-	m_Shader->Bind();
-	m_Shader->SetFloat("height", 25.f);
-	m_Shader->SetMat4("transform", m_Terrain.GetTransform());
-	m_Shader->SetMat4("projectedView", m_Camera.GetProjectedView());
-	m_Terrain.Render();
+	if (!m_RenderingGPU)
+	{
+		m_ShaderCPU->Bind();
+		m_ShaderCPU->SetFloat("height", 25.f);
+		m_ShaderCPU->SetMat4("transform", m_TerrainCPU.GetTransform());
+		m_ShaderCPU->SetMat4("projectedView", m_Camera.GetProjectedView());
+		m_TerrainCPU.Render();
+	}
+	else
+	{
+		m_ShaderGPU->Bind();
+		m_ShaderGPU->SetInt("using_simplex", m_GPUUsingSimplex);
+		m_ShaderGPU->SetFloat("noise_persistence", m_GPUPersistance);
+		m_ShaderGPU->SetInt("noise_octaves", m_GPUOctaves);
+		m_ShaderGPU->SetFloat("noise_scale", m_GPUScale * m_GPUScaleMultiplier);
+		m_ShaderGPU->SetFloat2("noise_offset", m_GPUOffset);
+		m_ShaderGPU->SetFloat("elevation", m_GPUElevation);
+
+		m_ShaderGPU->SetMat4("transform", m_TerrainGPU.GetTransform());
+		m_ShaderGPU->SetMat4("projectedView", m_Camera.GetProjectedView());
+		m_TerrainGPU.Render();
+	}
 }
 
 

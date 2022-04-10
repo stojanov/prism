@@ -82,47 +82,58 @@ namespace Prism::Gl
 		glDeleteShader(m_FragmentShader);
 	}
 
-
-	void Shader::SetInt(const std::string& name, int v) const
+	void Shader::SetIntV(const char* name, int count, int* v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
+		glUniform1iv(loc, count, v);
+	}
+
+	void Shader::SetFloatV(const char* name, int count, float* v) const
+	{
+		GLint loc = glGetUniformLocation(m_Program, name);
+		glUniform1fv(loc, count, v);
+	}
+
+	void Shader::SetInt(const char* name, int v) const
+	{
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniform1i(loc, v);
 	}
 	
-	void Shader::SetFloat(const std::string& name, float v) const
+	void Shader::SetFloat(const char* name, float v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniform1f(loc, v);
 	}
 
-	void Shader::SetFloat2(const std::string& name, const glm::vec2& v) const
+	void Shader::SetFloat2(const char* name, const glm::vec2& v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniform2f(loc, v.x, v.y);
 	}
 	
-	void Shader::SetFloat3(const std::string& name, const glm::vec3& v) const
+	void Shader::SetFloat3(const char* name, const glm::vec3& v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniform3f(loc, v.x, v.y, v.z);
 	}
 
-	void Shader::SetFloat4(const std::string& name, const glm::vec4& v) const
+	void Shader::SetFloat4(const char* name, const glm::vec4& v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniform4f(loc, v.x, v.y, v.z, v.w);
 	}
 
-	void Shader::SetMat3(const std::string& name, const glm::mat3& v) const
+	void Shader::SetMat3(const char* name, const glm::mat3& v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(v));
 	}
 
 	
-	void Shader::SetMat4(const std::string& name, const glm::mat4& v) const
+	void Shader::SetMat4(const char* name, const glm::mat4& v) const
 	{
-		GLint loc = glGetUniformLocation(m_Program, name.c_str());
+		GLint loc = glGetUniformLocation(m_Program, name);
 		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(v));
 	}
 

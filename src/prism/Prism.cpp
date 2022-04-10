@@ -64,6 +64,11 @@ namespace Prism
 			}
 		});
 
+		CLASSEVENT(evt, WindowResizeEvent)
+		{
+			glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		});
+
 		CLASSEVENT(evt, WindowCloseEvent)
 		{
 			m_WindowActive = false;

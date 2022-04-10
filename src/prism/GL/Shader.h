@@ -22,15 +22,19 @@ namespace Prism::Gl
 		static Ptr<Shader> PtrFromFiles(const std::string& vertFile, const std::string& fragFile);
 		
 		virtual ~Shader();
-		
-		void SetInt(const std::string& name, int v) const;
-		void SetFloat(const std::string& name, float v) const;
-		void SetFloat2(const std::string& name, const glm::vec2& v) const;
-		void SetFloat3(const std::string& name, const glm::vec3& v) const;
-		void SetFloat4(const std::string& name, const glm::vec4& v) const;
-		void SetMat3(const std::string& name, const glm::mat3& m) const;
-		void SetMat4(const std::string& name, const glm::mat4& m) const;
-		
+
+		void SetInt(const char* name, int v) const;
+		void SetFloat(const char* name, float v) const;
+		void SetFloat2(const char* name, const glm::vec2& v) const;
+		void SetFloat3(const char* name, const glm::vec3& v) const;
+		void SetFloat4(const char* name, const glm::vec4& v) const;
+		void SetMat3(const char* name, const glm::mat3& m) const;
+		void SetMat4(const char* name, const glm::mat4& m) const;
+
+		void SetIntV(const char* name, int count, int* v) const;
+		void SetFloatV(const char* name, int count, float* v) const;
+		void SetFloat2V(const char* name, int count, float* v) const;
+
 		void Bind();
 		void Unbind();
 		

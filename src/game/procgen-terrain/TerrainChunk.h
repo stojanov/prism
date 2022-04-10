@@ -10,6 +10,7 @@ public:
 	void SetHeightFunc(std::function<float(int, int, int, int)> func);
 	void BakeMap();
 
+	void CreateMesh();
 	void UpdateMesh(bool shouldUseFunc = false);
 	void Render();
 
@@ -20,7 +21,7 @@ public:
 
 private:
 	void _Allocate();
-	void _CreateMesh();
+	
 
 	bool _CheckBounds(int x, int y)
 	{
@@ -42,6 +43,7 @@ private:
 	glm::mat4 m_Transform{ 1.f };
 	int m_Width;
 	int m_Height;
+	uint32_t m_OffsetBuffer;
 	uint32_t m_ColorBuffer;
 	uint32_t m_NormalBuffer;
 	uint32_t m_UVBuffer;

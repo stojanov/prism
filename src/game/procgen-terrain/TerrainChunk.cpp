@@ -8,6 +8,10 @@ TerrainChunk::TerrainChunk(int width, int height)
 	m_Width(width),
 	m_Height(height)
 {
+	m_OffsetBuffer = m_Mesh.CreateNewVertexBuffer({
+		{ Prism::Gl::ShaderDataType::Float2, "offset"}
+	});
+
 	m_ColorBuffer = m_Mesh.CreateNewVertexBuffer({
 		{ Prism::Gl::ShaderDataType::Float3, "color"},
 	});
@@ -21,12 +25,12 @@ TerrainChunk::TerrainChunk(int width, int height)
 	});
 
 	_Allocate();
-	_CreateMesh();
 }
 
 void TerrainChunk::_Allocate()
 {
 	m_Mesh.AllocateVertexBuffer(0, m_Width * m_Height);
+	m_Mesh.AllocateVertexBuffer(m_OffsetBuffer, m_Width * m_Height);
 	m_Mesh.AllocateVertexBuffer(m_ColorBuffer, m_Width * m_Height);
 	m_Mesh.AllocateVertexBuffer(m_NormalBuffer, m_Width * m_Height);
 	m_Mesh.AllocateVertexBuffer(m_UVBuffer, m_Width * m_Height);
@@ -40,7 +44,7 @@ void TerrainChunk::SetHeightFunc(std::function<float(int, int, int, int)> func)
 
 void TerrainChunk::BakeMap()
 {
-	PR_SCOPE_TIMER_US("Generating Height Map");
+	PR_SCOPE_TIMER_MS("Generating Height Map");
 	if (!m_HeightFunc)
 	{
 		PR_CORE_WARN("Height function not found");
@@ -53,14 +57,16 @@ void TerrainChunk::BakeMap()
 	{
 		for (int y = 0; y < m_Height; y++)
 		{
-			m_HeightMap[_Idx(x, y)] = m_HeightFunc(x, y, m_Width, m_Height);
+			m_HeightMap[_Idx(x, y)] = m_HeightFunc(x, y, m_Width, m_Height);;
+			//m_Mesh.OverwriteVertex(m_OffsetBuffer, _Idx(x,y), z);
 		}
 	}
+	//m_Mesh.FlushVertexData(m_OffsetBuffer);
 }
 
-void TerrainChunk::_CreateMesh()
+void TerrainChunk::CreateMesh()
 {
-	PR_SCOPE_TIMER_US("Mesh Creation");
+	PR_SCOPE_TIMER_MS("Mesh Creation");
 	m_MeshReady = false;
 
 	uint32_t VertexCount = 0;
@@ -75,6 +81,7 @@ void TerrainChunk::_CreateMesh()
 			m_Mesh.AddVertex(m_UVBuffer, glm::vec2{ u, v });
 			m_Mesh.AddVertex(m_ColorBuffer, glm::vec3{ 1.f, 0.f, 0.f });
 			m_Mesh.AddVertex(m_NormalBuffer, glm::vec3{ 0.f, 0.0f, 0.f });
+			m_Mesh.AddVertex(m_OffsetBuffer, 0.f);
 
 			if (x < m_Width - 1 && y < m_Height - 1)
 			{
@@ -90,10 +97,10 @@ void TerrainChunk::_CreateMesh()
 
 	m_MeshReady = true;
 }
-
+ 
 void TerrainChunk::UpdateMesh(bool shouldUseFunc)
 {
-	PR_SCOPE_TIMER_US("Updating Mesh");
+	PR_SCOPE_TIMER_MS("Updating Mesh");
 
 	if (!shouldUseFunc && m_HeightMap.size() != m_Width * m_Height)
 	{
@@ -116,7 +123,7 @@ void TerrainChunk::UpdateMesh(bool shouldUseFunc)
 			}
 			m_Mesh.OverwriteVertex(0, _Idx(x, y), glm::vec3{ x, z, y });
 		}
-	}
+	} 
 
 	m_Mesh.Flush();
 }
