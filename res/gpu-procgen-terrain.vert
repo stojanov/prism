@@ -8,20 +8,57 @@ uniform mat4 projectedView;
 uniform mat4 transform;
 
 uniform int layer_count;
-uniform int mode[10];
 uniform int using_simplex[10];
 uniform float noise_scale[10];
 uniform float noise_scale_m[10];
 uniform float noise_offset_x[10];
 uniform float noise_offset_y[10];
+uniform float noise_opacity[10];
+uniform int noise_blendingmode[10];
 uniform float elevation;
-
 
 out vec4 WorldPos;
 out vec3 Color;
 out vec2 UV;
 out vec3 Normal;
 out float MaxHeight;
+
+float blendMultiply(float base, float blend) {
+	return base*blend;
+}
+
+float blendMultiply(float base, float blend, float opacity) {
+	return (blendMultiply(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+float blendSubtract(float base, float blend) {
+	return max(base+blend-1.0,0.0);
+}
+
+float blendSubtract(float base, float blend, float opacity) {
+	return (blendSubtract(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+float blendScreen(float base, float blend) {
+	return 1.0-((1.0-base)*(1.0-blend));
+}
+
+float blendScreen(float base, float blend, float opacity) {
+	return (blendScreen(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+float blendOverlay(float base, float blend) {
+	return base<0.5?(2.0*base*blend):(1.0-2.0*(1.0-base)*(1.0-blend));
+}
+
+float blendOverlay(float base, float blend, float opacity) {
+	return (blendOverlay(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+float blendAdd(float base, float blend, float opacity)
+{
+    return min(base + blend, 1.0) * opacity + base * (1.0 - opacity);
+}
 
 vec2 hash( vec2 p ) // replace this by something better
 {
@@ -147,14 +184,26 @@ void main()
         {
             noiseVal = fractal_value(aPos.xz, vec2(noise_offset_x[i], noise_offset_y[i]), noise_scale[i] * noise_scale_m[i], 7);  
         }
-
-        switch (mode[i])
+        
+        switch (noise_blendingmode[i])
         {
             case 0:
-                height += noiseVal;
+                height = blendAdd(height, noiseVal, noise_opacity[i]);
             break;
             case 1:
-                height *= noiseVal;
+                height = blendScreen(height, noiseVal, noise_opacity[i]);
+            break;
+            case 2:
+                height = blendOverlay(height, noiseVal, noise_opacity[i]);
+            break;
+            case 3:
+                height = blendSubtract(height, noiseVal, noise_opacity[i]);
+            break;
+            case 4:
+                height = blendMultiply(height, noiseVal, noise_opacity[i]);
+            break;
+            default:
+                height = blendAdd(height, noiseVal, noise_opacity[i]);
             break;
         }
 

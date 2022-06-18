@@ -103,6 +103,8 @@ void ProcGenTerrainVertex::OnGuiDraw()
 {
 	auto& io = ImGui::GetIO();
 
+	static const char* blendingModes[]{ "Add", "Screen", "Overlay", "Subtract", "Multiply" };
+
 	ImGui::BeginMainMenuBar();
 
 	ImGui::MenuItem("Info", 0, &m_ShowInfo);
@@ -135,30 +137,35 @@ void ProcGenTerrainVertex::OnGuiDraw()
 
 		if (ImGui::Button("Add Noise Layer") && m_NoiseLayerCount < m_MaxNoiseLayers)
 		{
-			m_Modes[m_NoiseLayerCount] = 0;
 			m_UsingSimplex[m_NoiseLayerCount] = false;
 			m_Scales[m_NoiseLayerCount] = 0.1f;
 			m_ScaleMultipliers[m_NoiseLayerCount] = 1.f;
 			m_OffsetsX[m_NoiseLayerCount] = 0.f;
 			m_OffsetsY[m_NoiseLayerCount] = 0.f;
+			m_Opacity[m_NoiseLayerCount] = 0.f;
+			m_SelectedBlendingMode[m_NoiseLayerCount] = 1;
 			m_NoiseLayerCount++;
 		}
 
+		char noiseTitle[100];
+		char scale[20];
+		char scalemulti[20];
+		char offsetx[20];
+		char offsety[20];
+		char rmbtn[20];
+		char opacity[20];
+		char blendingModeStr[20];
+
 		for (int i = 0; i < m_NoiseLayerCount; i++)
 		{
-			char noiseTitle[100];
-			char scale[20];
-			char scalemulti[20];
-			char offsetx[20];
-			char offsety[20];
-			char rmbtn[20];
-
 			sprintf_s(noiseTitle, "Noise Layer: %d", i);
-			sprintf_s(scale, "Scale : %d", i);
+			sprintf_s(scale, "Scale: %d", i);
 			sprintf_s(scalemulti, "Scale Multi: %d", i);
 			sprintf_s(offsetx, "Offset X: %d", i);
 			sprintf_s(offsety, "Offset Y: %d", i);
-			sprintf_s(rmbtn, "Remove Layer %d", i);
+			sprintf_s(rmbtn, "Remove LayerL: %d", i);
+			sprintf_s(opacity, "Opacity: %d", i);
+			sprintf_s(blendingModeStr, "Blending Mode: %d", i);
 
 			if (ImGui::CollapsingHeader(noiseTitle))
 			{
@@ -168,21 +175,25 @@ void ProcGenTerrainVertex::OnGuiDraw()
 				{
 					m_UsingSimplex[i] = m_UsingSimplex[i] == 0 ? 1 : 0;
 				}
+
 				ImGui::SliderFloat(scale, &m_Scales[i], 0, 1);
 				ImGui::SliderFloat(scalemulti, &m_ScaleMultipliers[i], 0, 1);
-				ImGui::SliderFloat(offsetx, (float*)&m_OffsetsX[i], -50, 50);
-				ImGui::SliderFloat(offsety, (float*)&m_OffsetsY[i], -50, 50);
+				ImGui::SliderFloat(opacity, &m_Opacity[i], 0, 1);
+				ImGui::Combo(blendingModeStr, &m_SelectedBlendingMode[i], blendingModes, IM_ARRAYSIZE(blendingModes));
+				ImGui::SliderFloat(offsetx, &m_OffsetsX[i], -50, 50);
+				ImGui::SliderFloat(offsety, &m_OffsetsY[i], -50, 50);
 
 				if (ImGui::Button(rmbtn))
 				{
 					for (int j = i; j < m_NoiseLayerCount - 1; j++)
 					{
-						m_Modes[j] = m_Modes[j + 1];
 						m_UsingSimplex[j] = m_UsingSimplex[j + 1];
 						m_Scales[j] = m_Scales[j + 1];
 						m_ScaleMultipliers[j] = m_ScaleMultipliers[j + 1];
 						m_OffsetsX[j] = m_OffsetsX[j + 1];
 						m_OffsetsY[j] = m_OffsetsY[j + 1];
+						m_Opacity[j] = m_Opacity[j + 1];
+						m_SelectedBlendingMode[j] = m_SelectedBlendingMode[j + 1];
 					}
 
 					m_NoiseLayerCount--;
@@ -199,12 +210,13 @@ void ProcGenTerrainVertex::OnDraw()
 {
 	m_Shader->Bind();
 	m_Shader->SetInt("layer_count", m_NoiseLayerCount);
-	m_Shader->SetIntV("mode", m_MaxNoiseLayers, m_Modes);
 	m_Shader->SetIntV("using_simplex", m_MaxNoiseLayers, m_UsingSimplex);
 	m_Shader->SetFloatV("noise_scale", m_MaxNoiseLayers, m_Scales);
 	m_Shader->SetFloatV("noise_scale_m", m_MaxNoiseLayers, m_ScaleMultipliers);
 	m_Shader->SetFloatV("noise_offset_x", m_MaxNoiseLayers,m_OffsetsX);
 	m_Shader->SetFloatV("noise_offset_y", m_MaxNoiseLayers, m_OffsetsY);
+	m_Shader->SetFloatV("noise_opacity", m_MaxNoiseLayers, m_Opacity);
+	m_Shader->SetIntV("noise_blendingmode", m_MaxNoiseLayers, m_SelectedBlendingMode);
 	m_Shader->SetFloat("elevation", m_Elevation);
 
 	m_Shader->SetMat4("transform", m_TerrainGPU.GetTransform());

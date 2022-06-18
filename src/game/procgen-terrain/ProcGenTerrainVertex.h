@@ -33,12 +33,13 @@ private:
 	int m_NoiseLayerCount{ 1 };
 	int m_MaxNoiseLayers{ 10 };
 
-	int m_Modes[10];
 	int m_UsingSimplex[10];
 	float m_Scales[10];
 	float m_ScaleMultipliers[10];
 	float m_OffsetsX[10];
 	float m_OffsetsY[10];
+	float m_Opacity[10];
+	int m_SelectedBlendingMode[10];
 
 
 	TerrainChunk m_TerrainGPU{ TerrainSize.x, TerrainSize.y };

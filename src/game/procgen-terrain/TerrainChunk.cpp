@@ -130,5 +130,9 @@ void TerrainChunk::UpdateMesh(bool shouldUseFunc)
 
 void TerrainChunk::Render()
 {
+	if (!m_MeshReady)
+	{
+		return;
+	}
 	m_Mesh.DrawIndexed();
 }
