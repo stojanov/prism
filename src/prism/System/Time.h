@@ -18,7 +18,7 @@ namespace Prism::System::Time
 	};
 
 	template<Duration t, bool fname = false>
-	static constexpr char* GetDurationAsString()
+	static const char* GetDurationAsString()
 	{
 		if constexpr (t == Seconds)
 		{

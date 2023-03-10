@@ -27,8 +27,8 @@ namespace Prism::Examples
 		
 		m_Camera.AttachController<Renderer::FPSCameraController<Renderer::PerspectiveCamera>>();
 		m_Camera.GetController()->SetMoveSpeed(m_CameraMoveSpeed);
-		m_Ctx->Assets.Shaders->LoadAsset("baseshader", { "res/voxel.vert", "res/voxel.frag" });
-		m_Shader = m_Ctx->Assets.Shaders->Get("baseshader");
+		m_Ctx->assets.Shaders->LoadAsset("baseshader", {"res/voxel.vert", "res/voxel.frag" });
+		m_Shader = m_Ctx->assets.Shaders->Get("baseshader");
 
 		m_Noise.SetScale(m_NoiseScale);
 		m_Noise.SetPersistance(m_Persistance);
@@ -74,12 +74,12 @@ namespace Prism::Examples
 				if (m_CameraLocked)
 				{
 					m_Camera.GetController()->ResetDelta();
-					m_Ctx->SystemOptions->DisableCursor();
+					m_Ctx->systemOptions->DisableCursor();
 					m_CameraLocked = !m_CameraLocked;
 				} else
 				{
 					m_CameraLocked = !m_CameraLocked;
-					m_Ctx->SystemOptions->EnableCursor();
+					m_Ctx->systemOptions->EnableCursor();
 				}
 				break;
 			}

@@ -1,6 +1,6 @@
 #include "TextureAtlas.h"
 
-#include "Prism/Math/Interpolation.h"
+#include "prism/Math/Interpolation.h"
 
 namespace Prism::Renderer
 {

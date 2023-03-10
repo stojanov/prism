@@ -23,11 +23,11 @@ namespace Prism::Core
 	// Shared data context between layers
 	struct SharedContext
 	{
-		Ref<Window>					Window;
-		Ref<SystemOptions>			SystemOptions;
-		Ref<RenderOptions>			RenderOptions;
-		Ref<BackgroundTasks>		Tasks;
-		GroupAssets					Assets;
+		Ref<Window>					window;
+		Ref<SystemOptions>			systemOptions;
+		Ref<RenderOptions>			renderOptions;
+		Ref<BackgroundTasks>		tasks;
+		GroupAssets					assets;
 		// Graphics/Renderer API
 	};
 
@@ -37,13 +37,13 @@ namespace Prism::Core
 	{
 		auto ctx = MakeRef<SharedContext>();
 		auto glLoadingContextPtr = win->GetLoadingContext();
-		ctx->Window	= win;
-		ctx->SystemOptions = MakeRef<SystemOptions>(win);
-		ctx->RenderOptions = MakeRef<RenderOptions>(); // Ref as to keep consistency in the api
+		ctx->window	= win;
+		ctx->systemOptions = MakeRef<SystemOptions>(win);
+		ctx->renderOptions = MakeRef<RenderOptions>(); // Ref as to keep consistency in the api
 		
-		ctx->Tasks = MakeRef<BackgroundTasks>();
+		ctx->tasks = MakeRef<BackgroundTasks>();
 		
-		ctx->Tasks->RegisterWorker(SHARECTX_TASKNAME, 1, [glLoadingContextPtr]
+		ctx->tasks->RegisterWorker(SHARECTX_TASKNAME, 1, [glLoadingContextPtr]
 		{
 			glfwMakeContextCurrent(glLoadingContextPtr);
 			PR_ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Couldn't initliaize glad for loading context");
@@ -52,10 +52,10 @@ namespace Prism::Core
 			glFinish();
 		});
 
-		ctx->Tasks->RegisterWorker("bg", 4);
+		ctx->tasks->RegisterWorker("bg", 4);
 		
-		ctx->Assets.Textures = MakeRef<TextureAssets>("Textures", ctx->Tasks->GetWorker(SHARECTX_TASKNAME));
-		ctx->Assets.Shaders = MakeRef<ShaderAssets>("Shaders", ctx->Tasks->GetWorker(SHARECTX_TASKNAME));
+		ctx->assets.Textures = MakeRef<TextureAssets>("Textures", ctx->tasks->GetWorker(SHARECTX_TASKNAME));
+		ctx->assets.Shaders = MakeRef<ShaderAssets>("Shaders", ctx->tasks->GetWorker(SHARECTX_TASKNAME));
 		
 		return ctx;
 	}	

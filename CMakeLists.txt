@@ -21,6 +21,8 @@ else()
     add_compile_definitions(PRISM_NODEBUG)
 endif()
 
+add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+
 include_directories(
                     vendor/glad/include/
                     vendor/GLFW/include/
@@ -36,10 +38,8 @@ file(GLOB STB_SRC vendor/stb/*.c)
 file(GLOB GLAD_SOURCE vendor/glad/src/glad.c)
 file(GLOB IMGUI_SOURCES vendor/imgui/*.cpp)
 file(GLOB IMGUI_HEADERS vendor/imgui/*.h)
-file(GLOB IMGUI_GLFW_HEADERS 
-                    vendor/imgui/backends/imgui_impl_glfw.h
-                    vendor/imgui/backends/imgui_impl_opengl3.h)
-file(GLOB IMGUI_GLFW_SOURCES 
+file(GLOB IMGUI_GLFW_HEADERS vendor/imgui/backends/imgui_impl_glfw.h)
+file(GLOB IMGUI_GLFW_SOURCES
                     vendor/imgui/backends/imgui_impl_opengl3.cpp
                     vendor/imgui/backends/imgui_impl_glfw.cpp)
 

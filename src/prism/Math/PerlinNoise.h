@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include "General.h"
-#include <corecrt_math_defines.h>
 
 namespace Prism::Math
 {

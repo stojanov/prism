@@ -38,7 +38,7 @@ namespace Prism::Core
 		void ProcessEvents();
 	private:
 		void _ProcessEvents();
-		void _PushEvent(Event& e);
+		void _PushEvent(Event&& e);
 		void _ProcessKeyboardEvents();
 		void _ProcessMouseEvents();
 

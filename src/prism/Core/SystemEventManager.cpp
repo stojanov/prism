@@ -176,10 +176,10 @@ namespace Prism::Core
 		OnMouseClick(GLFW_MOUSE_BUTTON_MIDDLE, Mouse::Button::SCROLL);
 	}
 	
-	void SystemEventManager::_PushEvent(Event& e)
+	void SystemEventManager::_PushEvent(Event&& e)
 	{
 		auto data = static_cast<WindowData*>(glfwGetWindowUserPointer((m_Window)));
-		data->OnEvent(e);
+		data->OnEvent(std::move(e));
 	}
 
 	void SystemEventManager::ProcessEvents()

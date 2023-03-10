@@ -28,5 +28,5 @@ struct Trace
 #ifndef NDEBUG
 #define TRACE Trace(__FILE__, __LINE__)
 #else
-#define TRACE __noop
+#define TRACE(...) ({;})
 #endif

@@ -43,7 +43,7 @@ namespace Prism::Core
 		// For async loading
 		void QueueLoad(const std::string& name, const LoadArgs& args) override
 		{
-			PR_CORE_INFO("Assets ({0})\t(Queued)\t{1}", m_Name, name);
+			PR_CORE_INFO("assets ({0})\t(Queued)\t{1}", m_Name, name);
 			m_QueuedLoad.emplace_back(name, args);
 		}
 
@@ -62,7 +62,7 @@ namespace Prism::Core
 		{
 			{
 				std::lock_guard<std::mutex> g(m_M);
-				PR_CORE_ERROR("Assets ({0})\tNo loading job found", m_Name);
+				PR_CORE_ERROR("assets ({0})\tNo loading job found", m_Name);
 				PR_ASSERT(m_UnloadedAssetCount != 0, "There is no loading job active");
 			}
 			
@@ -76,7 +76,7 @@ namespace Prism::Core
 			{
 				return i->second;
 			}
-			PR_CORE_ERROR("Assets ({0})\tAsset not found: {1}", m_Name, name);
+			PR_CORE_ERROR("assets ({0})\tAsset not found: {1}", m_Name, name);
 			PR_CONST_ASSERT(!ShouldAssert, "Asset not found: " + name);
 			return nullptr;
 		}
@@ -92,7 +92,7 @@ namespace Prism::Core
 			{
 				return i->second;
 			}
-			PR_CORE_ERROR("Assets ({0})\tAsset not found: {1}", m_Name, name);
+			PR_CORE_ERROR("assets ({0})\tAsset not found: {1}", m_Name, name);
 			PR_CONST_ASSERT(!ShouldAssert, "Asset not found: " + name);
 			return nullptr;
 		}
@@ -119,7 +119,7 @@ namespace Prism::Core
 		// Won't work if asset is used in multiple threads
 		void SafeDestroyLoaded() override
 		{
-			PR_CORE_WARN("Assets ({0})\tSafe Destroying loadind assets", m_Name);
+			PR_CORE_WARN("assets ({0})\tSafe Destroying loadind assets", m_Name);
 			for (auto i : m_Assets)
 			{
 				/*
@@ -133,7 +133,7 @@ namespace Prism::Core
 		
 		void DestroyLoaded() override
 		{
-			PR_CORE_WARN("Assets ({0})\tDestroying loadind assets", m_Name);
+			PR_CORE_WARN("assets ({0})\tDestroying loadind assets", m_Name);
 			for (auto i : m_Assets)
 			{
 				i.second.reset();
@@ -145,22 +145,22 @@ namespace Prism::Core
 		{
 			if (auto i = m_Assets.find(name); i == m_Assets.end())
 			{
-				PR_CORE_INFO("Assets ({0})\t(Loading)\t{1}", m_Name, name);
+				PR_CORE_INFO("assets ({0})\t(Loading)\t{1}", m_Name, name);
 				auto [LoadedAsset, err] = LoadFunc(args);
 				if (err)
 				{
-					PR_CORE_ERROR("Assets ({0})\tError loading asset:{1}", m_Name, name);
+					PR_CORE_ERROR("assets ({0})\tError loading asset:{1}", m_Name, name);
 					PR_CONST_ASSERT(!ShouldAssert, "Error loading asset");
 					return err;
 				}
 
 				m_Assets.emplace(name, LoadedAsset);
-				PR_CORE_INFO("Assets ({0})\t(Loaded)\t{1}", m_Name, name);
+				PR_CORE_INFO("assets ({0})\t(Loaded)\t{1}", m_Name, name);
 				return false;				
 			}
 
 
-			PR_CORE_ERROR("Assets ({0})\tAsset already loaded:{1}", m_Name, name);
+			PR_CORE_ERROR("assets ({0})\tAsset already loaded:{1}", m_Name, name);
 			PR_CONST_ASSERT(!ShouldAssert, "Asset already loaded: " + name);
 			
 			return true;
@@ -190,7 +190,7 @@ namespace Prism::Core
 			}
 			
 			m_QueuedLoad.clear();
-			PR_CORE_INFO("Assets ({0})\tFinished Loading", m_Name);
+			PR_CORE_INFO("assets ({0})\tFinished Loading", m_Name);
 			m_LoadingTaskStarted = false;
 			
 			if (m_LoadingAsync)
