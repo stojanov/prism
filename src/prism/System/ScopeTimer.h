@@ -25,7 +25,7 @@ namespace Prism::System::Time
 	private:
 		std::string m_Name;
 		TimePoint m_Start;
-	};
+	}; 
 }
 
 #ifdef PRISM_DEBUG
