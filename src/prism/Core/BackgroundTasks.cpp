@@ -15,7 +15,7 @@ namespace Prism::Core
 	void BackgroundTasks::RegisterWorker(const std::string& name, int count)
 	{
 		auto p = MakeRef<System::ThreadPool>();
-		p->Start();
+		p->Start(count);
 		PR_CORE_WARN("(BackgroundTasks) Regisering worker {0}", name);
 		m_Workers.emplace(name, std::move(p));
 	}
@@ -23,7 +23,7 @@ namespace Prism::Core
 	void BackgroundTasks::RegisterWorker(const std::string& name, int count, System::VoidCallback StartCallback)
 	{
 		auto p = MakeRef<System::ThreadPool>(StartCallback);
-		p->Start();
+		p->Start(count);
 		PR_CORE_WARN("(BackgroundTasks) Regisering worker {0}", name);
 		m_Workers.emplace(name, std::move(p));
 	}
