@@ -25,7 +25,7 @@ namespace Prism::System::Time
 	private:
 		std::string m_Name;
 		TimePoint m_Start;
-	};
+	}; 
 }
 
 #ifdef PRISM_DEBUG
@@ -34,8 +34,8 @@ namespace Prism::System::Time
 #define PR_SCOPE_TIMER_MS(name) auto PR_TIMER_MS = ::Prism::System::Time::Scope<::Prism::System::Time::Miliseconds>(name);
 #define PR_SCOPE_TIMER_S(name) auto PR_TIMER_S = ::Prism::System::Time::Scope<::Prism::System::Time::Seconds>(name);
 #else
-#define PR_SCOPE_TIMER_NS(name) __noop;
-#define PR_SCOPE_TIMER_MS(name) __noop;
-#define PR_SCOPE_TIMER_US(name) __noop;
-#define PR_SCOPE_TIMER_S(name) __noop;
+#define PR_SCOPE_TIMER_NS(name) ({;});
+#define PR_SCOPE_TIMER_MS(name) ({;});
+#define PR_SCOPE_TIMER_US(name) ({;});
+#define PR_SCOPE_TIMER_S(name) ({;});
 #endif 

@@ -56,7 +56,7 @@ namespace Prism::Voxel
 				chunk->SetWorldOffset(x, y);
 
 				auto chPtr = chunk.get();
-				m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chPtr]()
+				m_Ctx->tasks->GetWorker("bg")->QueueTask([this, chPtr]()
 					{
 						chPtr->Allocate();
 						chPtr->Populate();
@@ -105,7 +105,7 @@ namespace Prism::Voxel
 				chunk->SetWorldOffset(x, endPoint);
 				Additions.push_back(chunk);
 
-				m_Ctx->Tasks->GetWorker("bg")->QueueTask([this, chunk]()
+				m_Ctx->tasks->GetWorker("bg")->QueueTask([this, chunk]()
 				{
 					chunk->Allocate();
 					chunk->Populate();

@@ -26,14 +26,14 @@ namespace Prism
 		Ref<Core::Window> Window = MakeRef<Core::Window>();
 		
 		Window->Create(w, h, name); // Temp, TODO: Add fullscreen support
-		Window->SetEventCallback([this](Event& e)
+		Window->SetEventCallback([this](Event&& e)
 			{
 				OnEvent(e);
 			});
 		m_WindowActive = true;
 
 		m_Context = Core::CreateSharedContext(Window);
-		m_Context->RenderOptions->DepthTest(true);
+		m_Context->renderOptions->DepthTest(true);
 		
 		m_Layers = { m_Context };
 		glfwSwapInterval(0);
@@ -53,7 +53,7 @@ namespace Prism
 			switch (e.GetKey())
 			{
 			case Keyboard::Escape:
-				m_Context->Window->Close();
+				m_Context->window->Close();
 				m_WindowActive = false;
 				break;
 			case Keyboard::F1:
@@ -81,7 +81,7 @@ namespace Prism
 	{
 		glm::vec4 clearColor{ 0.07f, 0.0f, 0.1f, 0.0f };
 
-		GLFWwindow* WndPtr = m_Context->Window->GetNativeWindow();
+		GLFWwindow* WndPtr = m_Context->window->GetNativeWindow();
 		
 		auto StartTime = std::chrono::high_resolution_clock::now();
 		auto LastFrameTime = StartTime;
@@ -93,12 +93,12 @@ namespace Prism
 			LastFrameTime = StartTime;
 			float dt = ms * 1.f / 1000; // TODO: move into it's own class
 
-			m_Context->RenderOptions->DrawWireframe(m_Wireframe);
+			m_Context->renderOptions->DrawWireframe(m_Wireframe);
 			
 			glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			m_Context->Window->ProcessEvents();
+			m_Context->window->ProcessEvents();
 			
 			if (dt > m_FixedDt)
 			{
@@ -118,7 +118,7 @@ namespace Prism
 			glfwSwapBuffers(WndPtr);
 		}
 
-		m_Context->Tasks->Finish();
+		m_Context->tasks->Finish();
 		
 		exit(0);
 	}
