@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 #include "General.h"
 
 namespace Prism::Math

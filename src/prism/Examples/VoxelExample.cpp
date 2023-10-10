@@ -84,6 +84,11 @@ namespace Prism::Examples
 				break;
 			}
 		});
+
+        CLASSEVENT(handler, WindowResizeEvent)
+        {
+            m_Camera.UpdatePerspective(90, e.GetWidth(), e.GetHeight(), 0.1f, 2048.f);
+        });
 	}
 
 	void VoxelExample::OnGuiDraw()

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "prism/System/Trace.h"
+#include <stdint.h>
 
 namespace Prism::Gl
 {
@@ -37,6 +38,8 @@ namespace Prism::Gl
 		case ShaderDataType::Mat3:		return 4 * 3 * 3;
 		case ShaderDataType::Mat4:		return 4 * 4 * 4;
 		case ShaderDataType::Bool:		return 1;
+        default:
+            TRACE("Invalid ShaderDataType!");
 		}
 
 		TRACE("Invalid ShaderDataType!");
@@ -53,7 +56,7 @@ namespace Prism::Gl
 
 		BufferElement() = default;
 
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
+		BufferElement(ShaderDataType type, const std::string&& name, bool normalized = false)
 			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
 		{
 		}
@@ -89,12 +92,9 @@ namespace Prism::Gl
 			CalculateOffsetsAndStride();
 		}
 
-		uint32_t GetStride() const { return m_Stride; }
-		const auto& GetElements() const { return m_Elements; }
-		uint32_t GetLength() const
-		{
-			return m_Length;
-		}
+		[[nodiscard]] uint32_t GetStride() const { return m_Stride; }
+		[[nodiscard]] const auto& GetElements() const { return m_Elements; }
+		[[nodiscard]] uint32_t GetLength() const { return m_Length; }
 	private:
 		void CalculateOffsetsAndStride()
 		{
@@ -106,7 +106,8 @@ namespace Prism::Gl
 				offset += el.Size;
 				m_Stride += el.Size;
 			}
-			m_Length = std::accumulate(m_Elements.begin(), m_Elements.end(), 0, [](uint32_t sum, BufferElement& el)
+			m_Length = std::accumulate(m_Elements.begin(), m_Elements.end(), 0,
+                                       [](uint32_t sum, const BufferElement& el)
 				{
 					return el.GetComponentCount() + sum;
 				});

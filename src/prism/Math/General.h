@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace Prism::Math
 {
 #ifdef PR_MATH_DOUBLES

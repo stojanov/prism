@@ -60,22 +60,22 @@ namespace Prism::Voxel
 		void RebuildMesh();
 		void UpdateGpu(); // Will update only if rebuild has been called
 
-		const Vec2& GetOffset()
+		[[nodiscard]] Vec2 GetOffset()
 		{
 			return Vec2{ m_XOffset, m_YOffset };
 		}
 
-		glm::mat4& GetTransform()
+        [[nodiscard]] glm::mat4& GetTransform()
 		{
 			return m_Transform;
 		}
 
-		glm::vec3& GetPosition()
+        [[nodiscard]] glm::vec3& GetPosition()
 		{
 			return m_Position;
 		}
 
-		const glm::vec3& Size()
+        [[nodiscard]] glm::vec3 Size()
 		{
 			return glm::vec3{
 				m_XSize * m_BlockSize,
@@ -84,7 +84,7 @@ namespace Prism::Voxel
 			};
 		}
 
-		bool MeshReady()
+        [[nodiscard]] bool MeshReady()
 		{
 			return m_MeshReady;
 		}

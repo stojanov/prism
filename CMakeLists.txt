@@ -18,7 +18,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
     add_compile_definitions(PRISM_DEBUG)
 else()
-    add_compile_definitions(PRISM_NODEBUG)
+    # temporary, to test
+    add_compile_definitions(PRISM_DEBUG)
+    #add_compile_definitions(PRISM_NODEBUG)
 endif()
 
 add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD)
@@ -69,6 +71,9 @@ add_executable(${PROJECT_NAME}
                     ${IMGUI_GLFW_HEADERS}
                     ${PROJECT_CONFIGS} )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        _USE_MATH_DEFINES
+)
 
 target_link_libraries(${PROJECT_NAME} glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES})

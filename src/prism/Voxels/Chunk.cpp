@@ -86,7 +86,7 @@ namespace Prism::Voxel
 	void Chunk::Populate()
 	{
 		PR_ASSERT(m_PopulationFunction, "(Chunk) No population function present!");
-		//PR_SCOPE_TIMER_NS("Chunk Population");
+		PR_SCOPE_TIMER_US("Chunk Population");
 		m_MeshReady = false;
 		int zOffset = m_ZSize * m_YOffset;
 		int xOffset = m_XSize * m_XOffset;

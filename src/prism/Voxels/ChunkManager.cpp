@@ -40,7 +40,9 @@ namespace Prism::Voxel
 	void ChunkManager::_Create(const Vec2& position)
 	{
 		std::vector<Chunk*> Additions;
-
+#ifdef BENCHMARK_MESH_GENERATION
+        auto start = std::chrono::high_resolution_clock::now();
+#endif
 		for (int x = position.x - m_Radius; x < position.x + m_Radius; x++)
 		{
 			for (int y = position.y - m_Radius; y < position.y + m_Radius; y++)
@@ -60,12 +62,20 @@ namespace Prism::Voxel
 					{
 						chPtr->Allocate();
 						chPtr->Populate();
-						chPtr->GenerateMesh2();
+						chPtr->GenerateMesh();
 					});
 
 				m_Map.emplace(Vec2{ x, y }, std::move(chunk));
 			}
 		}
+
+#ifdef BENCHMARK_MESH_GENERATION
+        m_Ctx->tasks->GetWorker("bg")->WaitToFinishTasks();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        PR_CORE_WARN("Generating mesh took: {}ms", duration.count());
+#endif
 	}
 
 	/*
@@ -152,17 +162,18 @@ namespace Prism::Voxel
 	{
 		PR_SCOPE_TIMER_MS("Chunk cleanup");
 		PR_CORE_WARN("Remove Count {0}", m_ToRemove.size());
-		for (auto& pos : m_ToRemove)
-		{
-			if (auto i = m_Map.find(pos); i != m_Map.end())
-			{
-				i->second->PrepareForClearing();
-				i->second->Clear(); // Needs access to an opengl initialized thread
-				m_Map.erase(i);
-			}
-		}
-		
-		m_ToRemove.clear();
+
+        for (auto& pos : m_ToRemove)
+        {
+            if (auto i = m_Map.find(pos); i != m_Map.end())
+            {
+                i->second->PrepareForClearing();
+                i->second->Clear(); // Needs access to an opengl initialized thread
+                m_Map.erase(i);
+            }
+        }
+
+        m_ToRemove.clear();
 	}
 
 	void ChunkManager::ProcessFromPosition(int xOffset, int yOffset)

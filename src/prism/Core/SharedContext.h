@@ -54,10 +54,10 @@ namespace Prism::Core
 
         // Possibly move this kind of information into a new module
         auto threads = std::thread::hardware_concurrency();
-        auto using_threads = threads / 1.5;
-        PR_CORE_INFO("Using {} threads", using_threads);
+        int using_threads = threads / 1.5f;
+        PR_INFO("Registering background worker with {} threads", using_threads);
 
-		ctx->Tasks->RegisterWorker("bg", using_threads);
+		ctx->tasks->RegisterWorker("bg", using_threads);
 		
 		ctx->assets.Textures = MakeRef<TextureAssets>("Textures", ctx->tasks->GetWorker(SHARECTX_TASKNAME));
 		ctx->assets.Shaders = MakeRef<ShaderAssets>("Shaders", ctx->tasks->GetWorker(SHARECTX_TASKNAME));

@@ -29,13 +29,13 @@ namespace Prism::System::Time
 }
 
 #ifdef PRISM_DEBUG
-#define PR_SCOPE_TIMER_NS(name) auto PR_TIMER_NS = ::Prism::System::Time::Scope<::Prism::System::Time::Nanoseconds>(name);
-#define PR_SCOPE_TIMER_US(name) auto PR_TIMER_US = ::Prism::System::Time::Scope<::Prism::System::Time::Microseconds>(name);
-#define PR_SCOPE_TIMER_MS(name) auto PR_TIMER_MS = ::Prism::System::Time::Scope<::Prism::System::Time::Miliseconds>(name);
-#define PR_SCOPE_TIMER_S(name) auto PR_TIMER_S = ::Prism::System::Time::Scope<::Prism::System::Time::Seconds>(name);
+#define PR_SCOPE_TIMER_NS(name) auto PR_TIMER_NS = ::Prism::System::Time::Scope<::Prism::System::Time::Nanoseconds>(name)
+#define PR_SCOPE_TIMER_US(name) auto PR_TIMER_US = ::Prism::System::Time::Scope<::Prism::System::Time::Microseconds>(name)
+#define PR_SCOPE_TIMER_MS(name) auto PR_TIMER_MS = ::Prism::System::Time::Scope<::Prism::System::Time::Miliseconds>(name)
+#define PR_SCOPE_TIMER_S(name) auto PR_TIMER_S = ::Prism::System::Time::Scope<::Prism::System::Time::Seconds>(name)
 #else
-#define PR_SCOPE_TIMER_NS(name) ({;});
-#define PR_SCOPE_TIMER_MS(name) ({;});
-#define PR_SCOPE_TIMER_US(name) ({;});
-#define PR_SCOPE_TIMER_S(name) ({;});
+#define PR_SCOPE_TIMER_NS(name) do {} while(0)
+#define PR_SCOPE_TIMER_MS(name) do {} while(0)
+#define PR_SCOPE_TIMER_US(name) do {} while(0)
+#define PR_SCOPE_TIMER_S(name) do {} while(0)
 #endif 

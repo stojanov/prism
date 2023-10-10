@@ -37,6 +37,7 @@ namespace Prism::System
 		void CancelPendingTasks();
 		void Abort();
 		void Finish();
+        void WaitToFinishTasks();
 		void Start(size_t N = 1);
 		void StartSync(size_t N = 1);
 	private:
@@ -49,5 +50,6 @@ namespace Prism::System
 		std::condition_variable m_Signal;
 		std::deque<std::packaged_task<void()>> m_Queue;
 		std::vector<std::future<void>> m_RunningThreads;
+        std::chrono::high_resolution_clock::time_point m_Timepoint;
 	};
 }

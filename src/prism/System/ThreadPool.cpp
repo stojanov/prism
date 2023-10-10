@@ -80,6 +80,16 @@ namespace Prism::System
 		m_RunningThreads.clear();
 	}
 
+    void ThreadPool::WaitToFinishTasks()
+    {
+        std::unique_lock lck(m_M);
+
+        m_Signal.wait(lck, [this]
+        {
+            return m_Queue.empty();
+        });
+    }
+
 	void ThreadPool::Abort()
 	{
 		CancelPendingTasks();
@@ -122,6 +132,8 @@ namespace Prism::System
 			}
 
 			f();
+
+            m_Signal.notify_all();
 		}
 
 		if (m_EndCallback)
