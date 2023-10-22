@@ -55,18 +55,18 @@ namespace Prism::Renderer
 		};
 	}
 
-	std::array<glm::vec2, 4> TextureAtlas::GetTextureVec(int x, int y)
+	std::array<glm::vec2, 4> TextureAtlas::GetTextureVec(int x, int y) const
 	{
 		float xStart = x * m_InstSize.x;
 		float xEnd = xStart + m_InstSize.x;
-		float yStart = m_Height - (y + 1) * m_InstSize.y;
-		float yEnd = m_Height - y * m_InstSize.y;
+		float yStart = m_Height - ((y + 1) * m_InstSize.y);
+		float yEnd = m_Height - (y * m_InstSize.y);
 
-		float xVertStart = Math::LinearTranslate(0.f, m_Width * 1.f, 0.f, 1.f, xStart);
-		float xVertEnd = Math::LinearTranslate(0.f, m_Width * 1.f, 0.f, 1.f, xEnd);
+		float xVertStart = glm::clamp(xStart / m_Width, 0.f, 1.f);
+		float xVertEnd = glm::clamp(xEnd / m_Width, 0.f, 1.f);
 
-		float yVertStart = Math::LinearTranslate(0.f, m_Height * 1.f, 0.f, 1.f, yStart);
-		float yVertEnd = Math::LinearTranslate(0.f, m_Height * 1.f, 0.f, 1.f, yEnd);
+		float yVertStart = glm::clamp(yStart / m_Height, 0.f, 1.f);
+		float yVertEnd = glm::clamp(yEnd / m_Height, 0.f, 1.f);
 
 		return {
 			glm::vec2{ xVertStart, yVertStart },	// TOP LEFT

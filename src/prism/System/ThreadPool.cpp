@@ -71,7 +71,7 @@ namespace Prism::System
 	{
 		{
 			std::unique_lock<std::mutex> lck(m_M);
-			for (auto&& unsused : m_RunningThreads)
+			for ([[maybe_unused]] auto&& unsused : m_RunningThreads)
 			{
 				m_Queue.emplace_back();
 			}
