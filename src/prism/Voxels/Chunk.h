@@ -8,6 +8,8 @@
 #include "prism/Math/Interpolation.h"
 #include "prism/Math/Smoothing.h"
 
+#include "ChunkMapper.h"
+
 namespace Prism::Voxel
 {
 	struct Vec2
@@ -52,13 +54,13 @@ namespace Prism::Voxel
 		void Populate();
 		void SetPopulationFunction(std::function<float(int, int)> PopFunc);
 		void SetHeight(int h);
-		void SetMappingFunction(std::function<void()> MapFunc);
+		void HookMapper(Ref<ChunkMapper> mapper);
 		void GenerateMesh();
 		void GenerateMesh2();
 		void SendToGpu();
 		void SetWorldOffset(int x, int y);
-		void RebuildMesh();
-		void UpdateGpu(); // Will update only if rebuild has been called
+		//void RebuildMesh();
+		//void UpdateGpu(); // Will update only if rebuild has been called
 
 		[[nodiscard]] Vec2 GetOffset()
 		{
@@ -163,16 +165,18 @@ namespace Prism::Voxel
 		// Will be used once the mesh is created to create a more
 	   //  optimized mesh for adding and removing blocks
 		std::vector<int> m_BlockHeights;
-		std::function<void()> m_MappingFunction;
+		Ref<ChunkMapper> m_Mapper;
+		ChunkMapper::MappingData m_MappingData;
 		std::function<float(int, int)> m_PopulationFunction;
 		uint32_t m_NormalBuffer;
 		uint32_t m_ColorBuffer;
+		uint32_t m_TextureCoordBuffer;
 		std::atomic_bool m_MeshReady{ false };
 		glm::vec3 m_Position;
 		glm::mat4 m_Transform{ 1.f };
 		int m_CreatedFaces{ 0 };
 		bool m_IsAllocated{ false };
-		bool m_DataSentToGpu{ false };
+		std::atomic_bool m_DataSentToGpu{ false };
 		bool m_Populated{ false };
 		int m_BlockSize;
 		int m_XSize;

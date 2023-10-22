@@ -9,8 +9,9 @@ namespace Prism::Voxel
 		m_Ctx(ctx),
 		m_ChunkSize(ChunkSize),
 		m_BlockSize(BlockSize),
-		m_ChunkWorldSize(ChunkSize * BlockSize),
-		m_Height(ChunkSize * 8)
+		m_ChunkWorldSize(ChunkSize* BlockSize),
+		m_Height(ChunkSize * 8),
+		m_ChunkMapper(nullptr)
 	{
 		
 	}
@@ -22,9 +23,14 @@ namespace Prism::Voxel
 		_Create(StartPoint);
 	}
 
+	void ChunkManager::AttachChunkMapper(Ref<ChunkMapper>&& mapper)
+	{
+		m_ChunkMapper = mapper;
+	}
+
 	void ChunkManager::PopulationFunction(std::function<float(int, int)> func)
 	{
-		m_PopFunc = func;
+		m_PopFunc = std::move(func);
 	}
 
 	void ChunkManager::Clear()
@@ -57,12 +63,17 @@ namespace Prism::Voxel
 				chunk->SetHeight(m_Height);
 				chunk->SetWorldOffset(x, y);
 
+				if (m_ChunkMapper)
+				{
+					chunk->HookMapper(m_ChunkMapper);
+				}
+
 				auto chPtr = chunk.get();
 				m_Ctx->tasks->GetWorker("bg")->QueueTask([this, chPtr]()
 					{
 						chPtr->Allocate();
 						chPtr->Populate();
-						chPtr->GenerateMesh();
+						chPtr->GenerateMesh2();
 					});
 
 				m_Map.emplace(Vec2{ x, y }, std::move(chunk));

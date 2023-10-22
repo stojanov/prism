@@ -21,6 +21,21 @@ namespace std
 
 namespace Prism::Voxel
 {
+	class DefaultMapper : public Voxel::ChunkMapper
+	{
+	public:
+
+		void Map(const MappingData& data, int x, int y, int height, FaceSide side) override
+		{
+			auto color2 = glm::vec3{ 1.f, 0.f, 1.f };
+			data.ColorFn(color2);
+
+			auto coords = std::array<glm::vec2, 4>();
+
+			data.TextureCoordFn(coords);
+		}
+	};
+
 	Chunk::Chunk(int Size, int blockSize)
 		:
 		m_BlockSize(blockSize),
@@ -40,9 +55,30 @@ namespace Prism::Voxel
 			{ Gl::ShaderDataType::Float3, "color" }
 		});
 
+		m_TextureCoordBuffer = m_Mesh->CreateNewVertexBuffer({
+			{ Gl::ShaderDataType::Float2, "TexCoord" }
+		});
+
 		m_DebugMesh->CreateNewVertexBuffer({
 			{ Gl::ShaderDataType::Float3, "color"}
 		});
+
+		m_MappingData.MinHeight = 0;
+
+		m_MappingData.ColorFn = [this](const glm::vec3& color)
+		{
+			_PassVertParam(m_ColorBuffer, color);
+		};
+
+		m_MappingData.TextureCoordFn = [this](std::array<glm::vec2, 4> texCoords)
+		{
+			for (auto& coords: texCoords)
+			{
+				m_Mesh->AddVertex(m_TextureCoordBuffer, coords);
+			}
+		};
+
+		HookMapper(MakeRef<DefaultMapper>());
 	}
 
 	// Allocation is in another function in order to
@@ -61,6 +97,7 @@ namespace Prism::Voxel
 		m_Mesh->AllocateVertexBuffer(0, 12 * total);
 		m_Mesh->AllocateVertexBuffer(m_NormalBuffer, 12 * total);
 		m_Mesh->AllocateVertexBuffer(m_ColorBuffer, 12 * total);
+		m_Mesh->AllocateVertexBuffer(m_TextureCoordBuffer, 12 * total);
 		m_Mesh->AllocateIndexBuffer(6 * total);
 
 		m_IsAllocated = true;
@@ -71,6 +108,7 @@ namespace Prism::Voxel
 	{
 		m_Height = h;
 		m_YSize = h;
+		m_MappingData.MaxHeight = m_YSize;
 	}
 
 	void Chunk::SetPopulationFunction(std::function<float(int, int)> PopFunc)
@@ -78,9 +116,9 @@ namespace Prism::Voxel
 		m_PopulationFunction = PopFunc;
 	}
 
-	void Chunk::SetMappingFunction(std::function<void()> MapFunc)
+	void Chunk::HookMapper(Ref<ChunkMapper> mapper)
 	{
-		m_MappingFunction = MapFunc;
+		m_Mapper = std::move(mapper);
 	}
 
 	void Chunk::Populate()
@@ -162,13 +200,12 @@ namespace Prism::Voxel
 
 	void Chunk::SendToGpu()
 	{
-		if (m_DataSentToGpu)
-		{
-			return;
-		}
-		m_Mesh->Flush();
+		bool isNotSent = false;
 
-		m_DataSentToGpu = true;
+		if (m_DataSentToGpu.compare_exchange_strong(isNotSent, true))
+		{
+			m_Mesh->Flush();
+		} 
 	}
 
 	void Chunk::Clear()
@@ -275,13 +312,22 @@ namespace Prism::Voxel
 					xEnd, yEnd, zEnd
 				);
 				glm::vec3 clr = { 0.f, 0.8f, 0.1f };
-				_PassVertParam(m_ColorBuffer, clr);
+
+				// Mapper should be already initialized
+				m_Mapper->Map(m_MappingData, x, z, height, ChunkMapper::FaceSide::TOP);
 
 				int positions[8] = {
 					x + 1, z, // Left
 					x - 1, z, // Right
 					x, z + 1, // Front
 					x, z - 1, // Back
+				};
+
+				ChunkMapper::FaceSide faceSides[4] = {
+					ChunkMapper::FaceSide::LEFT,
+					ChunkMapper::FaceSide::RIGHT,
+					ChunkMapper::FaceSide::FRONT,
+					ChunkMapper::FaceSide::BACK,
 				};
 
 				for (int h = height; h >= 0; h--)
@@ -312,7 +358,7 @@ namespace Prism::Voxel
 								*Vertex[6], *Vertex[7], *Vertex[8],
 								*Vertex[9], *Vertex[10], *Vertex[11]
 							);
-							_PassVertParam(m_ColorBuffer, clr);
+							m_Mapper->Map(m_MappingData, x, z, h, faceSides[i]);
 						}
 						else
 						{

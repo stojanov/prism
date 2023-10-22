@@ -2,6 +2,7 @@
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec3 aColor;
+layout(location = 3) in vec2 aTexCoord;
 
 uniform mat4 transform;
 uniform mat4 projectedview;
@@ -11,6 +12,7 @@ uniform mat4 worldoffset;
 out vec3 Normal;
 out vec3 ToLightVec;
 out vec3 Color;
+out vec2 TexCoord;
 
 void main()
 {
@@ -20,4 +22,5 @@ void main()
     Normal = mat3(transpose(inverse(transform))) * aNormal;//aNormal;
     Color = aColor;
     ToLightVec = lightPos - WorldPos.xyz;
+    TexCoord = aTexCoord;
 }

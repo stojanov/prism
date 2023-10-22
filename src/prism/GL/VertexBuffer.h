@@ -26,7 +26,10 @@ namespace Prism::Gl
 		template<typename T>
 		void SetData(std::vector<T>& vertices, size_t count)
 		{
-			if (!m_Dynamic) return;
+			if (!m_Dynamic)
+			{
+				return;
+			}
 			Bind();
 			glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), &vertices[0], GL_DYNAMIC_DRAW);
 		}

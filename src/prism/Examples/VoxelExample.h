@@ -4,6 +4,7 @@
 #include "prism/Math/PerlinNoise.h"
 #include "prism/Renderer/DynamicMesh.h"
 #include "prism/Renderer/PerspectiveCamera.h"
+#include "prism/Renderer/TextureAtlas.h"
 #include "prism/Voxels/Chunk.h"
 #include "prism/Voxels/ChunkManager.h"
 
@@ -35,7 +36,9 @@ namespace Prism::Examples
 		// Hardcoded width and height for now
 		Renderer::PerspectiveCamera m_Camera{ 90, 1280, 720, 0.1f, 2048.f };
 		Voxel::ChunkManager m_ChunkManager{ m_Ctx, 16, 4 };
+		Ref<Voxel::ChunkMapper> m_ChunkMapper;
 		Ref<Gl::Shader> m_Shader;
+		Ref<Renderer::TextureAtlas> m_VoxelAtlas;
 		Math::PerlinNoise m_Noise;
 		VectorPtr<Voxel::Chunk> m_Chunks;
 		std::vector<ChunkData> m_ChunkData;
@@ -47,9 +50,9 @@ namespace Prism::Examples
 		bool m_ShowDescripton{ true };
 		bool m_ShowWorldGen{ false };
 		int m_Height{ 16 };
-		float m_NoiseScale{ 0.0025 };
+		float m_NoiseScale{ 0.0025f };
 		float m_NoiseScaleMultiplier{ 1 };
-		float m_Persistance{ 0.7 };
+		float m_Persistance{ 0.7f };
 		int m_Octaves{ 7 };
 		int m_Seed{ 0 };
 

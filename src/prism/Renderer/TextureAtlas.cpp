@@ -59,8 +59,8 @@ namespace Prism::Renderer
 	{
 		float xStart = x * m_InstSize.x;
 		float xEnd = xStart + m_InstSize.x;
-		float yStart = m_Height - ((y + 1) * m_InstSize.y);
-		float yEnd = m_Height - (y * m_InstSize.y);
+		float yStart = m_Height - (y * m_InstSize.y);
+		float yEnd = m_Height - ((y + 1) * m_InstSize.y);
 
 		float xVertStart = glm::clamp(xStart / m_Width, 0.f, 1.f);
 		float xVertEnd = glm::clamp(xEnd / m_Width, 0.f, 1.f);

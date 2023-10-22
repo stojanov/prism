@@ -8,6 +8,48 @@
 
 namespace Prism::Examples
 {
+	class MainMapper : public Voxel::ChunkMapper
+	{
+	public:
+		MainMapper(Ref<Renderer::TextureAtlas> textureAtlas)
+			: m_Atlas(std::move(textureAtlas))
+		{
+			
+		}
+
+		void Map(const MappingData& data, int x, int y, int height, FaceSide side) override
+		{
+			glm::vec3 clr = { 1.f, 1.f, 0.f };
+
+			data.ColorFn(clr);
+
+			auto sample = data.MaxHeight / 3;
+
+			if (height > sample * 1.2)
+			{
+				if (side == FaceSide::TOP)
+				{
+					data.TextureCoordFn(m_Atlas->GetTextureVec(0, 0));
+				}
+				else
+				{
+					data.TextureCoordFn(m_Atlas->GetTextureVec(3, 0));
+				}
+			}
+			else if (height <= sample * 1.2 && height > sample)
+			{
+				data.TextureCoordFn(m_Atlas->GetTextureVec(2, 0));
+			}
+			else
+			{
+				data.TextureCoordFn(m_Atlas->GetTextureVec(3, 4));
+			}
+		}
+
+	private:
+		Ref<Renderer::TextureAtlas> m_Atlas;
+	};
+
 	VoxelExample::VoxelExample(Core::SharedContextRef ctx, const std::string& name)
 		:
 		ILayer(ctx, name)
@@ -24,15 +66,24 @@ namespace Prism::Examples
 	{
 		m_Camera.SetPosition({ 100.f, 320.f, 0.f });
 		m_Camera.OffsetRotation({ 0.f, 85.f });
-		
+
 		m_Camera.AttachController<Renderer::FPSCameraController<Renderer::PerspectiveCamera>>();
 		m_Camera.GetController()->SetMoveSpeed(m_CameraMoveSpeed);
-		m_Ctx->assets.Shaders->LoadAsset("baseshader", {"res/voxel.vert", "res/voxel.frag" });
+
+
+		m_Ctx->assets.Shaders->LoadAsset("baseshader", { "res/voxel.vert", "res/voxel.frag" });
+		m_Ctx->assets.Textures->LoadAsset("voxel-texture", { "res/voxel-texture-atlas-2.png" });
+
 		m_Shader = m_Ctx->assets.Shaders->Get("baseshader");
+		m_VoxelAtlas = MakeRef<Renderer::TextureAtlas>(m_Ctx->assets.Textures->Get("voxel-texture"));
+
+		m_VoxelAtlas->SetInstanceSize({ 16.f,16.f });
 
 		m_Noise.SetScale(m_NoiseScale);
 		m_Noise.SetPersistance(m_Persistance);
+
 		m_Noise.SetOctaves(m_Octaves);
+		m_ChunkManager.AttachChunkMapper(MakeRef<MainMapper>(m_VoxelAtlas));
 
 		m_ChunkManager.PopulationFunction([this](int x, int y)
 			{
@@ -40,7 +91,7 @@ namespace Prism::Examples
 			});
 
 		m_ChunkManager.SetRadius(20);
-		
+
 		m_CameraLocked = true;
 	}
 
@@ -178,12 +229,14 @@ namespace Prism::Examples
 		for (auto& [pos, chunk] : m_ChunkManager)
 		{
 			if (!chunk->MeshReady())
-			{
+			{ 
 				continue;
 			}
 
 			chunk->SendToGpu();
+			m_VoxelAtlas->Bind(0);
 			m_Shader->Bind();
+			m_Shader->SetInt("textureAtlas", 0);
 			m_Shader->SetMat4("transform", chunk->GetTransform());
 			m_Shader->SetInt("tex", 0);
 			m_Shader->SetFloat3("lightPos", m_LightPosition);

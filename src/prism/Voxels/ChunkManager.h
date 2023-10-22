@@ -20,7 +20,7 @@ namespace Prism::Voxel
 			return b + 0x9e3779b9 + (a << 6) + (a >> 2); // boost library way to combine two hashes
 		}
 	};
-	
+
 	class ChunkManager
 	{
 	using Map = std::unordered_map<Vec2, Ptr<Chunk>, Vec2Hasher>;
@@ -32,6 +32,7 @@ namespace Prism::Voxel
 		ChunkManager(Core::SharedContextRef ctx, int ChunksSize, int BlockSize);
 
 		void Initial(const Vec2& StartPoint);
+		void AttachChunkMapper(Ref<ChunkMapper>&& mapper);
 		void PopulationFunction(std::function<float(int, int)> func);
 		void SetRadius(int r);
 		void SetHeight(int height);
@@ -77,6 +78,7 @@ namespace Prism::Voxel
 		Core::SharedContextRef m_Ctx;
 		int m_Radius; // In blocks
 		std::function<float(int, int)> m_PopFunc;
+		Ref<ChunkMapper> m_ChunkMapper;
 		Map m_Map;
 		std::vector<Vec2> m_ToRemove;
 		Vec2 m_CenterPosition;
