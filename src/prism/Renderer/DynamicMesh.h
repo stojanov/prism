@@ -117,7 +117,7 @@ namespace Prism::Renderer
 		}
 
 		template<typename T>
-		const T& GetVertex(uint32_t vertBufferIdx, uint32_t vertIdx)
+		const T GetVertex(uint32_t vertBufferIdx, uint32_t vertIdx)
 		{
 			constexpr int VertSize = GetVertexSize<T>();
 			PR_ASSERT(vertBufferIdx < m_VertexData.size(), "Cannot find vertex data");
@@ -152,7 +152,7 @@ namespace Prism::Renderer
 			}
 		}
 
-		const glm::vec3& GetVertex3f(uint32_t vertBufferIdx, uint32_t vertIdx)
+		const glm::vec3 GetVertex3f(uint32_t vertBufferIdx, uint32_t vertIdx)
 		{
 			return GetVertex<glm::vec3>(vertBufferIdx, vertIdx);
 		}
